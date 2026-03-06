@@ -1,0 +1,19 @@
+{
+  "name": "@repo/extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'build: placeholder'",
+    "dev": "echo 'dev: placeholder'",
+    "lint": "eslint .",
+    "test": "echo 'test: placeholder'",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^9",
+    "typescript": "^5"
+  }
+}
