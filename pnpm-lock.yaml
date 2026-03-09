@@ -123,6 +123,9 @@ importers:
       '@neondatabase/serverless':
         specifier: ^0.10
         version: 0.10.4
+      '@repo/shared':
+        specifier: workspace:*
+        version: link:../shared
       drizzle-orm:
         specifier: ^0.39
         version: 0.39.3(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)
