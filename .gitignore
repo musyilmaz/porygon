@@ -7,6 +7,5 @@ dist/
 out/
 .turbo/
 coverage/
-drizzle/meta/
 *.tsbuildinfo
 .DS_Store

@@ -8,14 +8,25 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:integration": "vitest run --project db-integration",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.39",
+    "@neondatabase/serverless": "^0.10"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@vitest/coverage-v8": "^3",
+    "dotenv": "^16",
+    "drizzle-kit": "^0.30",
     "eslint": "^9",
+    "tsx": "^4",
     "typescript": "^5",
     "vitest": "^3"
   }
