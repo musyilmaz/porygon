@@ -1,26 +1,10 @@
-export type {
-  Workspace,
-  Plan,
-  PlanLimits,
-} from "./workspace";
+export type { Workspace, Plan, PlanLimits } from "./workspace";
 
-export type {
-  Demo,
-  DemoStatus,
-  DemoSettings,
-} from "./demo";
+export type { Demo, DemoStatus, DemoSettings } from "./demo";
 
-export type {
-  Step,
-  ActionType,
-  Coordinates,
-} from "./step";
+export type { Step, ActionType, Coordinates } from "./step";
 
-export type {
-  Hotspot,
-  HotspotStyle,
-  TooltipPosition,
-} from "./hotspot";
+export type { Hotspot, HotspotStyle, TooltipPosition } from "./hotspot";
 
 export type {
   Annotation,

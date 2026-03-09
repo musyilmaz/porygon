@@ -14,10 +14,7 @@ export const createHotspotSchema = z.object({
   tooltipPosition: z.enum(TOOLTIP_POSITIONS).default("bottom"),
   style: z
     .object({
-      borderColor: z
-        .string()
-        .regex(HEX_COLOR, "Invalid hex color")
-        .optional(),
+      borderColor: z.string().regex(HEX_COLOR, "Invalid hex color").optional(),
       borderWidth: z.number().int().min(0).max(10).optional(),
       backgroundColor: z
         .string()
@@ -29,7 +26,9 @@ export const createHotspotSchema = z.object({
     .optional(),
 });
 
-export const updateHotspotSchema = createHotspotSchema.partial().omit({ stepId: true });
+export const updateHotspotSchema = createHotspotSchema
+  .partial()
+  .omit({ stepId: true });
 
 export type CreateHotspotInput = z.infer<typeof createHotspotSchema>;
 export type UpdateHotspotInput = z.infer<typeof updateHotspotSchema>;

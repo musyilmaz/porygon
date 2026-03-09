@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 
-import { createWorkspaceSchema, updateWorkspaceSchema } from "./workspace.schema";
+import {
+  createWorkspaceSchema,
+  updateWorkspaceSchema,
+} from "./workspace.schema";
 
 describe("createWorkspaceSchema", () => {
   it("accepts valid input", () => {

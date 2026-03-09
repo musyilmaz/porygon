@@ -4,7 +4,12 @@ import { PLAN_LIMITS } from "./plans";
 
 describe("PLAN_LIMITS", () => {
   it("defines limits for all plans", () => {
-    expect(Object.keys(PLAN_LIMITS)).toEqual(["free", "pro", "team", "business"]);
+    expect(Object.keys(PLAN_LIMITS)).toEqual([
+      "free",
+      "pro",
+      "team",
+      "business",
+    ]);
   });
 
   it("free plan has 10 max demos", () => {

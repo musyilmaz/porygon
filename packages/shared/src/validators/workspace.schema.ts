@@ -3,11 +3,18 @@ import { z } from "zod";
 import { SLUG } from "../constants/patterns";
 
 export const createWorkspaceSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less"),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name must be 100 characters or less"),
 });
 
 export const updateWorkspaceSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less").optional(),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name must be 100 characters or less")
+    .optional(),
   slug: z
     .string()
     .min(1, "Slug is required")
