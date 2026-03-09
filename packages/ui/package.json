@@ -3,16 +3,41 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./components/*": "./src/components/*",
+    "./hooks/*": "./src/hooks/*",
+    "./lib/*": "./src/lib/*",
+    "./styles/*": "./src/styles/*"
+  },
   "scripts": {
     "build": "echo 'build: placeholder'",
     "lint": "eslint .",
     "test": "echo 'test: placeholder'",
     "type-check": "tsc --noEmit"
   },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1",
+    "@radix-ui/react-separator": "^1",
+    "@radix-ui/react-slot": "^1",
+    "@radix-ui/react-tooltip": "^1",
+    "class-variance-authority": "^0.7",
+    "clsx": "^2",
+    "lucide-react": "^0.475",
+    "radix-ui": "^1.4.3",
+    "tailwind-merge": "^3",
+    "tw-animate-css": "^1"
+  },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "^9",
+    "tailwindcss": "^4",
     "typescript": "^5"
   }
 }
