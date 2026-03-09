@@ -1,14 +1,9 @@
 import { generateId } from "@repo/shared/src/utils/id";
 import { relations } from "drizzle-orm";
-import {
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  unique,
-} from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
+import { demos } from "./demos";
 
 export const planEnum = pgEnum("plan", ["free", "pro", "team", "business"]);
 
@@ -59,6 +54,7 @@ export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
     references: [user.id],
   }),
   members: many(workspaceMembers),
+  demos: many(demos),
 }));
 
 export const workspaceMembersRelations = relations(

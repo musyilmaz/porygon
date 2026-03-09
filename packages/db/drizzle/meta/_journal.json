@@ -15,6 +15,13 @@
       "when": 1773096366197,
       "tag": "0001_low_betty_brant",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773097730769,
+      "tag": "0002_superb_joseph",
+      "breakpoints": true
     }
   ]
 }
