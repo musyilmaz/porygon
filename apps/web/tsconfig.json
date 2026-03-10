@@ -4,7 +4,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/ui/*": ["../../packages/ui/src/*"]
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/auth": ["../../packages/auth/src/index.ts"],
+      "@repo/auth/*": ["../../packages/auth/src/*"]
     }
   },
   "include": ["src", "next-env.d.ts", ".next/types/**/*.ts"],

@@ -3,16 +3,27 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/auth-client.ts"
+  },
   "scripts": {
     "build": "echo 'build: placeholder'",
     "lint": "eslint .",
-    "test": "echo 'test: placeholder'",
+    "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "better-auth": "^1.5.4"
   }
 }
