@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
+import { demoViews } from "./demo-views";
 import { steps } from "./steps";
 import { workspaces } from "./workspaces";
 
@@ -53,4 +54,5 @@ export const demosRelations = relations(demos, ({ one, many }) => ({
     references: [user.id],
   }),
   steps: many(steps),
+  demoViews: many(demoViews),
 }));
