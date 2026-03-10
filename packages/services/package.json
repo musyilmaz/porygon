@@ -3,11 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "echo 'build: placeholder'",
     "lint": "eslint .",
     "test": "vitest run",
     "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "@repo/shared": "workspace:*",
+    "drizzle-orm": "^0.45.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

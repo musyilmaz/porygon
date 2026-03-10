@@ -1,1 +1,1 @@
-export {};
+export { createWorkspaceService } from "./workspace.service";
