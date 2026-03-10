@@ -62,6 +62,9 @@ importers:
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@repo/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui

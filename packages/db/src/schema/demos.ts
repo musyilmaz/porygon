@@ -1,4 +1,4 @@
-import { generateId } from "@repo/shared/src/utils/id";
+import { generateId } from "@repo/shared/utils";
 import { relations } from "drizzle-orm";
 import {
   jsonb,

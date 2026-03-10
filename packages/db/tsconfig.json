@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@repo/shared": ["../shared/src/index.ts"],
+      "@repo/shared/utils": ["../shared/src/utils/index.ts"]
     }
   },
   "include": ["src"],

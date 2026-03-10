@@ -6,7 +6,9 @@
       "@/*": ["./src/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
       "@repo/auth": ["../../packages/auth/src/index.ts"],
-      "@repo/auth/*": ["../../packages/auth/src/*"]
+      "@repo/auth/*": ["../../packages/auth/src/*"],
+      "@repo/shared": ["../../packages/shared/src/index.ts"],
+      "@repo/shared/validators": ["../../packages/shared/src/validators/index.ts"]
     }
   },
   "include": ["src", "next-env.d.ts", ".next/types/**/*.ts"],
