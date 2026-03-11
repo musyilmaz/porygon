@@ -44,3 +44,31 @@ export class ConflictError extends AppError {
     super(message, 409, "CONFLICT");
   }
 }
+
+export type ErrorResponse = {
+  error: {
+    message: string;
+    code: string;
+    statusCode: number;
+  };
+};
+
+export function toErrorResponse(error: unknown): ErrorResponse {
+  if (error instanceof AppError) {
+    return {
+      error: {
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+      },
+    };
+  }
+
+  return {
+    error: {
+      message: "Internal server error",
+      code: "INTERNAL_ERROR",
+      statusCode: 500,
+    },
+  };
+}

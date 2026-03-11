@@ -8,6 +8,7 @@ import {
   ValidationError,
   LimitExceededError,
   ConflictError,
+  toErrorResponse,
 } from "./errors";
 
 describe("AppError", () => {
@@ -73,5 +74,109 @@ describe("ConflictError", () => {
     const error = new ConflictError();
     expect(error.statusCode).toBe(409);
     expect(error.code).toBe("CONFLICT");
+  });
+});
+
+describe("toErrorResponse", () => {
+  it("converts NotFoundError", () => {
+    const result = toErrorResponse(new NotFoundError("Demo not found"));
+    expect(result).toEqual({
+      error: { message: "Demo not found", code: "NOT_FOUND", statusCode: 404 },
+    });
+  });
+
+  it("converts ForbiddenError", () => {
+    const result = toErrorResponse(new ForbiddenError());
+    expect(result).toEqual({
+      error: { message: "Access denied", code: "FORBIDDEN", statusCode: 403 },
+    });
+  });
+
+  it("converts UnauthorizedError", () => {
+    const result = toErrorResponse(new UnauthorizedError());
+    expect(result).toEqual({
+      error: {
+        message: "Unauthorized",
+        code: "UNAUTHORIZED",
+        statusCode: 401,
+      },
+    });
+  });
+
+  it("converts ValidationError", () => {
+    const result = toErrorResponse(new ValidationError());
+    expect(result).toEqual({
+      error: {
+        message: "Validation failed",
+        code: "VALIDATION_ERROR",
+        statusCode: 400,
+      },
+    });
+  });
+
+  it("converts LimitExceededError", () => {
+    const result = toErrorResponse(new LimitExceededError());
+    expect(result).toEqual({
+      error: {
+        message: "Limit exceeded",
+        code: "LIMIT_EXCEEDED",
+        statusCode: 403,
+      },
+    });
+  });
+
+  it("converts ConflictError", () => {
+    const result = toErrorResponse(new ConflictError());
+    expect(result).toEqual({
+      error: {
+        message: "Resource already exists",
+        code: "CONFLICT",
+        statusCode: 409,
+      },
+    });
+  });
+
+  it("returns 500 for generic Error", () => {
+    const result = toErrorResponse(new Error("something broke"));
+    expect(result).toEqual({
+      error: {
+        message: "Internal server error",
+        code: "INTERNAL_ERROR",
+        statusCode: 500,
+      },
+    });
+  });
+
+  it("returns 500 for string", () => {
+    const result = toErrorResponse("oops");
+    expect(result).toEqual({
+      error: {
+        message: "Internal server error",
+        code: "INTERNAL_ERROR",
+        statusCode: 500,
+      },
+    });
+  });
+
+  it("returns 500 for null", () => {
+    const result = toErrorResponse(null);
+    expect(result).toEqual({
+      error: {
+        message: "Internal server error",
+        code: "INTERNAL_ERROR",
+        statusCode: 500,
+      },
+    });
+  });
+
+  it("returns 500 for undefined", () => {
+    const result = toErrorResponse(undefined);
+    expect(result).toEqual({
+      error: {
+        message: "Internal server error",
+        code: "INTERNAL_ERROR",
+        statusCode: 500,
+      },
+    });
   });
 });

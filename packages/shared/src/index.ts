@@ -10,4 +10,6 @@ export {
   ValidationError,
   LimitExceededError,
   ConflictError,
+  toErrorResponse,
 } from "./errors";
+export type { ErrorResponse } from "./errors";
