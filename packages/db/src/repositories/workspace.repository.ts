@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
 import {
@@ -133,6 +133,14 @@ export function createWorkspaceRepository(db: Database) {
           ),
         );
       return member?.role ?? null;
+    },
+
+    async countMembers(workspaceId: string) {
+      const [result] = await db
+        .select({ count: count() })
+        .from(workspaceMembers)
+        .where(eq(workspaceMembers.workspaceId, workspaceId));
+      return result?.count ?? 0;
     },
   };
 }

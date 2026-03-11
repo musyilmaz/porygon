@@ -1,11 +1,18 @@
+import type { createWorkspaceRepository } from "@repo/db";
 import {
-  type Database,
-  workspaceMembers,
-  workspaces,
-} from "@repo/db";
-import { ConflictError } from "@repo/shared";
+  ConflictError,
+  ForbiddenError,
+  LimitExceededError,
+  NotFoundError,
+  PLAN_LIMITS,
+} from "@repo/shared";
 import { generateSlug } from "@repo/shared/utils";
-import { eq } from "drizzle-orm";
+
+type WorkspaceRepo = ReturnType<typeof createWorkspaceRepository>;
+
+interface WorkspaceServiceDeps {
+  workspaceRepo: WorkspaceRepo;
+}
 
 const SUFFIX_LENGTH = 4;
 const MAX_SLUG_ATTEMPTS = 3;
@@ -19,60 +26,152 @@ function randomSuffix(): string {
   return result;
 }
 
-async function uniqueSlug(db: Database, base: string): Promise<string> {
-  let slug = base;
-
-  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
-    const existing = await db
-      .select({ id: workspaces.id })
-      .from(workspaces)
-      .where(eq(workspaces.slug, slug))
-      .limit(1);
-
-    if (existing.length === 0) return slug;
-
-    slug = `${base}-${randomSuffix()}`;
+export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) {
+  async function getWorkspaceOrThrow(id: string) {
+    const workspace = await workspaceRepo.getById(id);
+    if (!workspace) {
+      throw new NotFoundError("Workspace not found");
+    }
+    return workspace;
   }
 
-  throw new ConflictError(
-    "Unable to generate a unique slug. Please try a different name.",
-  );
-}
+  async function assertMember(workspaceId: string, userId: string) {
+    const role = await workspaceRepo.getMemberRole(workspaceId, userId);
+    if (!role) {
+      throw new ForbiddenError("You are not a member of this workspace");
+    }
+    return role;
+  }
 
-export function createWorkspaceService({ db }: { db: Database }) {
+  async function assertAdmin(workspaceId: string, userId: string) {
+    const role = await assertMember(workspaceId, userId);
+    if (role !== "admin") {
+      throw new ForbiddenError("Only admins can perform this action");
+    }
+    return role;
+  }
+
+  async function uniqueSlug(base: string) {
+    let slug = base;
+
+    for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
+      const existing = await workspaceRepo.getBySlug(slug);
+      if (!existing) return slug;
+      slug = `${base}-${randomSuffix()}`;
+    }
+
+    throw new ConflictError(
+      "Unable to generate a unique slug. Please try a different name.",
+    );
+  }
+
   return {
     async create(input: { name: string }, userId: string) {
       const baseSlug = generateSlug(input.name);
-      const slug = await uniqueSlug(db, baseSlug);
+      const slug = await uniqueSlug(baseSlug);
 
-      const [workspace] = await db
-        .insert(workspaces)
-        .values({
-          name: input.name,
-          slug,
-          plan: "free",
-          ownerId: userId,
-        })
-        .returning();
+      const workspace = await workspaceRepo.create({
+        name: input.name,
+        slug,
+        plan: "free",
+        ownerId: userId,
+      });
 
-      await db.insert(workspaceMembers).values({
-        workspaceId: workspace!.id,
+      await workspaceRepo.addMember({
+        workspaceId: workspace.id,
         userId,
         role: "admin",
       });
 
-      return workspace!;
+      return workspace;
     },
 
-    async getByUserId(userId: string) {
-      const result = await db
-        .select({ workspace: workspaces })
-        .from(workspaceMembers)
-        .innerJoin(workspaces, eq(workspaceMembers.workspaceId, workspaces.id))
-        .where(eq(workspaceMembers.userId, userId))
-        .limit(1);
+    async getById(id: string, userId: string) {
+      const workspace = await getWorkspaceOrThrow(id);
+      await assertMember(id, userId);
+      return workspace;
+    },
 
-      return result[0]?.workspace ?? null;
+    async list(userId: string) {
+      return workspaceRepo.listByUser(userId);
+    },
+
+    async update(id: string, input: { name?: string }, userId: string) {
+      await getWorkspaceOrThrow(id);
+      await assertAdmin(id, userId);
+      return workspaceRepo.update(id, input);
+    },
+
+    async addMember(
+      workspaceId: string,
+      targetUserId: string,
+      role: "admin" | "editor" | "viewer",
+      actorId: string,
+    ) {
+      const workspace = await getWorkspaceOrThrow(workspaceId);
+      await assertAdmin(workspaceId, actorId);
+
+      const existingRole = await workspaceRepo.getMemberRole(workspaceId, targetUserId);
+      if (existingRole) {
+        throw new ConflictError("User is already a member of this workspace");
+      }
+
+      const limit = PLAN_LIMITS[workspace.plan].maxWorkspaceMembers;
+      if (limit !== -1) {
+        const memberCount = await workspaceRepo.countMembers(workspaceId);
+        if (memberCount >= limit) {
+          throw new LimitExceededError(
+            `Member limit reached for ${workspace.plan} plan (max ${limit})`,
+          );
+        }
+      }
+
+      return workspaceRepo.addMember({
+        workspaceId,
+        userId: targetUserId,
+        role,
+      });
+    },
+
+    async removeMember(
+      workspaceId: string,
+      targetUserId: string,
+      actorId: string,
+    ) {
+      const workspace = await getWorkspaceOrThrow(workspaceId);
+      await assertAdmin(workspaceId, actorId);
+
+      if (workspace.ownerId === targetUserId) {
+        throw new ForbiddenError("Cannot remove the workspace owner");
+      }
+
+      const targetRole = await workspaceRepo.getMemberRole(workspaceId, targetUserId);
+      if (!targetRole) {
+        throw new NotFoundError("User is not a member of this workspace");
+      }
+
+      return workspaceRepo.removeMember(workspaceId, targetUserId);
+    },
+
+    async updateMemberRole(
+      workspaceId: string,
+      targetUserId: string,
+      role: "admin" | "editor" | "viewer",
+      actorId: string,
+    ) {
+      const workspace = await getWorkspaceOrThrow(workspaceId);
+      await assertAdmin(workspaceId, actorId);
+
+      if (workspace.ownerId === targetUserId) {
+        throw new ForbiddenError("Cannot change the workspace owner's role");
+      }
+
+      const targetRole = await workspaceRepo.getMemberRole(workspaceId, targetUserId);
+      if (!targetRole) {
+        throw new NotFoundError("User is not a member of this workspace");
+      }
+
+      return workspaceRepo.updateMemberRole(workspaceId, targetUserId, role);
     },
   };
 }

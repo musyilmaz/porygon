@@ -1,10 +1,9 @@
-import { getDb } from "@repo/db";
-import { createWorkspaceService } from "@repo/services";
 import { AppError } from "@repo/shared";
 import { createWorkspaceSchema } from "@repo/shared/validators";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";
+import { getWorkspaceService } from "@/lib/services/workspace.service";
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -22,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const workspaceService = createWorkspaceService({ db: getDb() });
+    const workspaceService = getWorkspaceService();
     const workspace = await workspaceService.create(parsed.data, session.user.id);
     return NextResponse.json(workspace, { status: 201 });
   } catch (error) {
