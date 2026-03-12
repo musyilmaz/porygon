@@ -1,5 +1,5 @@
-import { createDemoRepository, getDb } from "@repo/db";
-import { createPublicDemoService } from "@repo/services";
+import { createDemoRepository, getDb } from "@porygon/db";
+import { createPublicDemoService } from "@porygon/services";
 
 export function getPublicDemoService() {
   const db = getDb();

@@ -1,8 +1,8 @@
-import type { createAnnotationRepository } from "@repo/db";
-import type { createDemoRepository } from "@repo/db";
-import type { createStepRepository } from "@repo/db";
-import type { createWorkspaceRepository } from "@repo/db";
-import { ForbiddenError, NotFoundError, ValidationError } from "@repo/shared";
+import type { createAnnotationRepository } from "@porygon/db";
+import type { createDemoRepository } from "@porygon/db";
+import type { createStepRepository } from "@porygon/db";
+import type { createWorkspaceRepository } from "@porygon/db";
+import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
 
 type AnnotationRepo = ReturnType<typeof createAnnotationRepository>;
 type StepRepo = ReturnType<typeof createStepRepository>;

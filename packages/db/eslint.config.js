@@ -1,3 +1,3 @@
-import libraryConfig from "@repo/eslint-config/library";
+import libraryConfig from "@porygon/eslint-config/library";
 
 export default [...libraryConfig];

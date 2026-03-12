@@ -1,12 +1,12 @@
-import type { createDemoRepository } from "@repo/db";
-import type { createStepRepository } from "@repo/db";
-import type { createWorkspaceRepository } from "@repo/db";
+import type { createDemoRepository } from "@porygon/db";
+import type { createStepRepository } from "@porygon/db";
+import type { createWorkspaceRepository } from "@porygon/db";
 import {
   ForbiddenError,
   MAX_UPLOAD_SIZE_BYTES,
   NotFoundError,
   ValidationError,
-} from "@repo/shared";
+} from "@porygon/shared";
 
 import { storageKey } from "./storage.service";
 

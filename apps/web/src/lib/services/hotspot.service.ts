@@ -4,8 +4,8 @@ import {
   createStepRepository,
   createWorkspaceRepository,
   getDb,
-} from "@repo/db";
-import { createHotspotService } from "@repo/services";
+} from "@porygon/db";
+import { createHotspotService } from "@porygon/services";
 
 export function getHotspotService() {
   const db = getDb();

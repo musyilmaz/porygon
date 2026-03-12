@@ -1,7 +1,7 @@
-import type { createAnalyticsRepository } from "@repo/db";
-import type { createDemoRepository } from "@repo/db";
-import { NotFoundError, ValidationError } from "@repo/shared";
-import type { Nullable } from "@repo/shared";
+import type { createAnalyticsRepository } from "@porygon/db";
+import type { createDemoRepository } from "@porygon/db";
+import { NotFoundError, ValidationError } from "@porygon/shared";
+import type { Nullable } from "@porygon/shared";
 
 type AnalyticsRepo = ReturnType<typeof createAnalyticsRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;

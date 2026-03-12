@@ -1,4 +1,4 @@
-import type { ActionType } from "@repo/shared/types";
+import type { ActionType } from "@porygon/shared/types";
 
 import type { ActionCapturedMessage } from "@/types/messages";
 import { debounce } from "@/utils/debounce";

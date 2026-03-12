@@ -1,9 +1,9 @@
-import type { createDemoRepository } from "@repo/db";
-import type { createHotspotRepository } from "@repo/db";
-import type { createStepRepository } from "@repo/db";
-import type { createWorkspaceRepository } from "@repo/db";
-import { ForbiddenError, NotFoundError, ValidationError } from "@repo/shared";
-import type { Nullable } from "@repo/shared";
+import type { createDemoRepository } from "@porygon/db";
+import type { createHotspotRepository } from "@porygon/db";
+import type { createStepRepository } from "@porygon/db";
+import type { createWorkspaceRepository } from "@porygon/db";
+import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
+import type { Nullable } from "@porygon/shared";
 
 type HotspotRepo = ReturnType<typeof createHotspotRepository>;
 type StepRepo = ReturnType<typeof createStepRepository>;

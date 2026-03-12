@@ -1,4 +1,4 @@
-import { getAuth } from "@repo/auth";
+import { getAuth } from "@porygon/auth";
 import { toNextJsHandler } from "better-auth/next-js";
 
 export const dynamic = "force-dynamic";

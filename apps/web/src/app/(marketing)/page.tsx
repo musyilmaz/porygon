@@ -1,11 +1,11 @@
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@porygon/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@repo/ui/components/card";
+} from "@porygon/ui/components/card";
 
 export default function HomePage() {
   return (

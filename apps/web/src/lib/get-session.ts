@@ -1,4 +1,4 @@
-import { getAuth } from "@repo/auth";
+import { getAuth } from "@porygon/auth";
 import { headers } from "next/headers";
 
 export async function getSession() {

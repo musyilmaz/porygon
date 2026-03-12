@@ -1,5 +1,5 @@
-import type { createDemoRepository } from "@repo/db";
-import { NotFoundError } from "@repo/shared";
+import type { createDemoRepository } from "@porygon/db";
+import { NotFoundError } from "@porygon/shared";
 
 type DemoRepo = ReturnType<typeof createDemoRepository>;
 

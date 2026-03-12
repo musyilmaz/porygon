@@ -4,8 +4,8 @@ import {
   createStepRepository,
   createWorkspaceRepository,
   getDb,
-} from "@repo/db";
-import { createAnnotationService } from "@repo/services";
+} from "@porygon/db";
+import { createAnnotationService } from "@porygon/services";
 
 export function getAnnotationService() {
   const db = getDb();

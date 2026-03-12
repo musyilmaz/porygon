@@ -1,5 +1,5 @@
-import { AppError } from "@repo/shared";
-import { createWorkspaceSchema } from "@repo/shared/validators";
+import { AppError } from "@porygon/shared";
+import { createWorkspaceSchema } from "@porygon/shared/validators";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";

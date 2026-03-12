@@ -1,1 +1,1 @@
-export { default } from "@repo/vitest-config/base";
+export { default } from "@porygon/vitest-config/base";

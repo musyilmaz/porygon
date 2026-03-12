@@ -1,10 +1,10 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
+  "extends": "@porygon/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/ui/*": ["./src/*"]
+      "@porygon/ui/*": ["./src/*"]
     }
   },
   "include": ["src"],

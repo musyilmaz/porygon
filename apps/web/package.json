@@ -1,5 +1,5 @@
 {
-  "name": "@repo/web",
+  "name": "@porygon/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,11 +12,11 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/auth": "workspace:*",
-    "@repo/db": "workspace:*",
-    "@repo/services": "workspace:*",
-    "@repo/shared": "workspace:*",
-    "@repo/ui": "workspace:*",
+    "@porygon/auth": "workspace:*",
+    "@porygon/db": "workspace:*",
+    "@porygon/services": "workspace:*",
+    "@porygon/shared": "workspace:*",
+    "@porygon/ui": "workspace:*",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
     "better-auth": "^1.5.4",
@@ -25,8 +25,8 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@porygon/eslint-config": "workspace:*",
+    "@porygon/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "25.3.5",
     "@types/react": "^19",

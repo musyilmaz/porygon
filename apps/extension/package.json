@@ -1,5 +1,5 @@
 {
-  "name": "@repo/extension",
+  "name": "@porygon/extension",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,13 +10,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/shared": "workspace:*",
+    "@porygon/shared": "workspace:*",
     "react": "^19",
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@porygon/typescript-config": "workspace:*",
+    "@porygon/eslint-config": "workspace:*",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@wxt-dev/module-react": "^1",

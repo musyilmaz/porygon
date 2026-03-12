@@ -1,14 +1,14 @@
-import type { createDemoRepository } from "@repo/db";
-import type { createStepRepository } from "@repo/db";
-import type { createWorkspaceRepository } from "@repo/db";
+import type { createDemoRepository } from "@porygon/db";
+import type { createStepRepository } from "@porygon/db";
+import type { createWorkspaceRepository } from "@porygon/db";
 import {
   ForbiddenError,
   LimitExceededError,
   NotFoundError,
   ValidationError,
   PLAN_LIMITS,
-} from "@repo/shared";
-import type { Nullable } from "@repo/shared";
+} from "@porygon/shared";
+import type { Nullable } from "@porygon/shared";
 
 type StepRepo = ReturnType<typeof createStepRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;

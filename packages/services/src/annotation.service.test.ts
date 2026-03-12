@@ -1,4 +1,4 @@
-import { ForbiddenError, NotFoundError, ValidationError } from "@repo/shared";
+import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAnnotationService } from "./annotation.service";

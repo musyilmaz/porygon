@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError } from "@repo/shared";
+import { NotFoundError, ValidationError } from "@porygon/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAnalyticsService } from "./analytics.service";

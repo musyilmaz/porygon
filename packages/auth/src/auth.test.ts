@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@repo/db", () => {
+vi.mock("@porygon/db", () => {
   const fakeTable = { _: { name: "fake" } };
   return {
     getDb: vi.fn(() => ({})),

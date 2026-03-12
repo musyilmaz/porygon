@@ -12,8 +12,8 @@
   },
   "aliases": {
     "components": "@/components",
-    "utils": "@repo/ui/lib/utils",
-    "ui": "@repo/ui/components",
+    "utils": "@porygon/ui/lib/utils",
+    "ui": "@porygon/ui/components",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

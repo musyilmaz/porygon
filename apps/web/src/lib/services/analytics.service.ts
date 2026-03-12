@@ -2,8 +2,8 @@ import {
   createAnalyticsRepository,
   createDemoRepository,
   getDb,
-} from "@repo/db";
-import { createAnalyticsService } from "@repo/services";
+} from "@porygon/db";
+import { createAnalyticsService } from "@porygon/services";
 
 export function getAnalyticsService() {
   const db = getDb();

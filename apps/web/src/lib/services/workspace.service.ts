@@ -1,5 +1,5 @@
-import { createWorkspaceRepository, getDb } from "@repo/db";
-import { createWorkspaceService } from "@repo/services";
+import { createWorkspaceRepository, getDb } from "@porygon/db";
+import { createWorkspaceService } from "@porygon/services";
 
 export function getWorkspaceService() {
   const workspaceRepo = createWorkspaceRepository(getDb());

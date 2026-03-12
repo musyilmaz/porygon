@@ -1,5 +1,5 @@
-import { AppError } from "@repo/shared";
-import { updateViewSchema } from "@repo/shared/validators";
+import { AppError } from "@porygon/shared";
+import { updateViewSchema } from "@porygon/shared/validators";
 import { NextResponse } from "next/server";
 
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";

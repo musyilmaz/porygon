@@ -1,5 +1,5 @@
-import { AppError } from "@repo/shared";
-import { createAnnotationBodySchema } from "@repo/shared/validators";
+import { AppError } from "@porygon/shared";
+import { createAnnotationBodySchema } from "@porygon/shared/validators";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";

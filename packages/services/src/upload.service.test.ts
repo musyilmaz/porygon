@@ -3,7 +3,7 @@ import {
   MAX_UPLOAD_SIZE_BYTES,
   NotFoundError,
   ValidationError,
-} from "@repo/shared";
+} from "@porygon/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createUploadService } from "./upload.service";

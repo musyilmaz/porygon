@@ -1,4 +1,4 @@
-import baseConfig from "@repo/eslint-config/base";
+import baseConfig from "@porygon/eslint-config/base";
 
 export default [
   ...baseConfig,

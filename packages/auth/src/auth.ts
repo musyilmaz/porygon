@@ -1,4 +1,4 @@
-import { getDb, user, session, account, verification } from "@repo/db";
+import { getDb, user, session, account, verification } from "@porygon/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";

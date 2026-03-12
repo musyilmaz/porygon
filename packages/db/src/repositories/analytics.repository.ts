@@ -1,4 +1,4 @@
-import type { Nullable } from "@repo/shared";
+import type { Nullable } from "@porygon/shared";
 import {
   and,
   asc,

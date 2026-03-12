@@ -1,4 +1,4 @@
-import { generateId } from "@repo/shared/utils";
+import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import {
   boolean,

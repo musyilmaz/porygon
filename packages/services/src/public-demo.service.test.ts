@@ -1,4 +1,4 @@
-import { NotFoundError } from "@repo/shared";
+import { NotFoundError } from "@porygon/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createPublicDemoService } from "./public-demo.service";

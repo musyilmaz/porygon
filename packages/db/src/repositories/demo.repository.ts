@@ -1,4 +1,4 @@
-import type { Nullable } from "@repo/shared";
+import type { Nullable } from "@porygon/shared";
 import { and, asc, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";

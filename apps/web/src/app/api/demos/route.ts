@@ -1,5 +1,5 @@
-import { AppError } from "@repo/shared";
-import { createDemoSchema, listDemosQuerySchema } from "@repo/shared/validators";
+import { AppError } from "@porygon/shared";
+import { createDemoSchema, listDemosQuerySchema } from "@porygon/shared/validators";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";

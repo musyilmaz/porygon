@@ -1,5 +1,5 @@
 {
-  "name": "@repo/player",
+  "name": "@porygon/player",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,9 +11,9 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/vitest-config": "workspace:*",
+    "@porygon/typescript-config": "workspace:*",
+    "@porygon/eslint-config": "workspace:*",
+    "@porygon/vitest-config": "workspace:*",
     "@vitest/coverage-v8": "^3",
     "eslint": "^9",
     "typescript": "^5",

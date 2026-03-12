@@ -1,17 +1,17 @@
 "use client";
 
-import { authClient } from "@repo/auth/client";
-import { signupSchema } from "@repo/shared/validators";
-import { Button } from "@repo/ui/components/button";
+import { authClient } from "@porygon/auth/client";
+import { signupSchema } from "@porygon/shared/validators";
+import { Button } from "@porygon/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@repo/ui/components/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
+} from "@porygon/ui/components/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@porygon/ui/components/field";
+import { Input } from "@porygon/ui/components/input";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

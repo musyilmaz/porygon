@@ -1,4 +1,4 @@
-import { AppError } from "@repo/shared";
+import { AppError } from "@porygon/shared";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";

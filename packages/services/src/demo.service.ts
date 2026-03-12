@@ -1,6 +1,6 @@
-import type { createDemoRepository } from "@repo/db";
-import type { createStepRepository } from "@repo/db";
-import type { createWorkspaceRepository } from "@repo/db";
+import type { createDemoRepository } from "@porygon/db";
+import type { createStepRepository } from "@porygon/db";
+import type { createWorkspaceRepository } from "@porygon/db";
 import {
   ConflictError,
   ForbiddenError,
@@ -8,9 +8,9 @@ import {
   NotFoundError,
   PLAN_LIMITS,
   ValidationError,
-} from "@repo/shared";
-import type { Nullable } from "@repo/shared";
-import { generateSlug } from "@repo/shared/utils";
+} from "@porygon/shared";
+import type { Nullable } from "@porygon/shared";
+import { generateSlug } from "@porygon/shared/utils";
 
 type DemoRepo = ReturnType<typeof createDemoRepository>;
 type WorkspaceRepo = ReturnType<typeof createWorkspaceRepository>;

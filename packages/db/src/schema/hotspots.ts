@@ -1,4 +1,4 @@
-import { generateId } from "@repo/shared/utils";
+import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import { jsonb, pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
 

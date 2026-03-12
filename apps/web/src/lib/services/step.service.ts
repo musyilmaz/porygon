@@ -3,8 +3,8 @@ import {
   createStepRepository,
   createWorkspaceRepository,
   getDb,
-} from "@repo/db";
-import { createStepService } from "@repo/services";
+} from "@porygon/db";
+import { createStepService } from "@porygon/services";
 
 export function getStepService() {
   const db = getDb();

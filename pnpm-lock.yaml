@@ -17,7 +17,7 @@ importers:
 
   apps/extension:
     dependencies:
-      '@repo/shared':
+      '@porygon/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       react:
@@ -27,10 +27,10 @@ importers:
         specifier: ^19
         version: 19.2.4(react@19.2.4)
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@types/react':
@@ -54,13 +54,13 @@ importers:
 
   apps/player:
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@repo/vitest-config':
+      '@porygon/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@vitest/coverage-v8':
@@ -78,19 +78,19 @@ importers:
 
   apps/web:
     dependencies:
-      '@repo/auth':
+      '@porygon/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@repo/db':
+      '@porygon/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@repo/services':
+      '@porygon/services':
         specifier: workspace:*
         version: link:../../packages/services
-      '@repo/shared':
+      '@porygon/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@repo/ui':
+      '@porygon/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@upstash/ratelimit':
@@ -112,10 +112,10 @@ importers:
         specifier: ^19
         version: 19.2.4(react@19.2.4)
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@tailwindcss/postcss':
@@ -148,20 +148,20 @@ importers:
 
   packages/auth:
     dependencies:
-      '@repo/db':
+      '@porygon/db':
         specifier: workspace:*
         version: link:../db
       better-auth:
         specifier: ^1.5.4
         version: 1.5.4(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(drizzle-kit@0.31.9)(drizzle-orm@0.45.1(@electric-sql/pglite@0.3.15)(@neondatabase/serverless@0.10.4)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.18.0)(@upstash/redis@1.37.0)(gel@2.2.0)(kysely@0.28.11)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)))(mongodb@7.1.0)(mysql2@3.15.3)(next@15.5.12(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.20.0)(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@repo/vitest-config':
+      '@porygon/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@vitest/coverage-v8':
@@ -182,20 +182,20 @@ importers:
       '@neondatabase/serverless':
         specifier: ^0.10
         version: 0.10.4
-      '@repo/shared':
+      '@porygon/shared':
         specifier: workspace:*
         version: link:../shared
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(@electric-sql/pglite@0.3.15)(@neondatabase/serverless@0.10.4)(@prisma/client@7.4.2(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.18.0)(@upstash/redis@1.37.0)(gel@2.2.0)(kysely@0.28.11)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@repo/vitest-config':
+      '@porygon/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@vitest/coverage-v8':
@@ -228,20 +228,20 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3
         version: 3.1007.0
-      '@repo/db':
+      '@porygon/db':
         specifier: workspace:*
         version: link:../db
-      '@repo/shared':
+      '@porygon/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@repo/vitest-config':
+      '@porygon/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@vitest/coverage-v8':
@@ -266,13 +266,13 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
-      '@repo/vitest-config':
+      '@porygon/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest
       '@vitest/coverage-v8':
@@ -327,10 +327,10 @@ importers:
         specifier: ^1
         version: 1.4.0
     devDependencies:
-      '@repo/eslint-config':
+      '@porygon/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint
-      '@repo/typescript-config':
+      '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@types/react':

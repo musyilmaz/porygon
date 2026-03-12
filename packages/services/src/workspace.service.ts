@@ -1,12 +1,12 @@
-import type { createWorkspaceRepository } from "@repo/db";
+import type { createWorkspaceRepository } from "@porygon/db";
 import {
   ConflictError,
   ForbiddenError,
   LimitExceededError,
   NotFoundError,
   PLAN_LIMITS,
-} from "@repo/shared";
-import { generateSlug } from "@repo/shared/utils";
+} from "@porygon/shared";
+import { generateSlug } from "@porygon/shared/utils";
 
 type WorkspaceRepo = ReturnType<typeof createWorkspaceRepository>;
 

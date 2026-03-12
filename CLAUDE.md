@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
 ### Error Handling
 
-Use custom error types from `@repo/shared`: NotFoundError, ForbiddenError, ValidationError, LimitExceededError, ConflictError, UnauthorizedError.
+Use custom error types from `@porygon/shared`: NotFoundError, ForbiddenError, ValidationError, LimitExceededError, ConflictError, UnauthorizedError.
 
 ## Linear Integration
 

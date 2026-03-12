@@ -1,4 +1,4 @@
-import type { ActionType, Coordinates } from "@repo/shared/types";
+import type { ActionType, Coordinates } from "@porygon/shared/types";
 
 export interface CapturedStep {
   orderIndex: number;

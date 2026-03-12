@@ -1,5 +1,5 @@
 {
-  "name": "@repo/db",
+  "name": "@porygon/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -19,13 +19,13 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10",
-    "@repo/shared": "workspace:*",
+    "@porygon/shared": "workspace:*",
     "drizzle-orm": "^0.45.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@repo/vitest-config": "workspace:*",
+    "@porygon/eslint-config": "workspace:*",
+    "@porygon/typescript-config": "workspace:*",
+    "@porygon/vitest-config": "workspace:*",
     "@vitest/coverage-v8": "^3",
     "dotenv": "^16",
     "drizzle-kit": "^0.31.9",
