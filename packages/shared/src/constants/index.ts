@@ -6,3 +6,4 @@ export {
   TOOLTIP_POSITIONS,
 } from "./demo";
 export { HEX_COLOR, SLUG } from "./patterns";
+export { ALLOWED_CONTENT_TYPES, MAX_UPLOAD_SIZE_BYTES } from "./upload";

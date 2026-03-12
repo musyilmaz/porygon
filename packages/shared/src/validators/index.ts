@@ -49,3 +49,8 @@ export {
   type LoginInput,
   type SignupInput,
 } from "./auth.schema";
+
+export {
+  createUploadSchema,
+  type CreateUploadInput,
+} from "./upload.schema";

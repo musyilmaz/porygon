@@ -21,4 +21,8 @@ export {
   type UpdateStepInput,
 } from "./step.service";
 export { createStorageService, storageKey } from "./storage.service";
+export {
+  createUploadService,
+  type GenerateUploadUrlInput,
+} from "./upload.service";
 export { createWorkspaceService } from "./workspace.service";
