@@ -6,7 +6,7 @@ export default defineConfig({
   manifest: {
     name: "Porygon",
     description: "Capture interactive product demos",
-    permissions: ["activeTab", "tabs", "scripting"],
+    permissions: ["activeTab", "tabs", "scripting", "storage"],
   },
   webExt: {
     startUrls: ["https://example.com"],
