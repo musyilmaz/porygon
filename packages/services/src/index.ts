@@ -5,7 +5,11 @@ export {
   type UpdateDemoInput,
   type ListDemosOptions,
 } from "./demo.service";
-export { createHotspotService } from "./hotspot.service";
+export {
+  createHotspotService,
+  type CreateHotspotInput,
+  type UpdateHotspotInput,
+} from "./hotspot.service";
 export {
   createStepService,
   type CreateStepInput,

@@ -30,5 +30,8 @@ export const updateHotspotSchema = createHotspotSchema
   .partial()
   .omit({ stepId: true });
 
+export const createHotspotBodySchema = createHotspotSchema.omit({ stepId: true });
+
 export type CreateHotspotInput = z.infer<typeof createHotspotSchema>;
+export type CreateHotspotBody = z.infer<typeof createHotspotBodySchema>;
 export type UpdateHotspotInput = z.infer<typeof updateHotspotSchema>;

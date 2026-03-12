@@ -20,8 +20,10 @@ export {
 
 export {
   createHotspotSchema,
+  createHotspotBodySchema,
   updateHotspotSchema,
   type CreateHotspotInput,
+  type CreateHotspotBody,
   type UpdateHotspotInput,
 } from "./hotspot.schema";
 

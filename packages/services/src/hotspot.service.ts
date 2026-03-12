@@ -17,7 +17,7 @@ interface HotspotServiceDeps {
   workspaceRepo: WorkspaceRepo;
 }
 
-interface CreateHotspotInput {
+export interface CreateHotspotInput {
   stepId: string;
   x: number;
   y: number;
@@ -29,7 +29,7 @@ interface CreateHotspotInput {
   style?: Record<string, unknown>;
 }
 
-interface UpdateHotspotInput {
+export interface UpdateHotspotInput {
   x?: number;
   y?: number;
   width?: number;
