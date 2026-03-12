@@ -9,9 +9,13 @@ export {
 
 export {
   createStepSchema,
+  createStepBodySchema,
   updateStepSchema,
+  reorderStepsSchema,
   type CreateStepInput,
+  type CreateStepBody,
   type UpdateStepInput,
+  type ReorderStepsInput,
 } from "./step.schema";
 
 export {

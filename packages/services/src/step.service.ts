@@ -20,14 +20,14 @@ interface StepServiceDeps {
   workspaceRepo: WorkspaceRepo;
 }
 
-interface CreateStepInput {
+export interface CreateStepInput {
   demoId: string;
   screenshotUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
   actionCoordinates?: Nullable<Record<string, unknown>>;
 }
 
-interface UpdateStepInput {
+export interface UpdateStepInput {
   screenshotUrl?: Nullable<string>;
   actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
   actionCoordinates?: Nullable<Record<string, unknown>>;

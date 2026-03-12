@@ -6,6 +6,10 @@ export {
   type ListDemosOptions,
 } from "./demo.service";
 export { createHotspotService } from "./hotspot.service";
-export { createStepService } from "./step.service";
+export {
+  createStepService,
+  type CreateStepInput,
+  type UpdateStepInput,
+} from "./step.service";
 export { createStorageService, storageKey } from "./storage.service";
 export { createWorkspaceService } from "./workspace.service";
