@@ -1,6 +1,7 @@
 import { and, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
+import { user } from "../schema/auth";
 import {
   workspaceMembers,
   workspaceRoleEnum,
@@ -141,6 +142,27 @@ export function createWorkspaceRepository(db: Database) {
         .from(workspaceMembers)
         .where(eq(workspaceMembers.workspaceId, workspaceId));
       return result?.count ?? 0;
+    },
+
+    async listMembers(workspaceId: string) {
+      return db
+        .select({
+          id: workspaceMembers.id,
+          workspaceId: workspaceMembers.workspaceId,
+          userId: workspaceMembers.userId,
+          role: workspaceMembers.role,
+          createdAt: workspaceMembers.createdAt,
+          updatedAt: workspaceMembers.updatedAt,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          },
+        })
+        .from(workspaceMembers)
+        .innerJoin(user, eq(workspaceMembers.userId, user.id))
+        .where(eq(workspaceMembers.workspaceId, workspaceId));
     },
   };
 }

@@ -34,6 +34,7 @@ function createMockRepo() {
       updateMemberRole: vi.fn(),
       getMemberRole: vi.fn(),
       countMembers: vi.fn(),
+      listMembers: vi.fn(),
     },
   };
 }
@@ -188,6 +189,41 @@ describe("WorkspaceService", () => {
       await expect(
         service.update("nonexistent", { name: "X" }, USER_ID),
       ).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  // --- listMembers ---
+  describe("listMembers", () => {
+    it("returns members for workspace member", async () => {
+      const members = [
+        { id: "m_1", workspaceId: "ws_1", userId: USER_ID, role: "admin", user: { id: USER_ID, name: "User 1", email: "u1@test.com", image: null } },
+        { id: "m_2", workspaceId: "ws_1", userId: OTHER_USER, role: "editor", user: { id: OTHER_USER, name: "User 2", email: "u2@test.com", image: null } },
+      ];
+      repos.workspaceRepo.getById.mockResolvedValue(mockWorkspace());
+      repos.workspaceRepo.getMemberRole.mockResolvedValue("admin");
+      repos.workspaceRepo.listMembers.mockResolvedValue(members);
+
+      const result = await service.listMembers("ws_1", USER_ID);
+
+      expect(result).toEqual(members);
+      expect(repos.workspaceRepo.listMembers).toHaveBeenCalledWith("ws_1");
+    });
+
+    it("throws NotFoundError for missing workspace", async () => {
+      repos.workspaceRepo.getById.mockResolvedValue(undefined);
+
+      await expect(service.listMembers("nonexistent", USER_ID)).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+
+    it("throws ForbiddenError for non-member", async () => {
+      repos.workspaceRepo.getById.mockResolvedValue(mockWorkspace());
+      repos.workspaceRepo.getMemberRole.mockResolvedValue(null);
+
+      await expect(service.listMembers("ws_1", "stranger")).rejects.toThrow(
+        ForbiddenError,
+      );
     });
   });
 

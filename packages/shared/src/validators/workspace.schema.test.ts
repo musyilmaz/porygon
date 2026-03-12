@@ -3,6 +3,8 @@ import { describe, it, expect } from "vitest";
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
+  addMemberSchema,
+  updateMemberRoleSchema,
 } from "./workspace.schema";
 
 describe("createWorkspaceSchema", () => {
@@ -76,5 +78,58 @@ describe("updateWorkspaceSchema", () => {
   it("accepts empty object", () => {
     const result = updateWorkspaceSchema.safeParse({});
     expect(result.success).toBe(true);
+  });
+});
+
+describe("addMemberSchema", () => {
+  it("accepts valid input with role", () => {
+    const result = addMemberSchema.safeParse({ userId: "user_1", role: "viewer" });
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual({ userId: "user_1", role: "viewer" });
+  });
+
+  it("defaults role to editor when omitted", () => {
+    const result = addMemberSchema.safeParse({ userId: "user_1" });
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual({ userId: "user_1", role: "editor" });
+  });
+
+  it("rejects missing userId", () => {
+    const result = addMemberSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty userId", () => {
+    const result = addMemberSchema.safeParse({ userId: "" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid role", () => {
+    const result = addMemberSchema.safeParse({ userId: "user_1", role: "superadmin" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("updateMemberRoleSchema", () => {
+  it("accepts valid role", () => {
+    const result = updateMemberRoleSchema.safeParse({ role: "admin" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts all valid roles", () => {
+    for (const role of ["admin", "editor", "viewer"]) {
+      const result = updateMemberRoleSchema.safeParse({ role });
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it("rejects missing role", () => {
+    const result = updateMemberRoleSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid role", () => {
+    const result = updateMemberRoleSchema.safeParse({ role: "owner" });
+    expect(result.success).toBe(false);
   });
 });

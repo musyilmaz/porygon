@@ -96,9 +96,17 @@ export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) 
       return workspaceRepo.listByUser(userId);
     },
 
-    async update(id: string, input: { name?: string }, userId: string) {
+    async update(id: string, input: { name?: string; slug?: string }, userId: string) {
       await getWorkspaceOrThrow(id);
       await assertAdmin(id, userId);
+
+      if (input.slug) {
+        const existing = await workspaceRepo.getBySlug(input.slug);
+        if (existing && existing.id !== id) {
+          throw new ConflictError("Slug is already in use");
+        }
+      }
+
       return workspaceRepo.update(id, input);
     },
 
@@ -151,6 +159,12 @@ export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) 
       }
 
       return workspaceRepo.removeMember(workspaceId, targetUserId);
+    },
+
+    async listMembers(workspaceId: string, userId: string) {
+      await getWorkspaceOrThrow(workspaceId);
+      await assertMember(workspaceId, userId);
+      return workspaceRepo.listMembers(workspaceId);
     },
 
     async updateMemberRole(

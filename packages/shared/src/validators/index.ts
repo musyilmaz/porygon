@@ -39,8 +39,12 @@ export {
 export {
   createWorkspaceSchema,
   updateWorkspaceSchema,
+  addMemberSchema,
+  updateMemberRoleSchema,
   type CreateWorkspaceInput,
   type UpdateWorkspaceInput,
+  type AddMemberInput,
+  type UpdateMemberRoleInput,
 } from "./workspace.schema";
 
 export {
