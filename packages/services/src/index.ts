@@ -1,4 +1,9 @@
-export { createAnalyticsService } from "./analytics.service";
+export {
+  createAnalyticsService,
+  type RecordViewInput,
+  type UpdateViewInput,
+  type DateRange,
+} from "./analytics.service";
 export {
   createAnnotationService,
   type CreateAnnotationInput,

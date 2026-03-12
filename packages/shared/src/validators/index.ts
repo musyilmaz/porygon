@@ -54,3 +54,10 @@ export {
   createUploadSchema,
   type CreateUploadInput,
 } from "./upload.schema";
+
+export {
+  recordViewSchema,
+  updateViewSchema,
+  type RecordViewInput,
+  type UpdateViewInput,
+} from "./analytics.schema";

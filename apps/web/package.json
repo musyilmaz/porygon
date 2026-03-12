@@ -17,6 +17,8 @@
     "@repo/services": "workspace:*",
     "@repo/shared": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "better-auth": "^1.5.4",
     "next": "^15",
     "react": "^19",

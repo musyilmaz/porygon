@@ -11,7 +11,7 @@ interface AnalyticsServiceDeps {
   demoRepo: DemoRepo;
 }
 
-interface RecordViewInput {
+export interface RecordViewInput {
   demoId: string;
   viewerHash: string;
   totalSteps: number;
@@ -20,13 +20,13 @@ interface RecordViewInput {
   country?: Nullable<string>;
 }
 
-interface UpdateViewInput {
+export interface UpdateViewInput {
   stepsViewed?: number;
   completed?: boolean;
   completedAt?: Nullable<Date>;
 }
 
-interface DateRange {
+export interface DateRange {
   from: Date;
   to: Date;
 }

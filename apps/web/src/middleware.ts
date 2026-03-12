@@ -9,6 +9,7 @@ const PUBLIC_ROUTES = [
   "/share",
   "/embed",
   "/api/auth",
+  "/api/analytics",
 ];
 
 function isPublicRoute(pathname: string): boolean {
