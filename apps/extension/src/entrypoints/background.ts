@@ -1,11 +1,13 @@
 import { recordingSession } from "@/lib/recording-state";
-import { addStep, clearSteps, getStepCount } from "@/lib/recording-store";
+import { addStep, clearSteps, getStepCount, getSteps } from "@/lib/recording-store";
 import type {
   ActionCapturedResponse,
   ExtensionMessage,
+  GetStepsResponse,
   RecordingStartedResponse,
   RecordingStoppedResponse,
   StateResponse,
+  StepThumbnail,
 } from "@/types/messages";
 import type { CapturedStep, RecordingSession } from "@/types/recording";
 import { captureScreenshot } from "@/utils/screenshot";
@@ -40,6 +42,7 @@ async function handleStart(
     tabId,
     tabUrl,
     startedAt: Date.now(),
+    status: "recording",
   });
 
   await browser.tabs.sendMessage(tabId, { type: "RECORDING_STARTED" });
@@ -52,24 +55,70 @@ async function handleStop(
   tabId: number,
 ): Promise<RecordingStoppedResponse> {
   await browser.tabs.sendMessage(tabId, { type: "RECORDING_STOPPED" });
-  await recordingSession.setValue(null);
+
+  const session = await recordingSession.getValue();
+  if (session) {
+    await recordingSession.setValue({ ...session, status: "done" });
+  }
 
   const stepCount = getStepCount();
   console.log("[Porygon] Recording stopped.", stepCount, "steps captured");
   return { success: true, stepCount };
 }
 
+async function handlePause(
+  session: RecordingSession,
+): Promise<{ success: boolean }> {
+  await browser.tabs.sendMessage(session.tabId, { type: "RECORDING_PAUSED" });
+  await recordingSession.setValue({ ...session, status: "paused" });
+
+  console.log("[Porygon] Recording paused");
+  return { success: true };
+}
+
+async function handleResume(
+  session: RecordingSession,
+): Promise<{ success: boolean }> {
+  await browser.tabs.sendMessage(session.tabId, { type: "RECORDING_RESUMED" });
+  await recordingSession.setValue({ ...session, status: "recording" });
+
+  console.log("[Porygon] Recording resumed");
+  return { success: true };
+}
+
 async function handleGetState(): Promise<StateResponse> {
   const session = await recordingSession.getValue();
   return {
-    isRecording: session !== null,
+    status: session?.status ?? "idle",
     stepCount: getStepCount(),
+    tabUrl: session?.tabUrl ?? null,
   };
+}
+
+function handleGetSteps(): GetStepsResponse {
+  const steps: StepThumbnail[] = getSteps().map((step) => ({
+    orderIndex: step.orderIndex,
+    screenshotDataUrl: step.screenshotDataUrl,
+    actionType: step.actionType,
+    capturedAt: step.capturedAt,
+  }));
+  return { steps };
+}
+
+async function handleNewRecording(): Promise<StateResponse> {
+  clearSteps();
+  await recordingSession.setValue(null);
+  return { status: "idle", stepCount: 0, tabUrl: null };
 }
 
 async function handleActionCaptured(
   message: ExtensionMessage & { type: "ACTION_CAPTURED" },
 ): Promise<ActionCapturedResponse> {
+  const session = await recordingSession.getValue();
+  if (!session || session.status !== "recording") {
+    return { success: false, stepIndex: -1 };
+  }
+
   await delay(CAPTURE_DELAY_MS);
 
   const screenshotDataUrl = await captureScreenshot();
@@ -131,8 +180,40 @@ export default defineBackground(() => {
         return true;
       }
 
+      if (message.type === "PAUSE_RECORDING") {
+        recordingSession.getValue().then((session: RecordingSession | null) => {
+          if (!session || session.status !== "recording") {
+            sendResponse({ success: false });
+            return;
+          }
+          handlePause(session).then(sendResponse);
+        });
+        return true;
+      }
+
+      if (message.type === "RESUME_RECORDING") {
+        recordingSession.getValue().then((session: RecordingSession | null) => {
+          if (!session || session.status !== "paused") {
+            sendResponse({ success: false });
+            return;
+          }
+          handleResume(session).then(sendResponse);
+        });
+        return true;
+      }
+
       if (message.type === "GET_STATE") {
         handleGetState().then(sendResponse);
+        return true;
+      }
+
+      if (message.type === "GET_STEPS") {
+        sendResponse(handleGetSteps());
+        return false;
+      }
+
+      if (message.type === "NEW_RECORDING") {
+        handleNewRecording().then(sendResponse);
         return true;
       }
 

@@ -1,5 +1,7 @@
 import type { ActionType, Coordinates } from "@porygon/shared/types";
 
+export type RecordingStatus = "idle" | "recording" | "paused" | "done";
+
 export interface CapturedStep {
   orderIndex: number;
   screenshotDataUrl: string;
@@ -15,4 +17,5 @@ export interface RecordingSession {
   tabId: number;
   tabUrl: string;
   startedAt: number;
+  status: RecordingStatus;
 }

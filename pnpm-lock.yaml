@@ -20,6 +20,12 @@ importers:
       '@porygon/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@porygon/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.475
+        version: 0.475.0(react@19.2.4)
       react:
         specifier: ^19
         version: 19.2.4
@@ -33,6 +39,9 @@ importers:
       '@porygon/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
       '@types/react':
         specifier: ^19
         version: 19.2.14
@@ -45,6 +54,12 @@ importers:
       eslint:
         specifier: ^9
         version: 9.39.3(jiti@2.6.1)
+      postcss:
+        specifier: ^8
+        version: 8.5.8
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
       typescript:
         specifier: ^5
         version: 5.9.3

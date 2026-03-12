@@ -16,6 +16,12 @@ export default defineContentScript({
         } else if (message.type === "RECORDING_STOPPED") {
           detachListeners();
           sendResponse({ success: true });
+        } else if (message.type === "RECORDING_PAUSED") {
+          detachListeners();
+          sendResponse({ success: true });
+        } else if (message.type === "RECORDING_RESUMED") {
+          attachListeners();
+          sendResponse({ success: true });
         }
       },
     );
