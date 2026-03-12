@@ -8,4 +8,6 @@ out/
 .turbo/
 coverage/
 *.tsbuildinfo
+.output/
+.wxt/
 .DS_Store
