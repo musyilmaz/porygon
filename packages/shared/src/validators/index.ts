@@ -58,6 +58,8 @@ export {
 export {
   recordViewSchema,
   updateViewSchema,
+  analyticsQuerySchema,
   type RecordViewInput,
   type UpdateViewInput,
+  type AnalyticsQuery,
 } from "./analytics.schema";

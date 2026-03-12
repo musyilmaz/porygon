@@ -15,5 +15,12 @@ export const updateViewSchema = z.object({
   completedAt: z.coerce.date().nullish(),
 });
 
+export const analyticsQuerySchema = z.object({
+  from: z.coerce.date().optional(),
+  to: z.coerce.date().optional(),
+  days: z.coerce.number().int().min(1, "Days must be at least 1").optional(),
+});
+
 export type RecordViewInput = z.infer<typeof recordViewSchema>;
 export type UpdateViewInput = z.infer<typeof updateViewSchema>;
+export type AnalyticsQuery = z.infer<typeof analyticsQuerySchema>;

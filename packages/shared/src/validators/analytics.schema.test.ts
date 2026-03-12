@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
-import { recordViewSchema, updateViewSchema } from "./analytics.schema";
+import {
+  analyticsQuerySchema,
+  recordViewSchema,
+  updateViewSchema,
+} from "./analytics.schema";
 
 describe("recordViewSchema", () => {
   it("accepts valid input with required fields only", () => {
@@ -157,5 +161,80 @@ describe("updateViewSchema", () => {
       completedAt: "not-a-date",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("analyticsQuerySchema", () => {
+  it("accepts empty object (all-time)", () => {
+    const result = analyticsQuerySchema.safeParse({});
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts from and to as ISO strings", () => {
+    const result = analyticsQuerySchema.safeParse({
+      from: "2025-01-01",
+      to: "2025-01-31",
+    });
+    expect(result.success).toBe(true);
+    expect(result.data!.from).toBeInstanceOf(Date);
+    expect(result.data!.to).toBeInstanceOf(Date);
+  });
+
+  it("coerces ISO datetime strings to Date", () => {
+    const result = analyticsQuerySchema.safeParse({
+      from: "2025-06-15T10:30:00Z",
+      to: "2025-06-20T23:59:59Z",
+    });
+    expect(result.success).toBe(true);
+    expect(result.data!.from!.toISOString()).toBe("2025-06-15T10:30:00.000Z");
+    expect(result.data!.to!.toISOString()).toBe("2025-06-20T23:59:59.000Z");
+  });
+
+  it("accepts only from without to", () => {
+    const result = analyticsQuerySchema.safeParse({ from: "2025-01-01" });
+    expect(result.success).toBe(true);
+    expect(result.data!.from).toBeInstanceOf(Date);
+    expect(result.data!.to).toBeUndefined();
+  });
+
+  it("accepts days as a string (coerced to number)", () => {
+    const result = analyticsQuerySchema.safeParse({ days: "7" });
+    expect(result.success).toBe(true);
+    expect(result.data!.days).toBe(7);
+  });
+
+  it("accepts days as a number", () => {
+    const result = analyticsQuerySchema.safeParse({ days: 30 });
+    expect(result.success).toBe(true);
+    expect(result.data!.days).toBe(30);
+  });
+
+  it("rejects days less than 1", () => {
+    const result = analyticsQuerySchema.safeParse({ days: 0 });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects negative days", () => {
+    const result = analyticsQuerySchema.safeParse({ days: -5 });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects non-integer days", () => {
+    const result = analyticsQuerySchema.safeParse({ days: 7.5 });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid date strings", () => {
+    const result = analyticsQuerySchema.safeParse({ from: "not-a-date" });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts from + to + days together", () => {
+    const result = analyticsQuerySchema.safeParse({
+      from: "2025-01-01",
+      to: "2025-01-31",
+      days: 30,
+    });
+    expect(result.success).toBe(true);
   });
 });
