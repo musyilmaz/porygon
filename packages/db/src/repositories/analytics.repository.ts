@@ -1,3 +1,4 @@
+import type { Nullable } from "@repo/shared";
 import {
   and,
   asc,
@@ -38,15 +39,15 @@ interface RecordViewData {
   demoId: string;
   viewerHash: string;
   totalSteps: number;
-  referrer?: string | null;
-  userAgent?: string | null;
-  country?: string | null;
+  referrer?: Nullable<string>;
+  userAgent?: Nullable<string>;
+  country?: Nullable<string>;
 }
 
 interface UpdateViewData {
   stepsViewed?: number;
   completed?: boolean;
-  completedAt?: Date | null;
+  completedAt?: Nullable<Date>;
 }
 
 // Percentage of views where the viewer reached completion (guarded against division by zero)

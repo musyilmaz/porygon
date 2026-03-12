@@ -1,3 +1,4 @@
+import type { Nullable } from "@repo/shared";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -9,8 +10,8 @@ interface CreateHotspotData {
   y: number;
   width: number;
   height: number;
-  targetStepId?: string | null;
-  tooltipContent?: Record<string, unknown> | null;
+  targetStepId?: Nullable<string>;
+  tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: string;
   style?: Record<string, unknown>;
 }
@@ -20,8 +21,8 @@ interface UpdateHotspotData {
   y?: number;
   width?: number;
   height?: number;
-  targetStepId?: string | null;
-  tooltipContent?: Record<string, unknown> | null;
+  targetStepId?: Nullable<string>;
+  tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: string;
   style?: Record<string, unknown>;
 }

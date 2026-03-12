@@ -8,6 +8,7 @@ import {
   ValidationError,
   PLAN_LIMITS,
 } from "@repo/shared";
+import type { Nullable } from "@repo/shared";
 
 type StepRepo = ReturnType<typeof createStepRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;
@@ -21,15 +22,15 @@ interface StepServiceDeps {
 
 interface CreateStepInput {
   demoId: string;
-  screenshotUrl?: string | null;
+  screenshotUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
-  actionCoordinates?: Record<string, unknown> | null;
+  actionCoordinates?: Nullable<Record<string, unknown>>;
 }
 
 interface UpdateStepInput {
-  screenshotUrl?: string | null;
-  actionType?: "click" | "scroll" | "type" | "navigation" | null;
-  actionCoordinates?: Record<string, unknown> | null;
+  screenshotUrl?: Nullable<string>;
+  actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
+  actionCoordinates?: Nullable<Record<string, unknown>>;
 }
 
 export function createStepService({

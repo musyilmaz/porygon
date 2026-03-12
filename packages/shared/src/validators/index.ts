@@ -1,8 +1,10 @@
 export {
   createDemoSchema,
   updateDemoSchema,
+  listDemosQuerySchema,
   type CreateDemoInput,
   type UpdateDemoInput,
+  type ListDemosQuery,
 } from "./demo.schema";
 
 export {

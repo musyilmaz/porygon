@@ -1,3 +1,4 @@
+import type { Nullable } from "@repo/shared";
 import { asc, count, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -6,15 +7,15 @@ import { steps } from "../schema/steps";
 interface CreateStepData {
   demoId: string;
   orderIndex: number;
-  screenshotUrl?: string | null;
+  screenshotUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
-  actionCoordinates?: Record<string, unknown> | null;
+  actionCoordinates?: Nullable<Record<string, unknown>>;
 }
 
 interface UpdateStepData {
-  screenshotUrl?: string | null;
-  actionType?: "click" | "scroll" | "type" | "navigation" | null;
-  actionCoordinates?: Record<string, unknown> | null;
+  screenshotUrl?: Nullable<string>;
+  actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
+  actionCoordinates?: Nullable<Record<string, unknown>>;
 }
 
 export function createStepRepository(db: Database) {

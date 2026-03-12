@@ -1,3 +1,4 @@
+import type { Nullable } from "@repo/shared";
 import { and, asc, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -10,13 +11,13 @@ interface CreateDemoData {
   title: string;
   slug: string;
   createdBy: string;
-  description?: string | null;
+  description?: Nullable<string>;
   settings?: Record<string, unknown>;
 }
 
 interface UpdateDemoData {
   title?: string;
-  description?: string | null;
+  description?: Nullable<string>;
   status?: DemoStatus;
   settings?: Record<string, unknown>;
 }

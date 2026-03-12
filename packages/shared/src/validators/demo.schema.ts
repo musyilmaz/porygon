@@ -37,5 +37,15 @@ export const updateDemoSchema = z.object({
     .optional(),
 });
 
+export const listDemosQuerySchema = z.object({
+  workspaceId: z.string().min(1, "Workspace ID is required"),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+  status: z.enum(DEMO_STATUSES).optional(),
+  sortBy: z.enum(["createdAt", "updatedAt", "title"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+});
+
 export type CreateDemoInput = z.infer<typeof createDemoSchema>;
 export type UpdateDemoInput = z.infer<typeof updateDemoSchema>;
+export type ListDemosQuery = z.infer<typeof listDemosQuerySchema>;

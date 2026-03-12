@@ -9,6 +9,7 @@ import {
   PLAN_LIMITS,
   ValidationError,
 } from "@repo/shared";
+import type { Nullable } from "@repo/shared";
 import { generateSlug } from "@repo/shared/utils";
 
 type DemoRepo = ReturnType<typeof createDemoRepository>;
@@ -21,20 +22,20 @@ interface DemoServiceDeps {
   stepRepo: StepRepo;
 }
 
-interface CreateDemoInput {
+export interface CreateDemoInput {
   workspaceId: string;
   title: string;
-  description?: string | null;
+  description?: Nullable<string>;
   settings?: Record<string, unknown>;
 }
 
-interface UpdateDemoInput {
+export interface UpdateDemoInput {
   title?: string;
-  description?: string | null;
+  description?: Nullable<string>;
   settings?: Record<string, unknown>;
 }
 
-interface ListDemosOptions {
+export interface ListDemosOptions {
   limit?: number;
   offset?: number;
   status?: "draft" | "published" | "archived";

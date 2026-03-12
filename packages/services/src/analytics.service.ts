@@ -1,6 +1,7 @@
 import type { createAnalyticsRepository } from "@repo/db";
 import type { createDemoRepository } from "@repo/db";
 import { NotFoundError, ValidationError } from "@repo/shared";
+import type { Nullable } from "@repo/shared";
 
 type AnalyticsRepo = ReturnType<typeof createAnalyticsRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;
@@ -14,15 +15,15 @@ interface RecordViewInput {
   demoId: string;
   viewerHash: string;
   totalSteps: number;
-  referrer?: string | null;
-  userAgent?: string | null;
-  country?: string | null;
+  referrer?: Nullable<string>;
+  userAgent?: Nullable<string>;
+  country?: Nullable<string>;
 }
 
 interface UpdateViewInput {
   stepsViewed?: number;
   completed?: boolean;
-  completedAt?: Date | null;
+  completedAt?: Nullable<Date>;
 }
 
 interface DateRange {

@@ -1,3 +1,5 @@
+export type { Nullable, Optional } from "./utils";
+
 export type { Workspace, Plan, PlanLimits } from "./workspace";
 
 export type { Demo, DemoStatus, DemoSettings } from "./demo";

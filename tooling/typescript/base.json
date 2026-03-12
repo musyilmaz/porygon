@@ -14,7 +14,6 @@
     "declarationMap": true,
     "sourceMap": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
     "noEmit": true
   },
   "exclude": ["node_modules", "dist", ".turbo"]

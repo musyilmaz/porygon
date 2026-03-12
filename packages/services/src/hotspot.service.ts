@@ -3,6 +3,7 @@ import type { createHotspotRepository } from "@repo/db";
 import type { createStepRepository } from "@repo/db";
 import type { createWorkspaceRepository } from "@repo/db";
 import { ForbiddenError, NotFoundError, ValidationError } from "@repo/shared";
+import type { Nullable } from "@repo/shared";
 
 type HotspotRepo = ReturnType<typeof createHotspotRepository>;
 type StepRepo = ReturnType<typeof createStepRepository>;
@@ -22,8 +23,8 @@ interface CreateHotspotInput {
   y: number;
   width: number;
   height: number;
-  targetStepId?: string | null;
-  tooltipContent?: Record<string, unknown> | null;
+  targetStepId?: Nullable<string>;
+  tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: string;
   style?: Record<string, unknown>;
 }
@@ -33,8 +34,8 @@ interface UpdateHotspotInput {
   y?: number;
   width?: number;
   height?: number;
-  targetStepId?: string | null;
-  tooltipContent?: Record<string, unknown> | null;
+  targetStepId?: Nullable<string>;
+  tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: string;
   style?: Record<string, unknown>;
 }
