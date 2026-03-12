@@ -1,16 +1,25 @@
 import { recordingSession } from "@/lib/recording-state";
 import { addStep, clearSteps, getStepCount, getSteps } from "@/lib/recording-store";
+import {
+  getUploadProgress,
+  resetUploadProgress,
+  sendToApp,
+} from "@/lib/upload-orchestrator";
 import type {
   ActionCapturedResponse,
   ExtensionMessage,
   GetStepsResponse,
   RecordingStartedResponse,
   RecordingStoppedResponse,
+  SendToAppResponse,
   StateResponse,
   StepThumbnail,
+  UploadProgressResponse,
 } from "@/types/messages";
 import type { CapturedStep, RecordingSession } from "@/types/recording";
 import { captureScreenshot } from "@/utils/screenshot";
+
+const APP_URL = import.meta.env.WXT_APP_URL;
 
 const CAPTURE_DELAY_MS = 100;
 
@@ -107,6 +116,7 @@ function handleGetSteps(): GetStepsResponse {
 
 async function handleNewRecording(): Promise<StateResponse> {
   clearSteps();
+  resetUploadProgress();
   await recordingSession.setValue(null);
   return { status: "idle", stepCount: 0, tabUrl: null };
 }
@@ -215,6 +225,42 @@ export default defineBackground(() => {
       if (message.type === "NEW_RECORDING") {
         handleNewRecording().then(sendResponse);
         return true;
+      }
+
+      if (message.type === "SEND_TO_APP") {
+        const steps = getSteps();
+        if (steps.length === 0) {
+          sendResponse({ success: false, error: "No steps to upload" } satisfies SendToAppResponse);
+          return false;
+        }
+
+        recordingSession.getValue().then(async (session) => {
+          const tabUrl = session?.tabUrl ?? "";
+          if (session) {
+            await recordingSession.setValue({ ...session, status: "uploading" });
+          }
+
+          sendResponse({ success: true } satisfies SendToAppResponse);
+
+          try {
+            const demoId = await sendToApp(steps, tabUrl);
+            await browser.tabs.create({
+              url: `${APP_URL}/dashboard/demos/${demoId}/edit`,
+            });
+            clearSteps();
+            await recordingSession.setValue(null);
+            resetUploadProgress();
+          } catch (error) {
+            console.error("[Porygon] Upload failed:", error);
+            // Progress object retains error details for the popup to read
+          }
+        });
+        return true;
+      }
+
+      if (message.type === "GET_UPLOAD_PROGRESS") {
+        sendResponse({ progress: getUploadProgress() } satisfies UploadProgressResponse);
+        return false;
       }
 
       if (message.type === "ACTION_CAPTURED") {

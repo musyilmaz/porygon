@@ -1,6 +1,6 @@
 import type { ActionType, Coordinates } from "@porygon/shared/types";
 
-import type { RecordingStatus } from "./recording";
+import type { RecordingStatus, UploadProgress } from "./recording";
 
 // Popup → Background
 export interface StartRecordingMessage {
@@ -29,6 +29,14 @@ export interface GetStepsMessage {
 
 export interface NewRecordingMessage {
   type: "NEW_RECORDING";
+}
+
+export interface SendToAppMessage {
+  type: "SEND_TO_APP";
+}
+
+export interface GetUploadProgressMessage {
+  type: "GET_UPLOAD_PROGRESS";
 }
 
 // Content → Background
@@ -73,6 +81,8 @@ export type ExtensionMessage =
   | GetStateMessage
   | GetStepsMessage
   | NewRecordingMessage
+  | SendToAppMessage
+  | GetUploadProgressMessage
   | ActionCapturedMessage
   | RecordingStartedMessage
   | RecordingStoppedMessage
@@ -111,4 +121,13 @@ export interface RecordingStoppedResponse {
 export interface ActionCapturedResponse {
   success: boolean;
   stepIndex: number;
+}
+
+export interface SendToAppResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface UploadProgressResponse {
+  progress: UploadProgress | null;
 }

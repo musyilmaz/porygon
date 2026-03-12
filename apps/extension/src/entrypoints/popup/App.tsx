@@ -1,24 +1,32 @@
 import { Badge } from "@porygon/ui/components/badge";
 import { Button } from "@porygon/ui/components/button";
 import {
+  AlertCircle,
   CheckCircle,
   Circle,
   ExternalLink,
+  Loader2,
+  LogIn,
   Pause,
   Play,
+  RotateCcw,
   Square,
+  Upload,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type {
   GetStepsResponse,
+  SendToAppResponse,
   StateResponse,
   StepThumbnail,
+  UploadProgressResponse,
 } from "@/types/messages";
-import type { RecordingStatus } from "@/types/recording";
+import type { RecordingStatus, UploadProgress } from "@/types/recording";
 
-const WEB_APP_URL = "https://app.porygon.dev/dashboard";
+const APP_URL = import.meta.env.WXT_APP_URL;
 const POLL_INTERVAL_MS = 2000;
+const UPLOAD_POLL_INTERVAL_MS = 500;
 
 export function App() {
   const [status, setStatus] = useState<RecordingStatus>("idle");
@@ -27,7 +35,9 @@ export function App() {
   const [tabUrl, setTabUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const uploadPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchSteps = useCallback(async () => {
     try {
@@ -53,6 +63,25 @@ export function App() {
     }
   }, []);
 
+  const fetchUploadProgress = useCallback(async () => {
+    try {
+      const response: UploadProgressResponse = await browser.runtime.sendMessage({
+        type: "GET_UPLOAD_PROGRESS",
+      });
+      setUploadProgress(response.progress);
+
+      if (response.progress?.phase === "complete") {
+        // Auto-transition to idle after completion
+        setTimeout(async () => {
+          await fetchState();
+          setUploadProgress(null);
+        }, 1500);
+      }
+    } catch {
+      // Non-critical
+    }
+  }, [fetchState]);
+
   // Initial load
   useEffect(() => {
     fetchState()
@@ -76,6 +105,21 @@ export function App() {
       }
     };
   }, [status, fetchState, fetchSteps]);
+
+  // Polling during upload
+  useEffect(() => {
+    if (status === "uploading") {
+      fetchUploadProgress();
+      uploadPollRef.current = setInterval(fetchUploadProgress, UPLOAD_POLL_INTERVAL_MS);
+    }
+
+    return () => {
+      if (uploadPollRef.current) {
+        clearInterval(uploadPollRef.current);
+        uploadPollRef.current = null;
+      }
+    };
+  }, [status, fetchUploadProgress]);
 
   const handleStart = useCallback(async () => {
     setIsLoading(true);
@@ -132,6 +176,7 @@ export function App() {
 
   const handleNewRecording = useCallback(async () => {
     setError(null);
+    setUploadProgress(null);
     try {
       await browser.runtime.sendMessage({ type: "NEW_RECORDING" });
       setStatus("idle");
@@ -143,8 +188,20 @@ export function App() {
     }
   }, []);
 
-  const handleEditInApp = useCallback(() => {
-    window.open(WEB_APP_URL, "_blank");
+  const handleSendToApp = useCallback(async () => {
+    setError(null);
+    try {
+      const response: SendToAppResponse = await browser.runtime.sendMessage({
+        type: "SEND_TO_APP",
+      });
+      if (response.success) {
+        setStatus("uploading");
+      } else {
+        setError(response.error ?? "Failed to start upload");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send to app");
+    }
   }, []);
 
   if (isLoading && status === "idle" && stepCount === 0) {
@@ -186,7 +243,15 @@ export function App() {
           <DoneView
             stepCount={stepCount}
             steps={steps}
-            onEditInApp={handleEditInApp}
+            onEditInApp={handleSendToApp}
+            onNewRecording={handleNewRecording}
+          />
+        )}
+
+        {status === "uploading" && (
+          <UploadingView
+            progress={uploadProgress}
+            onRetry={handleSendToApp}
             onNewRecording={handleNewRecording}
           />
         )}
@@ -219,6 +284,15 @@ function StatusBadge({ status }: { status: RecordingStatus }) {
       <Badge variant="secondary" className="gap-1.5 bg-amber-100 text-amber-800">
         <Pause className="size-2.5 fill-current" />
         Paused
+      </Badge>
+    );
+  }
+
+  if (status === "uploading") {
+    return (
+      <Badge variant="secondary" className="gap-1.5 bg-blue-100 text-blue-800">
+        <Upload className="size-2.5" />
+        Uploading
       </Badge>
     );
   }
@@ -345,6 +419,103 @@ function DoneView({
           New Recording
         </Button>
       </div>
+    </div>
+  );
+}
+
+function UploadingView({
+  progress,
+  onRetry,
+  onNewRecording,
+}: {
+  progress: UploadProgress | null;
+  onRetry: () => void;
+  onNewRecording: () => void;
+}) {
+  if (!progress) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const isError = progress.phase === "error";
+  const isComplete = progress.phase === "complete";
+  const isAuthError = progress.errorMessage?.includes("Not logged in");
+  const percent =
+    progress.totalSteps > 0
+      ? Math.round((progress.completedSteps / progress.totalSteps) * 100)
+      : 0;
+
+  let phaseLabel = "Preparing...";
+  if (progress.phase === "creating-demo") {
+    phaseLabel = "Creating demo...";
+  } else if (progress.phase === "uploading-steps") {
+    phaseLabel = `Uploading step ${progress.completedSteps + 1} of ${progress.totalSteps}...`;
+    if (progress.completedSteps === progress.totalSteps) {
+      phaseLabel = `Uploaded ${progress.totalSteps} steps`;
+    }
+  } else if (isComplete) {
+    phaseLabel = "Done!";
+  } else if (isError) {
+    phaseLabel = "Upload failed";
+  }
+
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
+      {isError ? (
+        <>
+          <AlertCircle className="size-8 text-destructive" />
+          <div className="text-center">
+            <p className="text-sm font-medium">{phaseLabel}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {progress.errorMessage}
+            </p>
+          </div>
+          <div className="flex w-full gap-2">
+            {isAuthError ? (
+              <Button
+                onClick={() => window.open(`${APP_URL}/login`, "_blank")}
+                className="flex-1"
+              >
+                <LogIn className="size-4" />
+                Log in
+              </Button>
+            ) : (
+              <Button onClick={onRetry} className="flex-1">
+                <RotateCcw className="size-4" />
+                Retry
+              </Button>
+            )}
+            <Button variant="outline" onClick={onNewRecording} className="flex-1">
+              New Recording
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          {isComplete ? (
+            <CheckCircle className="size-8 text-green-600" />
+          ) : (
+            <Loader2 className="size-8 animate-spin text-blue-600" />
+          )}
+          <div className="w-full text-center">
+            <p className="text-sm font-medium">{phaseLabel}</p>
+            {progress.phase === "uploading-steps" && (
+              <div className="mt-3">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">{percent}%</p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
