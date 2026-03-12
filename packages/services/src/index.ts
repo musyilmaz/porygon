@@ -15,6 +15,7 @@ export {
   type UpdateDemoInput,
   type ListDemosOptions,
 } from "./demo.service";
+export { createPublicDemoService } from "./public-demo.service";
 export {
   createHotspotService,
   type CreateHotspotInput,

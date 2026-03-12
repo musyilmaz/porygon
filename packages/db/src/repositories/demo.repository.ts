@@ -3,6 +3,7 @@ import { and, asc, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
 import { demos, demoStatusEnum } from "../schema/demos";
+import { steps } from "../schema/steps";
 
 type DemoStatus = (typeof demoStatusEnum.enumValues)[number];
 
@@ -113,6 +114,21 @@ export function createDemoRepository(db: Database) {
         .where(eq(demos.id, id))
         .returning({ id: demos.id });
       return result.length > 0;
+    },
+
+    async getPublishedBySlug(slug: string) {
+      return db.query.demos.findFirst({
+        where: and(eq(demos.slug, slug), eq(demos.status, "published")),
+        with: {
+          steps: {
+            orderBy: asc(steps.orderIndex),
+            with: {
+              hotspots: true,
+              annotations: true,
+            },
+          },
+        },
+      });
     },
 
     async updateStatus(id: string, status: DemoStatus) {
