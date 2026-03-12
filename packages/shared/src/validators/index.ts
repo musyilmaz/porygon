@@ -29,7 +29,11 @@ export {
 
 export {
   createAnnotationSchema,
+  createAnnotationBodySchema,
+  updateAnnotationSchema,
   type CreateAnnotationInput,
+  type CreateAnnotationBody,
+  type UpdateAnnotationInput,
 } from "./annotation.schema";
 
 export {

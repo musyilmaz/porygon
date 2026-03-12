@@ -1,5 +1,10 @@
 export { createAnalyticsService } from "./analytics.service";
 export {
+  createAnnotationService,
+  type CreateAnnotationInput,
+  type UpdateAnnotationInput,
+} from "./annotation.service";
+export {
   createDemoService,
   type CreateDemoInput,
   type UpdateDemoInput,

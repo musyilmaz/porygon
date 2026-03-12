@@ -22,4 +22,12 @@ export const createAnnotationSchema = z.object({
     .optional(),
 });
 
+export const updateAnnotationSchema = createAnnotationSchema
+  .partial()
+  .omit({ stepId: true });
+
+export const createAnnotationBodySchema = createAnnotationSchema.omit({ stepId: true });
+
 export type CreateAnnotationInput = z.infer<typeof createAnnotationSchema>;
+export type CreateAnnotationBody = z.infer<typeof createAnnotationBodySchema>;
+export type UpdateAnnotationInput = z.infer<typeof updateAnnotationSchema>;
