@@ -14,6 +14,7 @@
   "dependencies": {
     "@porygon/auth": "workspace:*",
     "@porygon/db": "workspace:*",
+    "@porygon/player": "workspace:*",
     "@porygon/services": "workspace:*",
     "@porygon/shared": "workspace:*",
     "@porygon/ui": "workspace:*",
