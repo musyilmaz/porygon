@@ -19,7 +19,9 @@
     "db:generate": "pnpm --filter @porygon/db db:generate",
     "db:migrate": "pnpm --filter @porygon/db db:migrate",
     "db:push": "pnpm --filter @porygon/db db:push",
-    "db:studio": "pnpm --filter @porygon/db db:studio"
+    "db:studio": "pnpm --filter @porygon/db db:studio",
+    "db:seed": "pnpm --filter @porygon/db db:seed",
+    "db:unseed": "pnpm --filter @porygon/db db:unseed"
   },
   "devDependencies": {
     "prettier": "^3",
