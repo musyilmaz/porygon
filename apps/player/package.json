@@ -10,6 +10,9 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@porygon/shared": "workspace:*"
+  },
   "devDependencies": {
     "@porygon/typescript-config": "workspace:*",
     "@porygon/eslint-config": "workspace:*",
