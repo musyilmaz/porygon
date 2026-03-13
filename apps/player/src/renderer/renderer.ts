@@ -1,3 +1,4 @@
+import { PlayerAnalytics } from "../analytics";
 import { DemoPlayer } from "../player";
 import type { PlayerConfig, PlayerStep } from "../types";
 
@@ -11,6 +12,7 @@ import { tiptapToHTML, calculateTooltipPosition } from "./tooltip";
 export interface RendererOptions {
   container: HTMLElement;
   config: PlayerConfig;
+  analyticsUrl?: string;
 }
 
 export class DemoPlayerRenderer {
@@ -19,6 +21,7 @@ export class DemoPlayerRenderer {
   private readonly container: HTMLElement;
   private readonly dom: PlayerDOM;
   private readonly keyboard: KeyboardHandler;
+  private readonly analytics: PlayerAnalytics | null = null;
   private autoplay: AutoplayTimer | null = null;
   private naturalWidth = 0;
   private naturalHeight = 0;
@@ -77,6 +80,17 @@ export class DemoPlayerRenderer {
       this.autoplay = new AutoplayTimer(delay, () => this.player.next());
     }
 
+    // Analytics
+    if (options.analyticsUrl) {
+      this.analytics = new PlayerAnalytics({
+        apiBaseUrl: options.analyticsUrl,
+        demoId: options.config.id,
+        totalSteps: options.config.steps.length,
+      });
+      this.analytics.attach(this.player);
+      this.analytics.start();
+    }
+
     // Hover pause/resume autoplay
     this.boundOnMouseEnter = () => this.autoplay?.pause();
     this.boundOnMouseLeave = () => this.autoplay?.resume();
@@ -96,6 +110,7 @@ export class DemoPlayerRenderer {
     if (this.destroyed) return;
     this.destroyed = true;
 
+    this.analytics?.destroy();
     this.keyboard.detach();
     this.autoplay?.destroy();
 
