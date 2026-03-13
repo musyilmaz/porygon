@@ -9,6 +9,11 @@ export default defineConfig({
     permissions: ["activeTab", "tabs", "scripting", "storage", "cookies"],
     host_permissions: ["http://localhost:3000/*", "https://app.porygon.dev/*"],
   },
+  dev: {
+    server: {
+      port: 3300,
+    },
+  },
   webExt: {
     startUrls: ["https://example.com"],
   },

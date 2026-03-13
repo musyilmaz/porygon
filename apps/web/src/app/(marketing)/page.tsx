@@ -1,11 +1,5 @@
 import { Button } from "@porygon/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@porygon/ui/components/card";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -17,18 +11,17 @@ export default function HomePage() {
         </p>
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Get Started</CardTitle>
-          <CardDescription>
-            Build beautiful, interactive demos that convert.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex gap-3">
-          <Button>Get Started</Button>
-          <Button variant="outline">Learn More</Button>
-        </CardContent>
-      </Card>
+      <div className="flex gap-3">
+        <Button asChild>
+          <Link href="/dashboard">Dashboard</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/login">Login</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/signup">Sign Up</Link>
+        </Button>
+      </div>
     </div>
   );
 }
