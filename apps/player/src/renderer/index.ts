@@ -1,0 +1,11 @@
+export { DemoPlayerRenderer } from "./renderer";
+export type { RendererOptions } from "./renderer";
+export { createPlayerDOM, createHotspotElement, createAnnotationElement } from "./dom";
+export type { PlayerDOM } from "./dom";
+export { tiptapToHTML, calculateTooltipPosition } from "./tooltip";
+export type { TooltipPositionResult } from "./tooltip";
+export { KeyboardHandler } from "./keyboard";
+export type { KeyboardHandlerCallbacks } from "./keyboard";
+export { AutoplayTimer } from "./autoplay";
+export { toPercent, hotspotToPercentStyles } from "./scaling";
+export { generateCSS, injectStyles, removeStyles } from "./styles";

@@ -1,6 +1,7 @@
 {
   "extends": "@porygon/typescript-config/library.json",
   "compilerOptions": {
+    "lib": ["esnext", "dom", "dom.iterable"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
