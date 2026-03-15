@@ -69,6 +69,14 @@ export function CanvasPanel() {
   // Space key for pan mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isTyping =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable;
+      if (isTyping) return;
+
       if (e.code === "Space" && !e.repeat) {
         e.preventDefault();
         setIsPanning(true);

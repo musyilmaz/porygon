@@ -1,6 +1,13 @@
 import type Konva from "konva";
 import { Rect } from "react-konva";
 
+import {
+  HEX_COLOR_REGEX,
+  HOTSPOT_BRANCHING_RGB,
+  HOTSPOT_DEFAULT_RGB,
+  parseHotspotStyle,
+} from "../constants";
+
 import type { EditorHotspot } from "@/stores/editor/types";
 
 interface HotspotOverlayProps {
@@ -13,6 +20,12 @@ interface HotspotOverlayProps {
     hotspotId: string,
     attrs: { x: number; y: number; width: number; height: number },
   ) => void;
+}
+
+function hexToRgb(hex: string): string | null {
+  const match = HEX_COLOR_REGEX.exec(hex);
+  if (!match?.[1] || !match[2] || !match[3]) return null;
+  return `${parseInt(match[1], 16)}, ${parseInt(match[2], 16)}, ${parseInt(match[3], 16)}`;
 }
 
 export function HotspotOverlay({
@@ -29,9 +42,16 @@ export function HotspotOverlay({
     <>
       {hotspots.map((hotspot) => {
         const isBranching = hotspot.targetStepId != null;
-        const baseColor = isBranching
-          ? "34, 197, 94"   // green
-          : "59, 130, 246"; // blue
+        const { backgroundColor, opacity } = parseHotspotStyle(hotspot.style);
+        const customRgb = hotspot.style?.backgroundColor
+          ? hexToRgb(backgroundColor)
+          : null;
+
+        const baseColor = customRgb
+          ? customRgb
+          : isBranching
+            ? HOTSPOT_BRANCHING_RGB
+            : HOTSPOT_DEFAULT_RGB;
         const isSelected = selectedHotspotId === hotspot.id;
 
         return (
@@ -42,7 +62,7 @@ export function HotspotOverlay({
             y={hotspot.y}
             width={hotspot.width}
             height={hotspot.height}
-            fill={`rgba(${baseColor}, 0.3)`}
+            fill={`rgba(${baseColor}, ${opacity})`}
             stroke={
               isSelected
                 ? `rgba(${baseColor}, 0.9)`
