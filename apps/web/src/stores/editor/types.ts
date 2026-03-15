@@ -51,6 +51,7 @@ export type ActiveTool = "select" | "hotspot" | "blur" | "crop" | "highlight";
 
 export interface EditorState {
   demoId: string;
+  workspaceId: string;
   demo: EditorDemo;
   steps: EditorStep[];
 
@@ -76,6 +77,7 @@ export interface EditorActions {
   // Steps
   selectStep: (index: number) => void;
   addStep: (step: EditorStep) => void;
+  insertStep: (step: EditorStep, atIndex: number) => void;
   removeStep: (stepId: string) => void;
   reorderSteps: (fromIndex: number, toIndex: number) => void;
   updateStep: (
@@ -121,6 +123,7 @@ export type EditorStore = EditorState & EditorActions;
 
 export interface EditorInitialData {
   demoId: string;
+  workspaceId: string;
   demo: EditorDemo;
   steps: EditorStep[];
 }

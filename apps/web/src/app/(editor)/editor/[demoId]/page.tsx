@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { EditorShell } from "./_components/editor-shell";
+import { EditorShell } from "@/components/editor/editor-shell";
 
 import { getSession } from "@/lib/get-session";
 import { getAnnotationService } from "@/lib/services/annotation.service";
@@ -53,6 +53,7 @@ export default async function EditorPage({
 
   const initialData: EditorInitialData = {
     demoId,
+    workspaceId: demo.workspaceId,
     demo: {
       title: demo.title,
       description: demo.description,

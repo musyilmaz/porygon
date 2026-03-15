@@ -2,8 +2,8 @@ import { SidebarInset, SidebarProvider } from "@porygon/ui/components/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { AppSidebar } from "./_components/app-sidebar";
-import { DashboardHeader } from "./_components/dashboard-header";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 import { getSession } from "@/lib/get-session";
 import { getWorkspaceService } from "@/lib/services/workspace.service";

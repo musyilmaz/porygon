@@ -9,6 +9,7 @@ export function createEditorStore(initialData: EditorInitialData) {
       (set) => ({
         // Initial state
         demoId: initialData.demoId,
+        workspaceId: initialData.workspaceId,
         demo: initialData.demo,
         steps: initialData.steps,
         selectedStepIndex: 0,
@@ -42,6 +43,16 @@ export function createEditorStore(initialData: EditorInitialData) {
             steps: [...state.steps, step],
             isDirty: true,
           })),
+
+        insertStep: (step, atIndex) =>
+          set((state) => {
+            const steps = [...state.steps];
+            steps.splice(atIndex, 0, step);
+            return {
+              steps: steps.map((s, i) => ({ ...s, orderIndex: i })),
+              isDirty: true,
+            };
+          }),
 
         removeStep: (stepId) =>
           set((state) => {
