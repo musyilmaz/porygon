@@ -3,11 +3,21 @@
 import { TOOLTIP_POSITIONS } from "@porygon/shared/constants";
 import { Button } from "@porygon/ui/components/button";
 import { Input } from "@porygon/ui/components/input";
-import { Trash2 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@porygon/ui/components/popover";
+import { CircleHelp, Trash2 } from "lucide-react";
 
-import { parseHotspotStyle } from "./constants";
+import {
+  parseBlurSettings,
+  parseHighlightSettings,
+  parseHotspotStyle,
+} from "./constants";
 import { TooltipContentEditor } from "./tooltip-content-editor";
 
+import { useAnnotationActions } from "@/hooks/editor/use-annotation-actions";
 import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
@@ -58,9 +68,28 @@ function HotspotProperties() {
     <div className="flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-wide">
-          Hotspot
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium uppercase tracking-wide">
+            Hotspot
+          </span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-muted-foreground hover:text-foreground size-5"
+              >
+                <CircleHelp className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="left" className="w-64 text-sm">
+              <p>
+                Hotspots are interactive clickable areas on your demo. Viewers
+                click them to navigate between steps or see tooltip information.
+              </p>
+            </PopoverContent>
+          </Popover>
+        </div>
         <Button
           variant="ghost"
           size="icon-sm"
@@ -236,11 +265,228 @@ function HotspotProperties() {
   );
 }
 
+function AnnotationProperties() {
+  const steps = useEditorStore((s) => s.steps);
+  const selectedStepIndex = useEditorStore((s) => s.selectedStepIndex);
+  const selectedAnnotationId = useEditorStore((s) => s.selectedAnnotationId);
+  const updateAnnotation = useEditorStore((s) => s.updateAnnotation);
+
+  const { saveAnnotation, deleteAnnotation } = useAnnotationActions();
+
+  const selectedStep = steps[selectedStepIndex];
+  const annotation = selectedStep?.annotations.find(
+    (a) => a.id === selectedAnnotationId,
+  );
+
+  if (!annotation || !selectedStep) return null;
+
+  const handleSettingsChange = (updates: Record<string, unknown>) => {
+    const mergedSettings = { ...(annotation.settings ?? {}), ...updates };
+    updateAnnotation(selectedStep.id, annotation.id, {
+      settings: mergedSettings,
+    });
+    saveAnnotation(selectedStep.id, annotation.id, {
+      settings: mergedSettings,
+    });
+  };
+
+  const isBlur = annotation.type === "blur";
+  const isHighlight = annotation.type === "highlight";
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium uppercase tracking-wide">
+            {annotation.type === "blur" ? "Blur" : "Highlight"}
+          </span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-muted-foreground hover:text-foreground size-5"
+              >
+                <CircleHelp className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="left" className="w-64 text-sm">
+              {annotation.type === "blur" ? (
+                <p>
+                  Blur hides sensitive information in your screenshots — like
+                  customer names, emails, or financial data — so demos can be
+                  shared publicly without exposing private content.
+                </p>
+              ) : (
+                <p>
+                  Highlight draws attention to a specific area of the screen,
+                  guiding viewers to the exact feature or element you want them
+                  to focus on in each step.
+                </p>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => deleteAnnotation(selectedStep.id, annotation.id)}
+          title="Delete annotation"
+          className="text-destructive hover:text-destructive"
+        >
+          <Trash2 className="size-3.5" />
+        </Button>
+      </div>
+
+      {/* Position / Size */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-muted-foreground text-xs font-medium">
+          Position &amp; Size
+        </span>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground text-xs">X</span>
+            <Input
+              value={Math.round(annotation.x)}
+              readOnly
+              className="h-7 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground text-xs">Y</span>
+            <Input
+              value={Math.round(annotation.y)}
+              readOnly
+              className="h-7 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground text-xs">Width</span>
+            <Input
+              value={Math.round(annotation.width)}
+              readOnly
+              className="h-7 text-xs"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground text-xs">Height</span>
+            <Input
+              value={Math.round(annotation.height)}
+              readOnly
+              className="h-7 text-xs"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-border border-t" />
+
+      {/* Blur Settings */}
+      {isBlur && (
+        <div className="flex flex-col gap-3">
+          <span className="text-muted-foreground text-xs font-medium">
+            Blur Settings
+          </span>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="blur-intensity"
+              className="min-w-[50px] text-xs"
+            >
+              Intensity
+            </label>
+            <input
+              id="blur-intensity"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={parseBlurSettings(annotation.settings).blurIntensity}
+              onChange={(e) =>
+                handleSettingsChange({
+                  blurIntensity: parseInt(e.target.value, 10),
+                })
+              }
+              className="h-1.5 flex-1"
+            />
+            <span className="text-muted-foreground w-8 text-right text-xs">
+              {parseBlurSettings(annotation.settings).blurIntensity}px
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Highlight Settings */}
+      {isHighlight && (
+        <div className="flex flex-col gap-3">
+          <span className="text-muted-foreground text-xs font-medium">
+            Highlight Settings
+          </span>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="highlight-color"
+              className="min-w-[50px] text-xs"
+            >
+              Color
+            </label>
+            <input
+              id="highlight-color"
+              type="color"
+              value={
+                parseHighlightSettings(annotation.settings).highlightColor
+              }
+              onChange={(e) =>
+                handleSettingsChange({ highlightColor: e.target.value })
+              }
+              className="h-7 w-10 cursor-pointer rounded border-none bg-transparent p-0"
+            />
+            <span className="text-muted-foreground text-xs">
+              {parseHighlightSettings(annotation.settings).highlightColor}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="highlight-opacity"
+              className="min-w-[50px] text-xs"
+            >
+              Opacity
+            </label>
+            <input
+              id="highlight-opacity"
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={
+                parseHighlightSettings(annotation.settings).highlightOpacity
+              }
+              onChange={(e) =>
+                handleSettingsChange({
+                  highlightOpacity: parseFloat(e.target.value),
+                })
+              }
+              className="h-1.5 flex-1"
+            />
+            <span className="text-muted-foreground w-8 text-right text-xs">
+              {Math.round(
+                parseHighlightSettings(annotation.settings)
+                  .highlightOpacity * 100,
+              )}
+              %
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PropertiesSidebar() {
   const title = useEditorStore((s) => s.demo.title);
   const description = useEditorStore((s) => s.demo.description);
   const updateDemo = useEditorStore((s) => s.updateDemo);
   const selectedHotspotId = useEditorStore((s) => s.selectedHotspotId);
+  const selectedAnnotationId = useEditorStore((s) => s.selectedAnnotationId);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -288,6 +534,10 @@ export function PropertiesSidebar() {
           {selectedHotspotId ? (
             <div className="border-border border-t pt-4">
               <HotspotProperties />
+            </div>
+          ) : selectedAnnotationId ? (
+            <div className="border-border border-t pt-4">
+              <AnnotationProperties />
             </div>
           ) : (
             <div className="border-border border-t pt-4">

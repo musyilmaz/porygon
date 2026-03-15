@@ -1,10 +1,11 @@
 import { Button } from "@porygon/ui/components/button";
+import { Separator } from "@porygon/ui/components/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@porygon/ui/components/tooltip";
-import { MousePointer2, Square } from "lucide-react";
+import { EyeOff, Highlighter, MousePointer2, Square } from "lucide-react";
 
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
@@ -40,6 +41,35 @@ export function CanvasToolbar() {
         </TooltipTrigger>
         <TooltipContent side="bottom" sideOffset={8}>
           Hotspot (H)
+        </TooltipContent>
+      </Tooltip>
+      <Separator orientation="vertical" className="mx-0.5 h-5" />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant={activeTool === "blur" ? "secondary" : "ghost"}
+            size="icon-sm"
+            onClick={() => setTool("blur")}
+          >
+            <EyeOff className="size-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={8}>
+          Blur (B)
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant={activeTool === "highlight" ? "secondary" : "ghost"}
+            size="icon-sm"
+            onClick={() => setTool("highlight")}
+          >
+            <Highlighter className="size-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={8}>
+          Highlight (Y)
         </TooltipContent>
       </Tooltip>
     </div>

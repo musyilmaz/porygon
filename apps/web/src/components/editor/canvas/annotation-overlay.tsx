@@ -1,19 +1,8 @@
 import type Konva from "konva";
 import { Rect } from "react-konva";
 
+import { getAnnotationColors } from "@/components/editor/constants";
 import type { EditorAnnotation } from "@/stores/editor/types";
-
-const ANNOTATION_COLORS: Record<
-  EditorAnnotation["type"],
-  { fill: string; stroke: string }
-> = {
-  blur: { fill: "rgba(107, 114, 128, 0.4)", stroke: "rgba(107, 114, 128, 0.7)" },
-  highlight: {
-    fill: "rgba(234, 179, 8, 0.25)",
-    stroke: "rgba(234, 179, 8, 0.7)",
-  },
-  crop: { fill: "rgba(0, 0, 0, 0.5)", stroke: "rgba(0, 0, 0, 0.8)" },
-};
 
 interface AnnotationOverlayProps {
   annotations: EditorAnnotation[];
@@ -40,7 +29,7 @@ export function AnnotationOverlay({
   return (
     <>
       {annotations.map((annotation) => {
-        const colors = ANNOTATION_COLORS[annotation.type];
+        const colors = getAnnotationColors(annotation);
         const isSelected = selectedAnnotationId === annotation.id;
 
         return (

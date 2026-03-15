@@ -2,12 +2,12 @@ import type Konva from "konva";
 import { Rect } from "react-konva";
 
 import {
-  HEX_COLOR_REGEX,
   HOTSPOT_BRANCHING_RGB,
   HOTSPOT_DEFAULT_RGB,
   parseHotspotStyle,
 } from "../constants";
 
+import { hexToRgb } from "@/lib/editor/color-utils";
 import type { EditorHotspot } from "@/stores/editor/types";
 
 interface HotspotOverlayProps {
@@ -20,12 +20,6 @@ interface HotspotOverlayProps {
     hotspotId: string,
     attrs: { x: number; y: number; width: number; height: number },
   ) => void;
-}
-
-function hexToRgb(hex: string): string | null {
-  const match = HEX_COLOR_REGEX.exec(hex);
-  if (!match?.[1] || !match[2] || !match[3]) return null;
-  return `${parseInt(match[1], 16)}, ${parseInt(match[2], 16)}, ${parseInt(match[3], 16)}`;
 }
 
 export function HotspotOverlay({

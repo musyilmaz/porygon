@@ -4,14 +4,14 @@ import { useCallback, useRef } from "react";
 
 import { apiError, fetchOpts } from "@/lib/editor/api-utils";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
-import type { EditorHotspot } from "@/stores/editor/types";
+import type { EditorAnnotation } from "@/stores/editor/types";
 
 let tempIdCounter = 0;
 
-export function useHotspotActions() {
-  const addHotspot = useEditorStore((s) => s.addHotspot);
-  const removeHotspot = useEditorStore((s) => s.removeHotspot);
-  const selectHotspot = useEditorStore((s) => s.selectHotspot);
+export function useAnnotationActions() {
+  const addAnnotation = useEditorStore((s) => s.addAnnotation);
+  const removeAnnotation = useEditorStore((s) => s.removeAnnotation);
+  const selectAnnotation = useEditorStore((s) => s.selectAnnotation);
   const setTool = useEditorStore((s) => s.setTool);
   const rightSidebarOpen = useEditorStore((s) => s.rightSidebarOpen);
   const toggleRightSidebar = useEditorStore((s) => s.toggleRightSidebar);
@@ -21,64 +21,58 @@ export function useHotspotActions() {
     new Map(),
   );
 
-  // Maps temp IDs to real IDs once server responds
   const tempToRealId = useRef<Map<string, string>>(new Map());
 
-  const resolveHotspotId = useCallback((id: string) => {
+  const resolveAnnotationId = useCallback((id: string) => {
     return tempToRealId.current.get(id) ?? id;
   }, []);
 
-  const createHotspot = useCallback(
+  const createAnnotation = useCallback(
     async (
       stepId: string,
-      data: { x: number; y: number; width: number; height: number },
+      type: EditorAnnotation["type"],
+      rect: { x: number; y: number; width: number; height: number },
     ) => {
-      // Optimistic: add hotspot immediately with temp ID
-      const tempId = `temp_hotspot_${++tempIdCounter}`;
-      const optimistic: EditorHotspot = {
+      const tempId = `temp_annotation_${++tempIdCounter}`;
+      const optimistic: EditorAnnotation = {
         id: tempId,
         stepId,
-        ...data,
-        targetStepId: null,
-        tooltipContent: null,
-        tooltipPosition: "bottom",
-        style: null,
+        type,
+        ...rect,
+        settings: null,
       };
 
-      addHotspot(stepId, optimistic);
-      selectHotspot(tempId);
+      addAnnotation(stepId, optimistic);
+      selectAnnotation(tempId);
       if (!rightSidebarOpen) {
         toggleRightSidebar();
       }
       setTool("select");
 
-      // Sync with server in background
-      const res = await fetch(`/api/steps/${stepId}/hotspots`, {
+      const res = await fetch(`/api/steps/${stepId}/annotations`, {
         ...fetchOpts,
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ type, ...rect }),
       });
 
       if (!res.ok) {
-        // Rollback optimistic add
-        removeHotspot(stepId, tempId);
+        removeAnnotation(stepId, tempId);
         setSaveError(await apiError(res));
         return;
       }
 
-      const real: EditorHotspot = await res.json();
+      const real: EditorAnnotation = await res.json();
 
-      // Replace temp hotspot with real one
-      removeHotspot(stepId, tempId);
-      addHotspot(stepId, real);
-      selectHotspot(real.id);
+      removeAnnotation(stepId, tempId);
+      addAnnotation(stepId, real);
+      selectAnnotation(real.id);
       tempToRealId.current.set(tempId, real.id);
     },
     [
-      addHotspot,
-      removeHotspot,
-      selectHotspot,
+      addAnnotation,
+      removeAnnotation,
+      selectAnnotation,
       setTool,
       rightSidebarOpen,
       toggleRightSidebar,
@@ -86,15 +80,14 @@ export function useHotspotActions() {
     ],
   );
 
-  const saveHotspot = useCallback(
+  const saveAnnotation = useCallback(
     (
       stepId: string,
-      hotspotId: string,
-      updates: Partial<Omit<EditorHotspot, "id" | "stepId">>,
+      annotationId: string,
+      updates: Partial<Omit<EditorAnnotation, "id" | "stepId">>,
     ) => {
-      const realId = resolveHotspotId(hotspotId);
-      // Don't save temp hotspots — they haven't been created on the server yet
-      if (realId.startsWith("temp_hotspot_")) return;
+      const realId = resolveAnnotationId(annotationId);
+      if (realId.startsWith("temp_annotation_")) return;
 
       const existing = debounceTimers.current.get(realId);
       if (existing) clearTimeout(existing);
@@ -102,7 +95,7 @@ export function useHotspotActions() {
       const timer = setTimeout(async () => {
         debounceTimers.current.delete(realId);
         const res = await fetch(
-          `/api/steps/${stepId}/hotspots/${realId}`,
+          `/api/steps/${stepId}/annotations/${realId}`,
           {
             ...fetchOpts,
             method: "PATCH",
@@ -117,28 +110,25 @@ export function useHotspotActions() {
 
       debounceTimers.current.set(realId, timer);
     },
-    [setSaveError, resolveHotspotId],
+    [setSaveError, resolveAnnotationId],
   );
 
-  const deleteHotspot = useCallback(
-    async (stepId: string, hotspotId: string) => {
-      const realId = resolveHotspotId(hotspotId);
+  const deleteAnnotation = useCallback(
+    async (stepId: string, annotationId: string) => {
+      const realId = resolveAnnotationId(annotationId);
 
-      // Clear any pending save
       const existing = debounceTimers.current.get(realId);
       if (existing) {
         clearTimeout(existing);
         debounceTimers.current.delete(realId);
       }
 
-      // Optimistic: remove immediately
-      removeHotspot(stepId, hotspotId);
+      removeAnnotation(stepId, annotationId);
 
-      // Skip server call for temp hotspots
-      if (realId.startsWith("temp_hotspot_")) return;
+      if (realId.startsWith("temp_annotation_")) return;
 
       const res = await fetch(
-        `/api/steps/${stepId}/hotspots/${realId}`,
+        `/api/steps/${stepId}/annotations/${realId}`,
         {
           ...fetchOpts,
           method: "DELETE",
@@ -148,8 +138,8 @@ export function useHotspotActions() {
         setSaveError(await apiError(res));
       }
     },
-    [removeHotspot, setSaveError, resolveHotspotId],
+    [removeAnnotation, setSaveError, resolveAnnotationId],
   );
 
-  return { createHotspot, saveHotspot, deleteHotspot };
+  return { createAnnotation, saveAnnotation, deleteAnnotation };
 }

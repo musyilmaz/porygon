@@ -4,25 +4,27 @@ import { useEffect } from "react";
 
 import { useEditorTemporalStore, useEditorStore } from "./editor-store-provider";
 
+import { useAnnotationActions } from "@/hooks/editor/use-annotation-actions";
+import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
+import { isTypingTarget } from "@/lib/editor/keyboard-utils";
+
 export function useEditorShortcuts() {
   const undo = useEditorTemporalStore((s) => s.undo);
   const redo = useEditorTemporalStore((s) => s.redo);
   const setTool = useEditorStore((s) => s.setTool);
   const selectHotspot = useEditorStore((s) => s.selectHotspot);
   const selectAnnotation = useEditorStore((s) => s.selectAnnotation);
+  const steps = useEditorStore((s) => s.steps);
+  const selectedStepIndex = useEditorStore((s) => s.selectedStepIndex);
+  const selectedHotspotId = useEditorStore((s) => s.selectedHotspotId);
+  const selectedAnnotationId = useEditorStore((s) => s.selectedAnnotationId);
+
+  const { deleteHotspot } = useHotspotActions();
+  const { deleteAnnotation } = useAnnotationActions();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Ignore shortcuts when typing in inputs
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.tagName === "SELECT" ||
-        target.isContentEditable
-      ) {
-        return;
-      }
+      if (isTypingTarget(e)) return;
 
       const mod = e.metaKey || e.ctrlKey;
 
@@ -48,6 +50,23 @@ export function useEditorShortcuts() {
       } else if (e.key === "h" || e.key === "H") {
         e.preventDefault();
         setTool("hotspot");
+      } else if (e.key === "b" || e.key === "B") {
+        e.preventDefault();
+        setTool("blur");
+      } else if (e.key === "y" || e.key === "Y") {
+        e.preventDefault();
+        setTool("highlight");
+      } else if (e.key === "Delete" || e.key === "Backspace") {
+        const selectedStep = steps[selectedStepIndex];
+        if (!selectedStep) return;
+
+        if (selectedHotspotId) {
+          e.preventDefault();
+          deleteHotspot(selectedStep.id, selectedHotspotId);
+        } else if (selectedAnnotationId) {
+          e.preventDefault();
+          deleteAnnotation(selectedStep.id, selectedAnnotationId);
+        }
       } else if (e.key === "Escape") {
         e.preventDefault();
         selectHotspot(null);
@@ -58,5 +77,17 @@ export function useEditorShortcuts() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [undo, redo, setTool, selectHotspot, selectAnnotation]);
+  }, [
+    undo,
+    redo,
+    setTool,
+    selectHotspot,
+    selectAnnotation,
+    steps,
+    selectedStepIndex,
+    selectedHotspotId,
+    selectedAnnotationId,
+    deleteHotspot,
+    deleteAnnotation,
+  ]);
 }

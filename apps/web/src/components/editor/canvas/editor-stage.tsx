@@ -7,6 +7,12 @@ import { HotspotOverlay } from "./hotspot-overlay";
 import { SelectionTransformer } from "./selection-transformer";
 import { StepContent } from "./step-content";
 
+import {
+  MIN_DRAW_SIZE,
+  PREVIEW_COLORS,
+  isDrawingTool,
+} from "@/components/editor/constants";
+import { useAnnotationActions } from "@/hooks/editor/use-annotation-actions";
 import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
@@ -22,8 +28,6 @@ interface EditorStageProps {
   onStagePositionChange: (pos: { x: number; y: number }) => void;
   onWheel: (e: Konva.KonvaEventObject<WheelEvent>) => void;
 }
-
-const MIN_HOTSPOT_SIZE = 20;
 
 export function EditorStage({
   width,
@@ -50,6 +54,7 @@ export function EditorStage({
   const updateAnnotation = useEditorStore((s) => s.updateAnnotation);
 
   const { createHotspot, saveHotspot } = useHotspotActions();
+  const { createAnnotation, saveAnnotation } = useAnnotationActions();
 
   const selectedStep = steps[selectedStepIndex];
   const selectedId = selectedHotspotId ?? selectedAnnotationId;
@@ -79,7 +84,7 @@ export function EditorStage({
 
   const handleMouseDown = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
-      if (activeTool !== "hotspot") return;
+      if (!isDrawingTool(activeTool)) return;
       if (e.target !== e.target.getStage()) return;
 
       const stage = e.target.getStage();
@@ -118,15 +123,21 @@ export function EditorStage({
     const h = Math.abs(drawCurrent.y - drawStart.y);
 
     // Enforce minimum size
-    if (w < MIN_HOTSPOT_SIZE || h < MIN_HOTSPOT_SIZE) return;
+    if (w < MIN_DRAW_SIZE || h < MIN_DRAW_SIZE) return;
 
-    createHotspot(selectedStep.id, {
+    const rect = {
       x: Math.round(x),
       y: Math.round(y),
       width: Math.round(w),
       height: Math.round(h),
-    });
-  }, [isDrawing, selectedStep, drawStart, drawCurrent, createHotspot]);
+    };
+
+    if (activeTool === "hotspot") {
+      createHotspot(selectedStep.id, rect);
+    } else if (activeTool === "blur" || activeTool === "highlight") {
+      createAnnotation(selectedStep.id, activeTool, rect);
+    }
+  }, [isDrawing, selectedStep, drawStart, drawCurrent, activeTool, createHotspot, createAnnotation]);
 
   // Drawing preview rect dimensions (in image space)
   const previewX = Math.min(drawStart.x, drawCurrent.x);
@@ -173,8 +184,9 @@ export function EditorStage({
     (annotationId: string, x: number, y: number) => {
       if (!selectedStep) return;
       updateAnnotation(selectedStep.id, annotationId, { x, y });
+      saveAnnotation(selectedStep.id, annotationId, { x, y });
     },
-    [selectedStep, updateAnnotation],
+    [selectedStep, updateAnnotation, saveAnnotation],
   );
 
   const handleAnnotationTransformEnd = useCallback(
@@ -184,8 +196,9 @@ export function EditorStage({
     ) => {
       if (!selectedStep) return;
       updateAnnotation(selectedStep.id, annotationId, attrs);
+      saveAnnotation(selectedStep.id, annotationId, attrs);
     },
-    [selectedStep, updateAnnotation],
+    [selectedStep, updateAnnotation, saveAnnotation],
   );
 
   const handleDragEnd = useCallback(
@@ -197,12 +210,8 @@ export function EditorStage({
     [onStagePositionChange],
   );
 
-  const cursor =
-    activeTool === "hotspot"
-      ? "crosshair"
-      : isDraggable
-        ? "grab"
-        : "default";
+  const isDrawTool = isDrawingTool(activeTool);
+  const cursor = isDrawTool ? "crosshair" : isDraggable ? "grab" : "default";
 
   if (!selectedStep) return null;
 
@@ -210,7 +219,7 @@ export function EditorStage({
     <Stage
       width={width}
       height={height}
-      draggable={isDraggable && activeTool !== "hotspot"}
+      draggable={isDraggable && !isDrawTool}
       x={stagePosition.x}
       y={stagePosition.y}
       onClick={handleStageClick}
@@ -256,8 +265,8 @@ export function EditorStage({
             y={previewY}
             width={previewW}
             height={previewH}
-            fill="rgba(59, 130, 246, 0.15)"
-            stroke="rgba(59, 130, 246, 0.8)"
+            fill={(PREVIEW_COLORS[activeTool] ?? PREVIEW_COLORS.hotspot)!.fill}
+            stroke={(PREVIEW_COLORS[activeTool] ?? PREVIEW_COLORS.hotspot)!.stroke}
             strokeWidth={1.5}
             dash={[6, 3]}
             listening={false}

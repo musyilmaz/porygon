@@ -2,20 +2,9 @@
 
 import { useCallback } from "react";
 
+import { apiError, fetchOpts } from "@/lib/editor/api-utils";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 import type { EditorStep } from "@/stores/editor/types";
-
-const fetchOpts: RequestInit = { credentials: "include" };
-
-async function apiError(res: Response): Promise<string> {
-  const text = await res.text().catch(() => "");
-  try {
-    const body = JSON.parse(text);
-    return body.error ?? `Request failed (${res.status})`;
-  } catch {
-    return `Request failed (${res.status})`;
-  }
-}
 
 export function useStepActions() {
   const demoId = useEditorStore((s) => s.demoId);
