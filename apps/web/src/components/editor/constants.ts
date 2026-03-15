@@ -142,3 +142,41 @@ const DRAWING_TOOLS = new Set(["hotspot", "blur", "highlight", "crop"] as const)
 export function isDrawingTool(tool: string): tool is "hotspot" | "blur" | "highlight" | "crop" {
   return DRAWING_TOOLS.has(tool as "hotspot" | "blur" | "highlight" | "crop");
 }
+
+// ---------------------------------------------------------------------------
+// Keyboard shortcuts
+// ---------------------------------------------------------------------------
+
+export interface ShortcutEntry {
+  keys: string[];
+  label: string;
+}
+
+export interface ShortcutCategory {
+  category: string;
+  shortcuts: ShortcutEntry[];
+}
+
+export const EDITOR_SHORTCUTS: ShortcutCategory[] = [
+  {
+    category: "Tools",
+    shortcuts: [
+      { keys: ["V"], label: "Select tool" },
+      { keys: ["H"], label: "Hotspot tool" },
+      { keys: ["B"], label: "Blur tool" },
+      { keys: ["Y"], label: "Highlight tool" },
+      { keys: ["C"], label: "Crop tool" },
+    ],
+  },
+  {
+    category: "Actions",
+    shortcuts: [
+      { keys: ["mod", "Z"], label: "Undo" },
+      { keys: ["mod", "Shift", "Z"], label: "Redo" },
+      { keys: ["mod", "P"], label: "Preview" },
+      { keys: ["Delete"], label: "Delete selected" },
+      { keys: ["Escape"], label: "Deselect / reset tool" },
+      { keys: ["?"], label: "Keyboard shortcuts" },
+    ],
+  },
+];

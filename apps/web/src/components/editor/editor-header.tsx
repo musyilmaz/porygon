@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@porygon/ui/components/tooltip";
-import { ArrowLeft, Play, Redo2, Undo2 } from "lucide-react";
+import { ArrowLeft, Keyboard, Play, Redo2, Undo2 } from "lucide-react";
 import Link from "next/link";
 
 import { SaveIndicator } from "./save-indicator";
@@ -20,6 +20,7 @@ export function EditorHeader() {
   const title = useEditorStore((s) => s.demo.title);
   const steps = useEditorStore((s) => s.steps);
   const setPreviewOpen = useEditorStore((s) => s.setPreviewOpen);
+  const setShortcutsHelpOpen = useEditorStore((s) => s.setShortcutsHelpOpen);
   const undo = useEditorTemporalStore((s) => s.undo);
   const redo = useEditorTemporalStore((s) => s.redo);
   const pastStates = useEditorTemporalStore((s) => s.pastStates);
@@ -42,6 +43,19 @@ export function EditorHeader() {
       <SaveIndicator />
 
       <div className="flex-1" />
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setShortcutsHelpOpen(true)}
+          >
+            <Keyboard className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Keyboard shortcuts (?)</TooltipContent>
+      </Tooltip>
 
       <Tooltip>
         <TooltipTrigger asChild>

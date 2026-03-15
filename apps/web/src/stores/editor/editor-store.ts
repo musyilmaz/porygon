@@ -19,6 +19,7 @@ export function createEditorStore(initialData: EditorInitialData) {
         leftSidebarOpen: true,
         rightSidebarOpen: true,
         isPreviewOpen: false,
+        isShortcutsHelpOpen: false,
         isDirty: false,
         isSaving: false,
         lastSavedAt: null,
@@ -189,6 +190,7 @@ export function createEditorStore(initialData: EditorInitialData) {
         // Tools & UI
         setTool: (tool) => set({ activeTool: tool }),
         setPreviewOpen: (open) => set({ isPreviewOpen: open }),
+        setShortcutsHelpOpen: (open) => set({ isShortcutsHelpOpen: open }),
         toggleLeftSidebar: () =>
           set((state) => ({ leftSidebarOpen: !state.leftSidebarOpen })),
         toggleRightSidebar: () =>

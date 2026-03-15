@@ -5,6 +5,7 @@ import { TooltipProvider } from "@porygon/ui/components/tooltip";
 import { EditorHeader } from "./editor-header";
 import { EditorLayout } from "./editor-layout";
 import { PreviewModal } from "./preview-modal";
+import { ShortcutsDialog } from "./shortcuts-dialog";
 
 import { EditorStoreProvider } from "@/stores/editor/editor-store-provider";
 import type { EditorInitialData } from "@/stores/editor/types";
@@ -20,6 +21,7 @@ function EditorInner() {
       <EditorHeader />
       <EditorLayout />
       <PreviewModal />
+      <ShortcutsDialog />
     </div>
   );
 }

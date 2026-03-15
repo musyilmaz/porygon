@@ -15,6 +15,8 @@ export function useEditorShortcuts() {
   const setPreviewOpen = useEditorStore((s) => s.setPreviewOpen);
   const selectHotspot = useEditorStore((s) => s.selectHotspot);
   const selectAnnotation = useEditorStore((s) => s.selectAnnotation);
+  const isShortcutsHelpOpen = useEditorStore((s) => s.isShortcutsHelpOpen);
+  const setShortcutsHelpOpen = useEditorStore((s) => s.setShortcutsHelpOpen);
   const steps = useEditorStore((s) => s.steps);
   const selectedStepIndex = useEditorStore((s) => s.selectedStepIndex);
   const selectedHotspotId = useEditorStore((s) => s.selectedHotspotId);
@@ -79,6 +81,9 @@ export function useEditorShortcuts() {
         selectHotspot(null);
         selectAnnotation(null);
         setTool("select");
+      } else if (e.key === "?") {
+        e.preventDefault();
+        setShortcutsHelpOpen(!isShortcutsHelpOpen);
       }
     }
 
@@ -97,5 +102,7 @@ export function useEditorShortcuts() {
     selectedAnnotationId,
     deleteHotspot,
     deleteAnnotation,
+    isShortcutsHelpOpen,
+    setShortcutsHelpOpen,
   ]);
 }
