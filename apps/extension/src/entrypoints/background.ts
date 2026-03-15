@@ -1,3 +1,4 @@
+import { getSessionCookie } from "@/lib/api-client";
 import { recordingSession } from "@/lib/recording-state";
 import { addStep, clearSteps, getStepCount, getSteps } from "@/lib/recording-store";
 import {
@@ -96,11 +97,15 @@ async function handleResume(
 }
 
 async function handleGetState(): Promise<StateResponse> {
-  const session = await recordingSession.getValue();
+  const [session, cookie] = await Promise.all([
+    recordingSession.getValue(),
+    getSessionCookie(),
+  ]);
   return {
     status: session?.status ?? "idle",
     stepCount: getStepCount(),
     tabUrl: session?.tabUrl ?? null,
+    isAuthenticated: cookie !== null,
   };
 }
 
@@ -117,8 +122,9 @@ function handleGetSteps(): GetStepsResponse {
 async function handleNewRecording(): Promise<StateResponse> {
   clearSteps();
   resetUploadProgress();
+  const cookie = await getSessionCookie();
   await recordingSession.setValue(null);
-  return { status: "idle", stepCount: 0, tabUrl: null };
+  return { status: "idle", stepCount: 0, tabUrl: null, isAuthenticated: cookie !== null };
 }
 
 async function handleActionCaptured(
@@ -245,7 +251,7 @@ export default defineBackground(() => {
           try {
             const demoId = await sendToApp(steps, tabUrl);
             await browser.tabs.create({
-              url: `${APP_URL}/dashboard/demos/${demoId}/edit`,
+              url: `${APP_URL}/editor/${demoId}?new=true`,
             });
             clearSteps();
             await recordingSession.setValue(null);

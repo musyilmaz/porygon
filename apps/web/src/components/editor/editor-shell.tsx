@@ -1,6 +1,9 @@
 "use client";
 
+import { toast } from "@porygon/ui/components/sonner";
 import { TooltipProvider } from "@porygon/ui/components/tooltip";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 import { EditorHeader } from "./editor-header";
 import { EditorLayout } from "./editor-layout";
@@ -15,6 +18,15 @@ import { useEditorShortcuts } from "@/stores/editor/use-editor-shortcuts";
 function EditorInner() {
   useAutoSave();
   useEditorShortcuts();
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("new") === "true") {
+      toast.success("Demo created — start adding hotspots and annotations");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [searchParams]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">

@@ -34,6 +34,7 @@ export function App() {
   const [steps, setSteps] = useState<StepThumbnail[]>([]);
   const [tabUrl, setTabUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -58,6 +59,7 @@ export function App() {
       setStatus(response.status);
       setStepCount(response.stepCount);
       setTabUrl(response.tabUrl);
+      setIsAuthenticated(response.isAuthenticated);
     } catch {
       setError("Failed to get state");
     }
@@ -224,7 +226,8 @@ export function App() {
 
       {/* Content */}
       <div className="flex min-h-0 flex-1 flex-col">
-        {status === "idle" && <IdleView onStart={handleStart} isLoading={isLoading} />}
+        {status === "idle" && !isAuthenticated && <NotLoggedInView />}
+        {status === "idle" && isAuthenticated && <IdleView onStart={handleStart} isLoading={isLoading} />}
 
         {(status === "recording" || status === "paused") && (
           <ActiveView
@@ -302,6 +305,26 @@ function StatusBadge({ status }: { status: RecordingStatus }) {
       <CheckCircle className="size-2.5" />
       Done
     </Badge>
+  );
+}
+
+function NotLoggedInView() {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
+      <div className="text-center">
+        <h2 className="text-lg font-semibold">Log in to Porygon</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Sign in to your account to start recording demos.
+        </p>
+      </div>
+      <Button
+        onClick={() => window.open(`${APP_URL}/login?callbackUrl=/extension/auth-success`, "_blank")}
+        className="w-full"
+      >
+        <LogIn className="size-4" />
+        Log in
+      </Button>
+    </div>
   );
 }
 

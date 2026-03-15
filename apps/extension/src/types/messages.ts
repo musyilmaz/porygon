@@ -95,6 +95,7 @@ export interface StateResponse {
   status: RecordingStatus;
   stepCount: number;
   tabUrl: string | null;
+  isAuthenticated: boolean;
 }
 
 export interface StepThumbnail {
