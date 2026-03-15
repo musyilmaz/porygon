@@ -118,7 +118,7 @@ export function TimelineSidebar() {
           <span className="text-xs font-medium uppercase tracking-wide">
             Steps
           </span>
-          <span className="text-muted-foreground ml-auto text-xs">
+          <span className="text-muted-foreground ml-1.5 text-xs">
             {steps.length}
           </span>
         </div>

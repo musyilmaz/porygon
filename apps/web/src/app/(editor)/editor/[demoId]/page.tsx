@@ -20,17 +20,21 @@ export default async function EditorPage({
 
   const userId = session.user.id;
 
-  let demo;
-  try {
-    demo = await getDemoService().getById(demoId, userId);
-  } catch {
-    notFound();
-  }
-
-  const steps = await getStepService().list(demoId, userId);
+  const demoService = getDemoService();
+  const stepService = getStepService();
   const hotspotService = getHotspotService();
   const annotationService = getAnnotationService();
 
+  // Fetch demo and steps in parallel
+  const [demoResult, steps] = await Promise.all([
+    demoService.getById(demoId, userId).catch(() => null),
+    stepService.list(demoId, userId),
+  ]);
+
+  if (!demoResult) notFound();
+  const demo = demoResult;
+
+  // Fetch all hotspots and annotations in parallel
   const editorSteps: EditorStep[] = await Promise.all(
     steps.map(async (step) => {
       const [hotspots, annotations] = await Promise.all([

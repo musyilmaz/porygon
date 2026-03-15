@@ -27,21 +27,28 @@ export function HotspotOverlay({
 
   return (
     <>
-      {hotspots.map((hotspot) => (
-        <Rect
-          key={hotspot.id}
-          id={hotspot.id}
-          x={hotspot.x}
-          y={hotspot.y}
-          width={hotspot.width}
-          height={hotspot.height}
-          fill="rgba(59, 130, 246, 0.3)"
-          stroke={
-            selectedHotspotId === hotspot.id
-              ? "rgba(59, 130, 246, 0.9)"
-              : "rgba(59, 130, 246, 0.6)"
-          }
-          strokeWidth={selectedHotspotId === hotspot.id ? 2 : 1}
+      {hotspots.map((hotspot) => {
+        const isBranching = hotspot.targetStepId != null;
+        const baseColor = isBranching
+          ? "34, 197, 94"   // green
+          : "59, 130, 246"; // blue
+        const isSelected = selectedHotspotId === hotspot.id;
+
+        return (
+          <Rect
+            key={hotspot.id}
+            id={hotspot.id}
+            x={hotspot.x}
+            y={hotspot.y}
+            width={hotspot.width}
+            height={hotspot.height}
+            fill={`rgba(${baseColor}, 0.3)`}
+            stroke={
+              isSelected
+                ? `rgba(${baseColor}, 0.9)`
+                : `rgba(${baseColor}, 0.6)`
+            }
+            strokeWidth={isSelected ? 2 : 1}
           draggable={isSelectMode}
           onClick={() => {
             if (isSelectMode) onSelect(hotspot.id);
@@ -66,7 +73,8 @@ export function HotspotOverlay({
             });
           }}
         />
-      ))}
+        );
+      })}
     </>
   );
 }

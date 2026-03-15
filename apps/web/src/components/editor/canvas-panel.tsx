@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useImage from "use-image";
 
+import { CanvasToolbar } from "./canvas/canvas-toolbar";
 import { ZoomControls } from "./canvas/zoom-controls";
 
 import { useContainerSize } from "@/hooks/editor/use-container-size";
@@ -193,6 +194,7 @@ export function CanvasPanel() {
           onWheel={handleWheel}
         />
       )}
+      <CanvasToolbar />
       <ZoomControls
         zoomLevel={zoomLevel}
         onZoomIn={handleZoomIn}

@@ -1,5 +1,7 @@
 "use client";
 
+import { TooltipProvider } from "@porygon/ui/components/tooltip";
+
 import { EditorHeader } from "./editor-header";
 import { EditorLayout } from "./editor-layout";
 
@@ -27,7 +29,9 @@ export function EditorShell({
 }) {
   return (
     <EditorStoreProvider initialData={initialData}>
-      <EditorInner />
+      <TooltipProvider>
+        <EditorInner />
+      </TooltipProvider>
     </EditorStoreProvider>
   );
 }

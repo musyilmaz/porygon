@@ -1,12 +1,13 @@
 import type Konva from "konva";
-import { useCallback, useRef } from "react";
-import { Layer, Stage } from "react-konva";
+import { useCallback, useRef, useState } from "react";
+import { Layer, Rect, Stage } from "react-konva";
 
 import { AnnotationOverlay } from "./annotation-overlay";
 import { HotspotOverlay } from "./hotspot-overlay";
 import { SelectionTransformer } from "./selection-transformer";
 import { StepContent } from "./step-content";
 
+import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
 interface EditorStageProps {
@@ -21,6 +22,8 @@ interface EditorStageProps {
   onStagePositionChange: (pos: { x: number; y: number }) => void;
   onWheel: (e: Konva.KonvaEventObject<WheelEvent>) => void;
 }
+
+const MIN_HOTSPOT_SIZE = 20;
 
 export function EditorStage({
   width,
@@ -46,18 +49,90 @@ export function EditorStage({
   const updateHotspot = useEditorStore((s) => s.updateHotspot);
   const updateAnnotation = useEditorStore((s) => s.updateAnnotation);
 
+  const { createHotspot, saveHotspot } = useHotspotActions();
+
   const selectedStep = steps[selectedStepIndex];
   const selectedId = selectedHotspotId ?? selectedAnnotationId;
 
+  // Drawing state for hotspot creation
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawStart, setDrawStart] = useState({ x: 0, y: 0 });
+  const [drawCurrent, setDrawCurrent] = useState({ x: 0, y: 0 });
+
+  const pointerToImageCoords = useCallback(
+    (pointerX: number, pointerY: number) => ({
+      x: (pointerX - stagePosition.x - layerX) / effectiveScale,
+      y: (pointerY - stagePosition.y - layerY) / effectiveScale,
+    }),
+    [stagePosition, layerX, layerY, effectiveScale],
+  );
+
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
-      if (e.target === e.target.getStage()) {
+      if (e.target === e.target.getStage() && activeTool === "select") {
         selectHotspot(null);
         selectAnnotation(null);
       }
     },
-    [selectHotspot, selectAnnotation],
+    [selectHotspot, selectAnnotation, activeTool],
   );
+
+  const handleMouseDown = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (activeTool !== "hotspot") return;
+      if (e.target !== e.target.getStage()) return;
+
+      const stage = e.target.getStage();
+      const pointer = stage?.getPointerPosition();
+      if (!pointer) return;
+
+      const imageCoords = pointerToImageCoords(pointer.x, pointer.y);
+      setDrawStart(imageCoords);
+      setDrawCurrent(imageCoords);
+      setIsDrawing(true);
+    },
+    [activeTool, pointerToImageCoords],
+  );
+
+  const handleMouseMove = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (!isDrawing) return;
+
+      const stage = e.target.getStage();
+      const pointer = stage?.getPointerPosition();
+      if (!pointer) return;
+
+      setDrawCurrent(pointerToImageCoords(pointer.x, pointer.y));
+    },
+    [isDrawing, pointerToImageCoords],
+  );
+
+  const handleMouseUp = useCallback(() => {
+    if (!isDrawing || !selectedStep) return;
+    setIsDrawing(false);
+
+    // Normalize rect (handle negative drag direction)
+    const x = Math.min(drawStart.x, drawCurrent.x);
+    const y = Math.min(drawStart.y, drawCurrent.y);
+    const w = Math.abs(drawCurrent.x - drawStart.x);
+    const h = Math.abs(drawCurrent.y - drawStart.y);
+
+    // Enforce minimum size
+    if (w < MIN_HOTSPOT_SIZE || h < MIN_HOTSPOT_SIZE) return;
+
+    createHotspot(selectedStep.id, {
+      x: Math.round(x),
+      y: Math.round(y),
+      width: Math.round(w),
+      height: Math.round(h),
+    });
+  }, [isDrawing, selectedStep, drawStart, drawCurrent, createHotspot]);
+
+  // Drawing preview rect dimensions (in image space)
+  const previewX = Math.min(drawStart.x, drawCurrent.x);
+  const previewY = Math.min(drawStart.y, drawCurrent.y);
+  const previewW = Math.abs(drawCurrent.x - drawStart.x);
+  const previewH = Math.abs(drawCurrent.y - drawStart.y);
 
   const handleHotspotSelect = useCallback(
     (hotspotId: string) => {
@@ -70,8 +145,9 @@ export function EditorStage({
     (hotspotId: string, x: number, y: number) => {
       if (!selectedStep) return;
       updateHotspot(selectedStep.id, hotspotId, { x, y });
+      saveHotspot(selectedStep.id, hotspotId, { x, y });
     },
-    [selectedStep, updateHotspot],
+    [selectedStep, updateHotspot, saveHotspot],
   );
 
   const handleHotspotTransformEnd = useCallback(
@@ -81,8 +157,9 @@ export function EditorStage({
     ) => {
       if (!selectedStep) return;
       updateHotspot(selectedStep.id, hotspotId, attrs);
+      saveHotspot(selectedStep.id, hotspotId, attrs);
     },
-    [selectedStep, updateHotspot],
+    [selectedStep, updateHotspot, saveHotspot],
   );
 
   const handleAnnotationSelect = useCallback(
@@ -120,20 +197,30 @@ export function EditorStage({
     [onStagePositionChange],
   );
 
+  const cursor =
+    activeTool === "hotspot"
+      ? "crosshair"
+      : isDraggable
+        ? "grab"
+        : "default";
+
   if (!selectedStep) return null;
 
   return (
     <Stage
       width={width}
       height={height}
-      draggable={isDraggable}
+      draggable={isDraggable && activeTool !== "hotspot"}
       x={stagePosition.x}
       y={stagePosition.y}
       onClick={handleStageClick}
       onTap={handleStageClick}
       onWheel={onWheel}
       onDragEnd={handleDragEnd}
-      style={{ cursor: isDraggable ? "grab" : "default" }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      style={{ cursor }}
     >
       <Layer
         ref={layerRef}
@@ -163,6 +250,19 @@ export function EditorStage({
           selectedId={selectedId}
           layerRef={layerRef}
         />
+        {isDrawing && (
+          <Rect
+            x={previewX}
+            y={previewY}
+            width={previewW}
+            height={previewH}
+            fill="rgba(59, 130, 246, 0.15)"
+            stroke="rgba(59, 130, 246, 0.8)"
+            strokeWidth={1.5}
+            dash={[6, 3]}
+            listening={false}
+          />
+        )}
       </Layer>
     </Stage>
   );
