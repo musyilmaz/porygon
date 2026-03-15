@@ -78,7 +78,7 @@ interface Step {
 
 interface UploadUrlResponse {
   uploadUrl: string;
-  fileUrl: string;
+  publicUrl: string;
 }
 
 export function getWorkspaces(): Promise<Workspace[]> {

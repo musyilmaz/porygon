@@ -105,7 +105,7 @@ export async function sendToApp(
       });
 
       // Get presigned upload URL
-      const { uploadUrl, fileUrl } = await getUploadUrl({
+      const { uploadUrl, publicUrl } = await getUploadUrl({
         workspaceId: workspace.id,
         demoId: demo.id,
         stepId: step.id,
@@ -119,7 +119,7 @@ export async function sendToApp(
       await uploadBlob(uploadUrl, blob);
 
       // Patch step with public URL
-      await updateStep(demo.id, step.id, { screenshotUrl: fileUrl });
+      await updateStep(demo.id, step.id, { screenshotUrl: publicUrl });
 
       setProgress({ completedSteps: i + 1 });
     }

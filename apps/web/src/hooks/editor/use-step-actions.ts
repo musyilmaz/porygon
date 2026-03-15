@@ -100,42 +100,40 @@ export function useStepActions() {
 
   const deleteStep = useCallback(
     async (stepId: string) => {
+      const stepIndex = steps.findIndex((s) => s.id === stepId);
+      if (stepIndex === -1) return;
+      const savedStep = steps[stepIndex]!;
+
+      // Optimistic: remove immediately
+      removeStep(stepId);
+
       const res = await fetch(`/api/demos/${demoId}/steps/${stepId}`, {
         ...fetchOpts,
         method: "DELETE",
       });
       if (!res.ok && res.status !== 404) {
+        // Rollback on failure
+        insertStep(savedStep, stepIndex);
         setSaveError(await apiError(res));
-        return;
       }
-      // Remove from store on success or 404 (already gone)
-      removeStep(stepId);
     },
-    [demoId, removeStep, setSaveError],
+    [demoId, steps, removeStep, insertStep, setSaveError],
   );
 
   const duplicateStep = useCallback(
     async (stepId: string) => {
       const sourceIndex = steps.findIndex((s) => s.id === stepId);
       if (sourceIndex === -1) return;
-      const source = steps[sourceIndex]!;
 
-      // Only include non-null values (schema rejects null)
-      const body: Record<string, unknown> = {};
-      if (source.screenshotUrl) body.screenshotUrl = source.screenshotUrl;
-      if (source.actionType) body.actionType = source.actionType;
-
-      const createRes = await fetch(`/api/demos/${demoId}/steps`, {
-        ...fetchOpts,
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!createRes.ok) {
-        setSaveError(await apiError(createRes));
+      const res = await fetch(
+        `/api/demos/${demoId}/steps/${stepId}/duplicate`,
+        { ...fetchOpts, method: "POST" },
+      );
+      if (!res.ok) {
+        setSaveError(await apiError(res));
         return;
       }
-      const created = await createRes.json();
+      const created = await res.json();
 
       const insertAt = sourceIndex + 1;
       const newStep: EditorStep = {
@@ -145,8 +143,30 @@ export function useStepActions() {
         screenshotUrl: created.screenshotUrl,
         actionType: created.actionType,
         actionCoordinates: created.actionCoordinates,
-        hotspots: [],
-        annotations: [],
+        hotspots: (created.hotspots ?? []).map((h: Record<string, unknown>) => ({
+          id: h.id,
+          stepId: h.stepId,
+          x: h.x,
+          y: h.y,
+          width: h.width,
+          height: h.height,
+          targetStepId: h.targetStepId,
+          tooltipContent: h.tooltipContent,
+          tooltipPosition: h.tooltipPosition,
+          style: h.style,
+        })),
+        annotations: (created.annotations ?? []).map(
+          (a: Record<string, unknown>) => ({
+            id: a.id,
+            stepId: a.stepId,
+            type: a.type,
+            x: a.x,
+            y: a.y,
+            width: a.width,
+            height: a.height,
+            settings: a.settings,
+          }),
+        ),
       };
 
       insertStep(newStep, insertAt);

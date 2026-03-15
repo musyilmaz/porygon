@@ -164,6 +164,25 @@ async function handleActionCaptured(
 export default defineBackground(() => {
   console.log("[Porygon] Background service worker started");
 
+  // Re-attach event listeners after the recording tab navigates
+  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status !== "complete") return;
+
+    recordingSession.getValue().then(async (session) => {
+      if (!session || session.tabId !== tabId || session.status !== "recording") {
+        return;
+      }
+
+      try {
+        await ensureContentScript(tabId);
+        await browser.tabs.sendMessage(tabId, { type: "RECORDING_STARTED" });
+        console.log("[Porygon] Re-attached listeners after navigation on tab", tabId);
+      } catch (error) {
+        console.error("[Porygon] Failed to re-attach after navigation:", error);
+      }
+    });
+  });
+
   browser.runtime.onMessage.addListener(
     (message: ExtensionMessage, sender, sendResponse) => {
       if (message.type === "START_RECORDING") {

@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
+  GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -52,6 +53,17 @@ export function createStorageService({
 
     generateDownloadUrl(key: string): string {
       return `${base}/${key}`;
+    },
+
+    async getFile(key: string) {
+      const response = await client.send(
+        new GetObjectCommand({ Bucket: bucketName, Key: key }),
+      );
+      const bytes = await response.Body!.transformToByteArray();
+      return {
+        bytes,
+        contentType: response.ContentType ?? "application/octet-stream",
+      };
     },
 
     async deleteFile(key: string): Promise<void> {

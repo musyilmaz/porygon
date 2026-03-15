@@ -1,5 +1,7 @@
 import {
+  createAnnotationRepository,
   createDemoRepository,
+  createHotspotRepository,
   createStepRepository,
   createWorkspaceRepository,
   getDb,
@@ -11,5 +13,13 @@ export function getStepService() {
   const stepRepo = createStepRepository(db);
   const demoRepo = createDemoRepository(db);
   const workspaceRepo = createWorkspaceRepository(db);
-  return createStepService({ stepRepo, demoRepo, workspaceRepo });
+  const hotspotRepo = createHotspotRepository(db);
+  const annotationRepo = createAnnotationRepository(db);
+  return createStepService({
+    stepRepo,
+    demoRepo,
+    workspaceRepo,
+    hotspotRepo,
+    annotationRepo,
+  });
 }

@@ -33,7 +33,7 @@ export function CanvasPanel() {
   const { ref: containerRef, size: containerSize } =
     useContainerSize<HTMLDivElement>();
 
-  const [image] = useImage(selectedStep?.screenshotUrl ?? "", "anonymous");
+  const [image] = useImage(selectedStep?.screenshotUrl ?? "");
 
   const [zoomLevel, setZoomLevel] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });

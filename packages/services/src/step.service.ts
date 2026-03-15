@@ -1,4 +1,6 @@
+import type { createAnnotationRepository } from "@porygon/db";
 import type { createDemoRepository } from "@porygon/db";
+import type { createHotspotRepository } from "@porygon/db";
 import type { createStepRepository } from "@porygon/db";
 import type { createWorkspaceRepository } from "@porygon/db";
 import {
@@ -13,11 +15,15 @@ import type { Coordinates, Nullable } from "@porygon/shared";
 type StepRepo = ReturnType<typeof createStepRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;
 type WorkspaceRepo = ReturnType<typeof createWorkspaceRepository>;
+type HotspotRepo = ReturnType<typeof createHotspotRepository>;
+type AnnotationRepo = ReturnType<typeof createAnnotationRepository>;
 
 interface StepServiceDeps {
   stepRepo: StepRepo;
   demoRepo: DemoRepo;
   workspaceRepo: WorkspaceRepo;
+  hotspotRepo: HotspotRepo;
+  annotationRepo: AnnotationRepo;
 }
 
 export interface CreateStepInput {
@@ -37,6 +43,8 @@ export function createStepService({
   stepRepo,
   demoRepo,
   workspaceRepo,
+  hotspotRepo,
+  annotationRepo,
 }: StepServiceDeps) {
   async function assertWorkspaceMember(workspaceId: string, userId: string) {
     const role = await workspaceRepo.getMemberRole(workspaceId, userId);
@@ -169,6 +177,64 @@ export function createStepService({
       await stepRepo.reorder(
         orderedIds.map((id, i) => ({ id, orderIndex: i })),
       );
+    },
+
+    async duplicate(stepId: string, userId: string) {
+      const source = await getStepOrThrow(stepId);
+      const demo = await assertDemoAccess(source.demoId, userId);
+      await checkStepLimit(demo.id, demo.workspaceId);
+
+      const orderIndex = await stepRepo.countByDemo(demo.id);
+
+      const newStep = await stepRepo.create({
+        demoId: demo.id,
+        orderIndex,
+        ...(source.screenshotUrl !== null && {
+          screenshotUrl: source.screenshotUrl,
+        }),
+        ...(source.actionType !== null && {
+          actionType: source.actionType,
+        }),
+        ...(source.actionCoordinates !== null && {
+          actionCoordinates: source.actionCoordinates,
+        }),
+      });
+
+      const hotspots = await Promise.all(
+        source.hotspots.map((h) =>
+          hotspotRepo.create({
+            stepId: newStep.id,
+            x: h.x,
+            y: h.y,
+            width: h.width,
+            height: h.height,
+            ...(h.targetStepId !== null && { targetStepId: h.targetStepId }),
+            ...(h.tooltipContent !== null && {
+              tooltipContent: h.tooltipContent,
+            }),
+            ...(h.tooltipPosition !== null && {
+              tooltipPosition: h.tooltipPosition,
+            }),
+            ...(h.style !== null && { style: h.style }),
+          }),
+        ),
+      );
+
+      const annotations = await Promise.all(
+        source.annotations.map((a) =>
+          annotationRepo.create({
+            stepId: newStep.id,
+            type: a.type,
+            x: a.x,
+            y: a.y,
+            width: a.width,
+            height: a.height,
+            ...(a.settings !== null && { settings: a.settings }),
+          }),
+        ),
+      );
+
+      return { ...newStep, hotspots, annotations };
     },
   };
 }

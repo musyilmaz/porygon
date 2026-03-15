@@ -31,7 +31,7 @@ function PlayerContainer({ config }: { config: PlayerConfig }) {
     };
   }, [config]);
 
-  return <div ref={containerRef} className="size-full" />;
+  return <div ref={containerRef} className="min-h-0 w-full flex-1" />;
 }
 
 export function PreviewModal() {
@@ -49,7 +49,7 @@ export function PreviewModal() {
   return (
     <Dialog open={isPreviewOpen} onOpenChange={setPreviewOpen}>
       <DialogContent
-        className="max-h-[90vh] max-w-[90vw] gap-0 overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[90vw]"
+        className="flex h-[90vh] max-w-[90vw] flex-col gap-0 overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[90vw]"
         showCloseButton
       >
         <DialogTitle className="sr-only">Demo Preview</DialogTitle>
