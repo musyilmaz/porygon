@@ -186,7 +186,7 @@ function HotspotProperties() {
         <span className="text-muted-foreground text-xs font-medium">Style</span>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="hotspot-color" className="text-xs min-w-[50px]">
+          <label htmlFor="hotspot-color" className="text-xs min-w-12.5">
             Color
           </label>
           <input
@@ -202,7 +202,7 @@ function HotspotProperties() {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="hotspot-opacity" className="text-xs min-w-[50px]">
+          <label htmlFor="hotspot-opacity" className="text-xs min-w-12.5">
             Opacity
           </label>
           <input
@@ -420,7 +420,7 @@ function AnnotationProperties() {
           <div className="flex items-center gap-2">
             <label
               htmlFor="blur-intensity"
-              className="min-w-[50px] text-xs"
+              className="min-w-12.5 text-xs"
             >
               Intensity
             </label>
@@ -454,7 +454,7 @@ function AnnotationProperties() {
           <div className="flex items-center gap-2">
             <label
               htmlFor="highlight-color"
-              className="min-w-[50px] text-xs"
+              className="min-w-12.5 text-xs"
             >
               Color
             </label>
@@ -476,7 +476,7 @@ function AnnotationProperties() {
           <div className="flex items-center gap-2">
             <label
               htmlFor="highlight-opacity"
-              className="min-w-[50px] text-xs"
+              className="min-w-12.5 text-xs"
             >
               Opacity
             </label>

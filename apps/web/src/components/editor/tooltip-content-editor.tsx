@@ -74,7 +74,7 @@ export function TooltipContentEditor({
           size="icon-xs"
           onClick={() => editor.chain().focus().toggleBold().run()}
           data-active={editor.isActive("bold") || undefined}
-          className="data-[active]:bg-accent"
+          className="data-active:bg-accent"
           title="Bold"
           type="button"
         >
@@ -85,7 +85,7 @@ export function TooltipContentEditor({
           size="icon-xs"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           data-active={editor.isActive("italic") || undefined}
-          className="data-[active]:bg-accent"
+          className="data-active:bg-accent"
           title="Italic"
           type="button"
         >
@@ -96,7 +96,7 @@ export function TooltipContentEditor({
           size="icon-xs"
           onClick={toggleLink}
           data-active={editor.isActive("link") || undefined}
-          className="data-[active]:bg-accent"
+          className="data-active:bg-accent"
           title="Link"
           type="button"
         >
@@ -107,7 +107,7 @@ export function TooltipContentEditor({
           size="icon-xs"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           data-active={editor.isActive("bulletList") || undefined}
-          className="data-[active]:bg-accent"
+          className="data-active:bg-accent"
           title="Bullet list"
           type="button"
         >
@@ -118,7 +118,7 @@ export function TooltipContentEditor({
           size="icon-xs"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           data-active={editor.isActive("orderedList") || undefined}
-          className="data-[active]:bg-accent"
+          className="data-active:bg-accent"
           title="Ordered list"
           type="button"
         >

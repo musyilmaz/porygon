@@ -35,10 +35,10 @@ export function EditorLayout() {
       <div
         className={cn(
           "border-border shrink-0 border-r transition-all duration-200",
-          leftSidebarOpen ? "w-[260px]" : "w-0 overflow-hidden border-r-0",
+          leftSidebarOpen ? "w-65" : "w-0 overflow-hidden border-r-0",
         )}
       >
-        <div className="relative flex h-full w-[260px] flex-col">
+        <div className="relative flex h-full w-65 flex-col">
           <Button
             variant="ghost"
             size="icon-xs"
@@ -61,10 +61,10 @@ export function EditorLayout() {
       <div
         className={cn(
           "border-border shrink-0 border-l transition-all duration-200",
-          rightSidebarOpen ? "w-[300px]" : "w-0 overflow-hidden border-l-0",
+          rightSidebarOpen ? "w-75" : "w-0 overflow-hidden border-l-0",
         )}
       >
-        <div className="relative flex h-full w-[300px] flex-col">
+        <div className="relative flex h-full w-75 flex-col">
           <Button
             variant="ghost"
             size="icon-xs"
