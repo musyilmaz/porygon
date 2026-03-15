@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-
 import { getSession } from "@/lib/get-session";
 import { getWorkspaceService } from "@/lib/services/workspace.service";
 

@@ -12,6 +12,7 @@ import { CircleHelp, Trash2 } from "lucide-react";
 
 import {
   parseBlurSettings,
+  parseCropSettings,
   parseHighlightSettings,
   parseHotspotStyle,
 } from "./constants";
@@ -292,6 +293,9 @@ function AnnotationProperties() {
 
   const isBlur = annotation.type === "blur";
   const isHighlight = annotation.type === "highlight";
+  const isCrop = annotation.type === "crop";
+
+  const headerLabel = isCrop ? "Crop" : isBlur ? "Blur" : "Highlight";
 
   return (
     <div className="flex flex-col gap-4">
@@ -299,7 +303,7 @@ function AnnotationProperties() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide">
-            {annotation.type === "blur" ? "Blur" : "Highlight"}
+            {headerLabel}
           </span>
           <Popover>
             <PopoverTrigger asChild>
@@ -312,7 +316,12 @@ function AnnotationProperties() {
               </Button>
             </PopoverTrigger>
             <PopoverContent side="left" className="w-64 text-sm">
-              {annotation.type === "blur" ? (
+              {isCrop ? (
+                <p>
+                  Crop defines the visible area of the screenshot. The player
+                  zooms into this region, hiding everything outside.
+                </p>
+              ) : isBlur ? (
                 <p>
                   Blur hides sensitive information in your screenshots — like
                   customer names, emails, or financial data — so demos can be
@@ -381,6 +390,26 @@ function AnnotationProperties() {
       </div>
 
       <div className="border-border border-t" />
+
+      {/* Crop Settings */}
+      {isCrop && (
+        <div className="flex flex-col gap-3">
+          <span className="text-muted-foreground text-xs font-medium">
+            Crop Settings
+          </span>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={parseCropSettings(annotation.settings).lockAspectRatio}
+              onChange={(e) =>
+                handleSettingsChange({ lockAspectRatio: e.target.checked })
+              }
+              className="accent-primary size-3.5 rounded"
+            />
+            <span className="text-xs">Lock aspect ratio</span>
+          </label>
+        </div>
+      )}
 
       {/* Blur Settings */}
       {isBlur && (

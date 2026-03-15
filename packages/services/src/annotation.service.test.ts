@@ -140,6 +140,47 @@ describe("AnnotationService", () => {
       ).rejects.toThrow(ForbiddenError);
     });
 
+    it("replaces existing crop when creating a new crop on the same step", async () => {
+      const existingCrop = mockAnnotation({ id: "crop_1", type: "crop" });
+      const newCrop = mockAnnotation({ id: "crop_2", type: "crop", x: 50, y: 50 });
+      repos.stepRepo.getById.mockResolvedValue(mockStep());
+      repos.demoRepo.getById.mockResolvedValue(mockDemo());
+      repos.workspaceRepo.getMemberRole.mockResolvedValue("admin");
+      repos.annotationRepo.listByStep.mockResolvedValue([existingCrop]);
+      repos.annotationRepo.delete.mockResolvedValue(true);
+      repos.annotationRepo.create.mockResolvedValue(newCrop);
+
+      const result = await service.create(
+        { stepId: "step_1", type: "crop", x: 50, y: 50, width: 200, height: 150 },
+        USER_ID,
+      );
+
+      expect(result).toEqual(newCrop);
+      expect(repos.annotationRepo.delete).toHaveBeenCalledWith("crop_1");
+      expect(repos.annotationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "crop" }),
+      );
+    });
+
+    it("allows multiple blur/highlight annotations on the same step", async () => {
+      const newHighlight = mockAnnotation({ id: "highlight_1", type: "highlight" });
+      repos.stepRepo.getById.mockResolvedValue(mockStep());
+      repos.demoRepo.getById.mockResolvedValue(mockDemo());
+      repos.workspaceRepo.getMemberRole.mockResolvedValue("admin");
+      repos.annotationRepo.create.mockResolvedValue(newHighlight);
+
+      const result = await service.create(
+        { stepId: "step_1", type: "highlight", x: 10, y: 10, width: 50, height: 30 },
+        USER_ID,
+      );
+
+      expect(result).toEqual(newHighlight);
+      // listByStep should NOT be called for non-crop types
+      expect(repos.annotationRepo.listByStep).not.toHaveBeenCalled();
+      // delete should NOT be called
+      expect(repos.annotationRepo.delete).not.toHaveBeenCalled();
+    });
+
     it("validates position — rejects negative values", async () => {
       repos.stepRepo.getById.mockResolvedValue(mockStep());
       repos.demoRepo.getById.mockResolvedValue(mockDemo());

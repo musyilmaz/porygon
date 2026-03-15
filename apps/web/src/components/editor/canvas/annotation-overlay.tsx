@@ -29,7 +29,10 @@ export function AnnotationOverlay({
   return (
     <>
       {annotations.map((annotation) => {
-        const colors = getAnnotationColors(annotation);
+        const isCrop = annotation.type === "crop";
+        const colors = isCrop
+          ? { fill: "transparent", stroke: "rgba(255, 255, 255, 0.9)" }
+          : getAnnotationColors(annotation);
         const isSelected = selectedAnnotationId === annotation.id;
 
         return (
@@ -41,8 +44,9 @@ export function AnnotationOverlay({
             width={annotation.width}
             height={annotation.height}
             fill={colors.fill}
-            stroke={isSelected ? colors.stroke : colors.stroke}
+            stroke={colors.stroke}
             strokeWidth={isSelected ? 2 : 1}
+            dash={isCrop ? [6, 3] : undefined}
             draggable={isSelectMode}
             onClick={() => {
               if (isSelectMode) onSelect(annotation.id);

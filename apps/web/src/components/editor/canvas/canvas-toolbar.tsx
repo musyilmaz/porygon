@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@porygon/ui/components/tooltip";
-import { EyeOff, Highlighter, MousePointer2, Square } from "lucide-react";
+import { Crop, EyeOff, Highlighter, MousePointer2, Square } from "lucide-react";
 
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
@@ -70,6 +70,20 @@ export function CanvasToolbar() {
         </TooltipTrigger>
         <TooltipContent side="bottom" sideOffset={8}>
           Highlight (Y)
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant={activeTool === "crop" ? "secondary" : "ghost"}
+            size="icon-sm"
+            onClick={() => setTool("crop")}
+          >
+            <Crop className="size-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={8}>
+          Crop (C)
         </TooltipContent>
       </Tooltip>
     </div>

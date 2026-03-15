@@ -183,7 +183,7 @@ describe("createHotspotElement", () => {
 describe("createAnnotationElement", () => {
   it("creates a positioned div with percentage coordinates", () => {
     const annotation = makeAnnotation();
-    const el = createAnnotationElement(annotation, 1000, 800);
+    const el = createAnnotationElement(annotation, 1000, 800)!;
 
     expect(el.style.left).toBe("5%");
     expect(el.style.top).toBe("12.5%");
@@ -193,7 +193,7 @@ describe("createAnnotationElement", () => {
 
   it("sets data-annotation-id attribute", () => {
     const annotation = makeAnnotation({ id: "ann-7" });
-    const el = createAnnotationElement(annotation, 1000, 800);
+    const el = createAnnotationElement(annotation, 1000, 800)!;
     expect(el.dataset.annotationId).toBe("ann-7");
   });
 
@@ -202,7 +202,7 @@ describe("createAnnotationElement", () => {
       type: "highlight",
       settings: { highlightColor: "#ff0", highlightOpacity: 0.6 },
     });
-    const el = createAnnotationElement(annotation, 1000, 800);
+    const el = createAnnotationElement(annotation, 1000, 800)!;
 
     expect(el.classList.contains("porygon-player-annotation--highlight")).toBe(
       true,
@@ -216,7 +216,7 @@ describe("createAnnotationElement", () => {
       type: "blur",
       settings: { blurIntensity: 12 },
     });
-    const el = createAnnotationElement(annotation, 1000, 800);
+    const el = createAnnotationElement(annotation, 1000, 800)!;
 
     expect(el.classList.contains("porygon-player-annotation--blur")).toBe(true);
     expect(el.style.backdropFilter).toBe("blur(12px)");
@@ -227,7 +227,13 @@ describe("createAnnotationElement", () => {
       type: "blur",
       settings: {},
     });
-    const el = createAnnotationElement(annotation, 1000, 800);
+    const el = createAnnotationElement(annotation, 1000, 800)!;
     expect(el.style.backdropFilter).toBe("blur(8px)");
+  });
+
+  it("returns null for crop annotations", () => {
+    const annotation = makeAnnotation({ type: "crop", settings: {} });
+    const el = createAnnotationElement(annotation, 1000, 800);
+    expect(el).toBeNull();
   });
 });

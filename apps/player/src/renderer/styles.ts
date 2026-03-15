@@ -25,6 +25,14 @@ export function generateCSS(brandColor: string = "#4f46e5"): string {
   width: 100%;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
+  transition: aspect-ratio 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.porygon-player-crop-container {
+  position: relative;
+  width: 100%;
+  transform-origin: 0 0;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .porygon-player-screenshot {
@@ -65,8 +73,8 @@ export function generateCSS(brandColor: string = "#4f46e5"): string {
 }
 
 @keyframes porygon-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--porygon-hotspot-pulse-color, rgba(79, 70, 229, 0.4)); }
+  50% { box-shadow: 0 0 0 8px transparent; }
 }
 
 .porygon-player-annotation {

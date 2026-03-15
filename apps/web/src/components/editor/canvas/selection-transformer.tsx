@@ -5,11 +5,13 @@ import { Transformer } from "react-konva";
 interface SelectionTransformerProps {
   selectedId: string | null;
   layerRef: React.RefObject<Konva.Layer | null>;
+  keepRatio?: boolean;
 }
 
 export function SelectionTransformer({
   selectedId,
   layerRef,
+  keepRatio = false,
 }: SelectionTransformerProps) {
   const transformerRef = useRef<Konva.Transformer>(null);
 
@@ -37,7 +39,7 @@ export function SelectionTransformer({
     <Transformer
       ref={transformerRef}
       rotateEnabled={false}
-      keepRatio={false}
+      keepRatio={keepRatio}
       boundBoxFunc={(_oldBox, newBox) => {
         if (newBox.width < 20 || newBox.height < 20) {
           return {

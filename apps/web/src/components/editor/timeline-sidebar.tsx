@@ -19,11 +19,10 @@ import {
 import { Plus } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
-import { useStepActions } from "@/hooks/editor/use-step-actions";
-
 import { DeleteStepDialog } from "./delete-step-dialog";
 import { SortableStepCard } from "./sortable-step-card";
 
+import { useStepActions } from "@/hooks/editor/use-step-actions";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 import type { EditorStep } from "@/stores/editor/types";
 

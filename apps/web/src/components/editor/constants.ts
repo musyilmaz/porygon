@@ -135,7 +135,23 @@ export const PREVIEW_COLORS: Record<string, { fill: string; stroke: string }> = 
   hotspot: { fill: "rgba(59, 130, 246, 0.15)", stroke: "rgba(59, 130, 246, 0.8)" },
   blur: { fill: "rgba(107, 114, 128, 0.15)", stroke: "rgba(107, 114, 128, 0.8)" },
   highlight: { fill: "rgba(234, 179, 8, 0.15)", stroke: "rgba(234, 179, 8, 0.8)" },
+  crop: { fill: "rgba(255, 255, 255, 0.05)", stroke: "rgba(255, 255, 255, 0.9)" },
 };
+
+export interface ParsedCropSettings {
+  lockAspectRatio: boolean;
+}
+
+export function parseCropSettings(
+  settings: Record<string, unknown> | null | undefined,
+): ParsedCropSettings {
+  return {
+    lockAspectRatio:
+      typeof settings?.lockAspectRatio === "boolean"
+        ? settings.lockAspectRatio
+        : true,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Drawing tool helpers
@@ -144,8 +160,8 @@ export const PREVIEW_COLORS: Record<string, { fill: string; stroke: string }> = 
 /** Minimum width/height (in image pixels) for a drawn element */
 export const MIN_DRAW_SIZE = 20;
 
-const DRAWING_TOOLS = new Set(["hotspot", "blur", "highlight"] as const);
+const DRAWING_TOOLS = new Set(["hotspot", "blur", "highlight", "crop"] as const);
 
-export function isDrawingTool(tool: string): tool is "hotspot" | "blur" | "highlight" {
-  return DRAWING_TOOLS.has(tool as "hotspot" | "blur" | "highlight");
+export function isDrawingTool(tool: string): tool is "hotspot" | "blur" | "highlight" | "crop" {
+  return DRAWING_TOOLS.has(tool as "hotspot" | "blur" | "highlight" | "crop");
 }

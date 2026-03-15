@@ -56,6 +56,9 @@ export function useEditorShortcuts() {
       } else if (e.key === "y" || e.key === "Y") {
         e.preventDefault();
         setTool("highlight");
+      } else if (e.key === "c" || e.key === "C") {
+        e.preventDefault();
+        setTool("crop");
       } else if (e.key === "Delete" || e.key === "Backspace") {
         const selectedStep = steps[selectedStepIndex];
         if (!selectedStep) return;

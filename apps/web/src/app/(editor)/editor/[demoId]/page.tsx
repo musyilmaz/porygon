@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { EditorShell } from "@/components/editor/editor-shell";
-
 import { getSession } from "@/lib/get-session";
 import { getAnnotationService } from "@/lib/services/annotation.service";
 import { getDemoService } from "@/lib/services/demo.service";

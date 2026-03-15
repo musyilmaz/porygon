@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 
 import { AnnotationOverlay } from "./annotation-overlay";
+import { CropDimOverlay } from "./crop-dim-overlay";
 import { HotspotOverlay } from "./hotspot-overlay";
 import { SelectionTransformer } from "./selection-transformer";
 import { StepContent } from "./step-content";
@@ -11,6 +12,7 @@ import {
   MIN_DRAW_SIZE,
   PREVIEW_COLORS,
   isDrawingTool,
+  parseCropSettings,
 } from "@/components/editor/constants";
 import { useAnnotationActions } from "@/hooks/editor/use-annotation-actions";
 import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
@@ -54,7 +56,7 @@ export function EditorStage({
   const updateAnnotation = useEditorStore((s) => s.updateAnnotation);
 
   const { createHotspot, saveHotspot } = useHotspotActions();
-  const { createAnnotation, saveAnnotation } = useAnnotationActions();
+  const { createAnnotation, saveAnnotation, deleteAnnotation } = useAnnotationActions();
 
   const selectedStep = steps[selectedStepIndex];
   const selectedId = selectedHotspotId ?? selectedAnnotationId;
@@ -136,14 +138,35 @@ export function EditorStage({
       createHotspot(selectedStep.id, rect);
     } else if (activeTool === "blur" || activeTool === "highlight") {
       createAnnotation(selectedStep.id, activeTool, rect);
+    } else if (activeTool === "crop") {
+      // Constrain to image aspect ratio during drawing
+      const imgRatio = image.naturalWidth / image.naturalHeight;
+      const constrainedH = Math.round(rect.width / imgRatio);
+      const constrainedRect = {
+        ...rect,
+        height: constrainedH,
+        // Adjust y if user dragged upward
+        y: drawCurrent.y < drawStart.y ? Math.round(drawStart.y - constrainedH) : rect.y,
+      };
+
+      // One crop per step — remove existing before creating new
+      const existingCrop = selectedStep.annotations.find((a) => a.type === "crop");
+      if (existingCrop) {
+        deleteAnnotation(selectedStep.id, existingCrop.id);
+      }
+      createAnnotation(selectedStep.id, "crop", constrainedRect);
     }
-  }, [isDrawing, selectedStep, drawStart, drawCurrent, activeTool, createHotspot, createAnnotation]);
+  }, [isDrawing, selectedStep, drawStart, drawCurrent, activeTool, createHotspot, createAnnotation, deleteAnnotation, image]);
 
   // Drawing preview rect dimensions (in image space)
-  const previewX = Math.min(drawStart.x, drawCurrent.x);
-  const previewY = Math.min(drawStart.y, drawCurrent.y);
   const previewW = Math.abs(drawCurrent.x - drawStart.x);
-  const previewH = Math.abs(drawCurrent.y - drawStart.y);
+  const isCropDraw = activeTool === "crop";
+  const imgRatio = image.naturalWidth / image.naturalHeight;
+  const previewH = isCropDraw ? previewW / imgRatio : Math.abs(drawCurrent.y - drawStart.y);
+  const previewX = Math.min(drawStart.x, drawCurrent.x);
+  const previewY = isCropDraw
+    ? (drawCurrent.y < drawStart.y ? drawStart.y - previewH : drawStart.y)
+    : Math.min(drawStart.y, drawCurrent.y);
 
   const handleHotspotSelect = useCallback(
     (hotspotId: string) => {
@@ -210,6 +233,14 @@ export function EditorStage({
     [onStagePositionChange],
   );
 
+  // Determine if the selected crop should keep aspect ratio
+  const selectedAnnotation = selectedStep?.annotations.find(
+    (a) => a.id === selectedAnnotationId,
+  );
+  const cropKeepRatio =
+    selectedAnnotation?.type === "crop" &&
+    parseCropSettings(selectedAnnotation.settings).lockAspectRatio;
+
   const isDrawTool = isDrawingTool(activeTool);
   const cursor = isDrawTool ? "crosshair" : isDraggable ? "grab" : "default";
 
@@ -239,6 +270,11 @@ export function EditorStage({
         scaleY={effectiveScale}
       >
         <StepContent image={image} />
+        <CropDimOverlay
+          crop={selectedStep.annotations.find((a) => a.type === "crop")}
+          imageWidth={image.naturalWidth}
+          imageHeight={image.naturalHeight}
+        />
         <AnnotationOverlay
           annotations={selectedStep.annotations}
           selectedAnnotationId={selectedAnnotationId}
@@ -258,6 +294,7 @@ export function EditorStage({
         <SelectionTransformer
           selectedId={selectedId}
           layerRef={layerRef}
+          keepRatio={cropKeepRatio}
         />
         {isDrawing && (
           <Rect

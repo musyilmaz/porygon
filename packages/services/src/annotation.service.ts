@@ -103,6 +103,15 @@ export function createAnnotationService({
 
       validatePosition(input);
 
+      // One crop per step — remove existing crop before creating new one
+      if (input.type === "crop") {
+        const existing = await annotationRepo.listByStep(input.stepId);
+        const existingCrop = existing.find((a) => a.type === "crop");
+        if (existingCrop) {
+          await annotationRepo.delete(existingCrop.id);
+        }
+      }
+
       return annotationRepo.create({
         stepId: input.stepId,
         type: input.type,

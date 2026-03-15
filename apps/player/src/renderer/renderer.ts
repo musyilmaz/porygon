@@ -173,14 +173,19 @@ export class DemoPlayerRenderer {
     this.dom.annotationLayer.innerHTML = "";
     this.dom.hotspotLayer.innerHTML = "";
 
-    // Render annotations
+    // Find crop annotation for this step
+    const crop = step.annotations.find((a) => a.type === "crop");
+
+    // Render annotations (skip crop — it's structural, not visual)
     for (const annotation of step.annotations) {
       const el = createAnnotationElement(
         annotation,
         this.naturalWidth,
         this.naturalHeight,
       );
-      this.dom.annotationLayer.appendChild(el);
+      if (el) {
+        this.dom.annotationLayer.appendChild(el);
+      }
     }
 
     // Render hotspots
@@ -193,6 +198,24 @@ export class DemoPlayerRenderer {
       el.addEventListener("click", () => this.handleHotspotClick(hotspot));
       this.dom.hotspotLayer.appendChild(el);
     }
+
+    // Apply crop transform
+    this.applyCropTransform(crop);
+  }
+
+  private applyCropTransform(crop: PlayerStep["annotations"][number] | undefined): void {
+    if (crop && this.naturalWidth > 0 && this.naturalHeight > 0) {
+      const scale = this.naturalWidth / crop.width;
+      const translateX = -(crop.x / this.naturalWidth) * 100;
+      const translateY = -(crop.y / this.naturalHeight) * 100;
+      this.dom.cropContainer.style.transform = `scale(${scale}) translate(${translateX}%, ${translateY}%)`;
+      this.dom.cropContainer.style.transformOrigin = "0 0";
+      this.dom.viewport.style.aspectRatio = `${crop.width} / ${crop.height}`;
+    } else {
+      this.dom.cropContainer.style.transform = "none";
+      this.dom.cropContainer.style.transformOrigin = "";
+      this.dom.viewport.style.aspectRatio = "";
+    }
   }
 
   private handleHotspotClick(hotspot: {
@@ -201,11 +224,22 @@ export class DemoPlayerRenderer {
     tooltipContent: Record<string, unknown> | null;
     tooltipPosition: "top" | "bottom" | "left" | "right";
   }): void {
-    if (hotspot.tooltipContent) {
-      this.showTooltip(hotspot);
-    } else if (hotspot.targetStepId) {
+    if (hotspot.targetStepId) {
       this.player.navigateBranch(hotspot.id);
+    } else if (this.hasTooltipContent(hotspot.tooltipContent)) {
+      this.showTooltip(hotspot);
     }
+  }
+
+  /** Check if TipTap JSON has meaningful text (not just empty paragraphs) */
+  private hasTooltipContent(content: Record<string, unknown> | null): boolean {
+    if (!content) return false;
+    const docContent = content.content as Array<Record<string, unknown>> | undefined;
+    if (!docContent || docContent.length === 0) return false;
+    return docContent.some((node) => {
+      const nodeContent = node.content as Array<Record<string, unknown>> | undefined;
+      return nodeContent && nodeContent.length > 0;
+    });
   }
 
   private showTooltip(hotspot: {

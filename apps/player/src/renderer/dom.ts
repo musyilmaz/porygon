@@ -9,6 +9,7 @@ const CHEVRON_RIGHT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
 export interface PlayerDOM {
   root: HTMLDivElement;
   viewport: HTMLDivElement;
+  cropContainer: HTMLDivElement;
   screenshot: HTMLImageElement;
   annotationLayer: HTMLDivElement;
   hotspotLayer: HTMLDivElement;
@@ -37,15 +38,19 @@ export function createPlayerDOM(title: string): PlayerDOM {
   screenshot.alt = "";
   screenshot.draggable = false;
 
+  const cropContainer = document.createElement("div");
+  cropContainer.className = "porygon-player-crop-container";
+
   const annotationLayer = document.createElement("div");
   annotationLayer.className = "porygon-player-annotation-layer";
 
   const hotspotLayer = document.createElement("div");
   hotspotLayer.className = "porygon-player-hotspot-layer";
 
-  viewport.appendChild(screenshot);
-  viewport.appendChild(annotationLayer);
-  viewport.appendChild(hotspotLayer);
+  cropContainer.appendChild(screenshot);
+  cropContainer.appendChild(annotationLayer);
+  cropContainer.appendChild(hotspotLayer);
+  viewport.appendChild(cropContainer);
 
   // Tooltip
   const tooltip = document.createElement("div");
@@ -94,6 +99,7 @@ export function createPlayerDOM(title: string): PlayerDOM {
   return {
     root,
     viewport,
+    cropContainer,
     screenshot,
     annotationLayer,
     hotspotLayer,
@@ -139,6 +145,9 @@ export function createHotspotElement(
   }
   if (hotspot.style.pulseAnimation) {
     el.classList.add("porygon-player-hotspot--pulse");
+    // Use the hotspot's background color for the pulse glow
+    const pulseColor = hotspot.style.backgroundColor ?? "rgba(79, 70, 229, 1)";
+    el.style.setProperty("--porygon-hotspot-pulse-color", pulseColor);
   }
 
   return el;
@@ -148,7 +157,7 @@ export function createAnnotationElement(
   annotation: PlayerAnnotation,
   naturalWidth: number,
   naturalHeight: number,
-): HTMLDivElement {
+): HTMLDivElement | null {
   const el = document.createElement("div");
   el.className = "porygon-player-annotation";
   el.dataset.annotationId = annotation.id;
@@ -174,6 +183,9 @@ export function createAnnotationElement(
     if (annotation.settings.highlightOpacity !== undefined) {
       el.style.opacity = String(annotation.settings.highlightOpacity);
     }
+  } else if (annotation.type === "crop") {
+    // Crop is structural, not visual — return null to skip rendering
+    return null;
   }
 
   return el;
