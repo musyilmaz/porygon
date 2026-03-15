@@ -1,3 +1,4 @@
+import type { Coordinates } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import {
@@ -31,7 +32,7 @@ export const steps = pgTable("steps", {
   screenshotUrl: text("screenshot_url"),
   actionType: actionTypeEnum("action_type"),
   actionCoordinates:
-    jsonb("action_coordinates").$type<Record<string, unknown>>(),
+    jsonb("action_coordinates").$type<Coordinates>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

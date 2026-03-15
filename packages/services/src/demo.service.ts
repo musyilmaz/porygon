@@ -9,7 +9,7 @@ import {
   PLAN_LIMITS,
   ValidationError,
 } from "@porygon/shared";
-import type { Nullable } from "@porygon/shared";
+import type { DemoSettings, Nullable } from "@porygon/shared";
 import { generateSlug } from "@porygon/shared/utils";
 
 type DemoRepo = ReturnType<typeof createDemoRepository>;
@@ -26,13 +26,13 @@ export interface CreateDemoInput {
   workspaceId: string;
   title: string;
   description?: Nullable<string>;
-  settings?: Record<string, unknown>;
+  settings?: DemoSettings;
 }
 
 export interface UpdateDemoInput {
   title?: string;
   description?: Nullable<string>;
-  settings?: Record<string, unknown>;
+  settings?: DemoSettings;
 }
 
 export interface ListDemosOptions {
@@ -185,7 +185,7 @@ export function createDemoService({
         slug,
         createdBy: userId,
         description: demo.description,
-        ...(demo.settings != null && { settings: demo.settings as Record<string, unknown> }),
+        ...(demo.settings != null && { settings: demo.settings }),
       });
 
       const steps = await stepRepo.listByDemo(demo.id);
@@ -196,7 +196,7 @@ export function createDemoService({
           ...(step.screenshotUrl != null && { screenshotUrl: step.screenshotUrl }),
           ...(step.actionType != null && { actionType: step.actionType }),
           ...(step.actionCoordinates != null && {
-            actionCoordinates: step.actionCoordinates as Record<string, unknown>,
+            actionCoordinates: step.actionCoordinates,
           }),
         });
       }

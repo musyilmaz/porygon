@@ -4,6 +4,7 @@ import { TooltipProvider } from "@porygon/ui/components/tooltip";
 
 import { EditorHeader } from "./editor-header";
 import { EditorLayout } from "./editor-layout";
+import { PreviewModal } from "./preview-modal";
 
 import { EditorStoreProvider } from "@/stores/editor/editor-store-provider";
 import type { EditorInitialData } from "@/stores/editor/types";
@@ -18,6 +19,7 @@ function EditorInner() {
     <div className="flex h-screen flex-col overflow-hidden">
       <EditorHeader />
       <EditorLayout />
+      <PreviewModal />
     </div>
   );
 }

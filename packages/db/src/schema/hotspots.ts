@@ -1,3 +1,4 @@
+import type { HotspotStyle, TooltipPosition } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import { jsonb, pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
@@ -17,8 +18,8 @@ export const hotspots = pgTable("hotspots", {
   height: real("height").notNull(),
   targetStepId: text("target_step_id").references(() => steps.id),
   tooltipContent: jsonb("tooltip_content").$type<Record<string, unknown>>(),
-  tooltipPosition: text("tooltip_position").notNull().default("bottom"),
-  style: jsonb("style").$type<Record<string, unknown>>().default({}),
+  tooltipPosition: text("tooltip_position").notNull().default("bottom").$type<TooltipPosition>(),
+  style: jsonb("style").$type<HotspotStyle>().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

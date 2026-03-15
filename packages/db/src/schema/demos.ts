@@ -1,3 +1,4 @@
+import type { DemoSettings } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import {
@@ -33,7 +34,7 @@ export const demos = pgTable(
     description: text("description"),
     slug: text("slug").notNull(),
     status: demoStatusEnum("status").notNull().default("draft"),
-    settings: jsonb("settings").$type<Record<string, unknown>>().default({}),
+    settings: jsonb("settings").$type<DemoSettings>().default({}),
     createdBy: text("created_by")
       .notNull()
       .references(() => user.id),

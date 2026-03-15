@@ -1,3 +1,4 @@
+import type { AnnotationSettings } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import {
@@ -29,7 +30,7 @@ export const annotations = pgTable("annotations", {
   y: real("y").notNull(),
   width: real("width").notNull(),
   height: real("height").notNull(),
-  settings: jsonb("settings").$type<Record<string, unknown>>().default({}),
+  settings: jsonb("settings").$type<AnnotationSettings>().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

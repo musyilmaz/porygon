@@ -1,3 +1,5 @@
+import type { AnnotationSettings, HotspotStyle, Nullable } from "@porygon/shared";
+
 import { hexToRgb } from "@/lib/editor/color-utils";
 import type { EditorAnnotation } from "@/stores/editor/types";
 
@@ -23,26 +25,13 @@ export interface ParsedHotspotStyle {
   pulseAnimation: boolean;
 }
 
-/**
- * Extracts typed style values from the untyped jsonb `Record<string, unknown>`.
- * Returns defaults for any missing or invalid fields.
- */
 export function parseHotspotStyle(
-  style: Record<string, unknown> | null | undefined,
+  style: Nullable<HotspotStyle> | undefined,
 ): ParsedHotspotStyle {
   return {
-    backgroundColor:
-      typeof style?.backgroundColor === "string"
-        ? style.backgroundColor
-        : HOTSPOT_DEFAULT_COLOR,
-    opacity:
-      typeof style?.opacity === "number"
-        ? style.opacity
-        : HOTSPOT_DEFAULT_OPACITY,
-    pulseAnimation:
-      typeof style?.pulseAnimation === "boolean"
-        ? style.pulseAnimation
-        : false,
+    backgroundColor: style?.backgroundColor ?? HOTSPOT_DEFAULT_COLOR,
+    opacity: style?.opacity ?? HOTSPOT_DEFAULT_OPACITY,
+    pulseAnimation: style?.pulseAnimation ?? false,
   };
 }
 
@@ -69,28 +58,19 @@ export interface ParsedHighlightSettings {
 }
 
 export function parseBlurSettings(
-  settings: Record<string, unknown> | null | undefined,
+  settings: Nullable<AnnotationSettings> | undefined,
 ): ParsedBlurSettings {
   return {
-    blurIntensity:
-      typeof settings?.blurIntensity === "number"
-        ? settings.blurIntensity
-        : ANNOTATION_DEFAULT_BLUR_INTENSITY,
+    blurIntensity: settings?.blurIntensity ?? ANNOTATION_DEFAULT_BLUR_INTENSITY,
   };
 }
 
 export function parseHighlightSettings(
-  settings: Record<string, unknown> | null | undefined,
+  settings: Nullable<AnnotationSettings> | undefined,
 ): ParsedHighlightSettings {
   return {
-    highlightColor:
-      typeof settings?.highlightColor === "string"
-        ? settings.highlightColor
-        : ANNOTATION_DEFAULT_HIGHLIGHT_COLOR,
-    highlightOpacity:
-      typeof settings?.highlightOpacity === "number"
-        ? settings.highlightOpacity
-        : ANNOTATION_DEFAULT_HIGHLIGHT_OPACITY,
+    highlightColor: settings?.highlightColor ?? ANNOTATION_DEFAULT_HIGHLIGHT_COLOR,
+    highlightOpacity: settings?.highlightOpacity ?? ANNOTATION_DEFAULT_HIGHLIGHT_OPACITY,
   };
 }
 
@@ -143,13 +123,10 @@ export interface ParsedCropSettings {
 }
 
 export function parseCropSettings(
-  settings: Record<string, unknown> | null | undefined,
+  settings: Nullable<AnnotationSettings> | undefined,
 ): ParsedCropSettings {
   return {
-    lockAspectRatio:
-      typeof settings?.lockAspectRatio === "boolean"
-        ? settings.lockAspectRatio
-        : true,
+    lockAspectRatio: settings?.lockAspectRatio ?? true,
   };
 }
 

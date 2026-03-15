@@ -2,6 +2,7 @@ import type { createAnnotationRepository } from "@porygon/db";
 import type { createDemoRepository } from "@porygon/db";
 import type { createStepRepository } from "@porygon/db";
 import type { createWorkspaceRepository } from "@porygon/db";
+import type { AnnotationSettings } from "@porygon/shared";
 import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
 
 type AnnotationRepo = ReturnType<typeof createAnnotationRepository>;
@@ -23,11 +24,7 @@ export interface CreateAnnotationInput {
   y: number;
   width: number;
   height: number;
-  settings?: {
-    blurIntensity?: number;
-    highlightColor?: string;
-    highlightOpacity?: number;
-  };
+  settings?: AnnotationSettings;
 }
 
 export interface UpdateAnnotationInput {
@@ -36,11 +33,7 @@ export interface UpdateAnnotationInput {
   y?: number;
   width?: number;
   height?: number;
-  settings?: {
-    blurIntensity?: number;
-    highlightColor?: string;
-    highlightOpacity?: number;
-  };
+  settings?: AnnotationSettings;
 }
 
 export function createAnnotationService({

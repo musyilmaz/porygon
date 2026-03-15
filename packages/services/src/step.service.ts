@@ -8,7 +8,7 @@ import {
   ValidationError,
   PLAN_LIMITS,
 } from "@porygon/shared";
-import type { Nullable } from "@porygon/shared";
+import type { Coordinates, Nullable } from "@porygon/shared";
 
 type StepRepo = ReturnType<typeof createStepRepository>;
 type DemoRepo = ReturnType<typeof createDemoRepository>;
@@ -24,13 +24,13 @@ export interface CreateStepInput {
   demoId: string;
   screenshotUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
-  actionCoordinates?: Nullable<Record<string, unknown>>;
+  actionCoordinates?: Nullable<Coordinates>;
 }
 
 export interface UpdateStepInput {
   screenshotUrl?: Nullable<string>;
   actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
-  actionCoordinates?: Nullable<Record<string, unknown>>;
+  actionCoordinates?: Nullable<Coordinates>;
 }
 
 export function createStepService({

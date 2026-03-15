@@ -8,6 +8,7 @@ const CHEVRON_RIGHT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 2
 
 export interface PlayerDOM {
   root: HTMLDivElement;
+  wrapper: HTMLDivElement;
   viewport: HTMLDivElement;
   cropContainer: HTMLDivElement;
   screenshot: HTMLImageElement;
@@ -92,12 +93,17 @@ export function createPlayerDOM(title: string): PlayerDOM {
   controls.appendChild(progress);
   controls.appendChild(nextButton);
 
-  root.appendChild(viewport);
+  const wrapper = document.createElement("div");
+  wrapper.className = "porygon-player-wrapper";
+  wrapper.appendChild(viewport);
+  wrapper.appendChild(controls);
+
+  root.appendChild(wrapper);
   root.appendChild(tooltip);
-  root.appendChild(controls);
 
   return {
     root,
+    wrapper,
     viewport,
     cropContainer,
     screenshot,

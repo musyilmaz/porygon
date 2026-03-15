@@ -1,5 +1,6 @@
 "use client";
 
+import type { AnnotationSettings, HotspotStyle, TooltipPosition } from "@porygon/shared";
 import { TOOLTIP_POSITIONS } from "@porygon/shared/constants";
 import { Button } from "@porygon/ui/components/button";
 import { Input } from "@porygon/ui/components/input";
@@ -48,13 +49,13 @@ function HotspotProperties() {
     saveHotspot(selectedStep.id, hotspot.id, { tooltipContent: json });
   };
 
-  const handleTooltipPositionChange = (value: string) => {
+  const handleTooltipPositionChange = (value: TooltipPosition) => {
     updateHotspot(selectedStep.id, hotspot.id, { tooltipPosition: value });
     saveHotspot(selectedStep.id, hotspot.id, { tooltipPosition: value });
   };
 
   const handleStyleChange = (
-    updates: Record<string, unknown>,
+    updates: Partial<HotspotStyle>,
   ) => {
     const mergedStyle = { ...(hotspot.style ?? {}), ...updates };
     updateHotspot(selectedStep.id, hotspot.id, { style: mergedStyle });
@@ -168,7 +169,7 @@ function HotspotProperties() {
         <select
           id="hotspot-tooltip-position"
           value={hotspot.tooltipPosition}
-          onChange={(e) => handleTooltipPositionChange(e.target.value)}
+          onChange={(e) => handleTooltipPositionChange(e.target.value as TooltipPosition)}
           className="border-input bg-background text-foreground focus-visible:ring-ring h-8 w-full rounded-md border px-2 text-sm capitalize focus-visible:outline-none focus-visible:ring-1"
         >
           {TOOLTIP_POSITIONS.map((pos) => (
@@ -281,7 +282,7 @@ function AnnotationProperties() {
 
   if (!annotation || !selectedStep) return null;
 
-  const handleSettingsChange = (updates: Record<string, unknown>) => {
+  const handleSettingsChange = (updates: Partial<AnnotationSettings>) => {
     const mergedSettings = { ...(annotation.settings ?? {}), ...updates };
     updateAnnotation(selectedStep.id, annotation.id, {
       settings: mergedSettings,

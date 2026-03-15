@@ -4,6 +4,7 @@ export interface AnnotationSettings {
   blurIntensity?: number;
   highlightColor?: string;
   highlightOpacity?: number;
+  lockAspectRatio?: boolean;
 }
 
 export interface Annotation {

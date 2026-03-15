@@ -1,8 +1,12 @@
-import type { DemoStatus, Nullable } from "@porygon/shared";
-
-// Editor types match what the DB/service layer actually returns.
-// jsonb columns come back as Record<string, unknown>, not the stricter
-// shared interfaces (DemoSettings, HotspotStyle, etc.).
+import type {
+  AnnotationSettings,
+  Coordinates,
+  DemoSettings,
+  DemoStatus,
+  HotspotStyle,
+  Nullable,
+  TooltipPosition,
+} from "@porygon/shared";
 
 export interface EditorHotspot {
   id: string;
@@ -13,8 +17,8 @@ export interface EditorHotspot {
   height: number;
   targetStepId: Nullable<string>;
   tooltipContent: Nullable<Record<string, unknown>>;
-  tooltipPosition: string;
-  style: Nullable<Record<string, unknown>>;
+  tooltipPosition: TooltipPosition;
+  style: Nullable<HotspotStyle>;
 }
 
 export interface EditorAnnotation {
@@ -25,7 +29,7 @@ export interface EditorAnnotation {
   y: number;
   width: number;
   height: number;
-  settings: Nullable<Record<string, unknown>>;
+  settings: Nullable<AnnotationSettings>;
 }
 
 export interface EditorStep {
@@ -34,7 +38,7 @@ export interface EditorStep {
   orderIndex: number;
   screenshotUrl: Nullable<string>;
   actionType: Nullable<"click" | "scroll" | "type" | "navigation">;
-  actionCoordinates: Nullable<Record<string, unknown>>;
+  actionCoordinates: Nullable<Coordinates>;
   hotspots: EditorHotspot[];
   annotations: EditorAnnotation[];
 }
@@ -44,7 +48,7 @@ export interface EditorDemo {
   description: Nullable<string>;
   slug: string;
   status: DemoStatus;
-  settings: Nullable<Record<string, unknown>>;
+  settings: Nullable<DemoSettings>;
 }
 
 export type ActiveTool = "select" | "hotspot" | "blur" | "crop" | "highlight";
@@ -63,6 +67,8 @@ export interface EditorState {
 
   leftSidebarOpen: boolean;
   rightSidebarOpen: boolean;
+
+  isPreviewOpen: boolean;
 
   isDirty: boolean;
   isSaving: boolean;
@@ -109,6 +115,7 @@ export interface EditorActions {
 
   // Tools & UI
   setTool: (tool: ActiveTool) => void;
+  setPreviewOpen: (open: boolean) => void;
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
 

@@ -3,7 +3,7 @@ import type { createHotspotRepository } from "@porygon/db";
 import type { createStepRepository } from "@porygon/db";
 import type { createWorkspaceRepository } from "@porygon/db";
 import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
-import type { Nullable } from "@porygon/shared";
+import type { HotspotStyle, Nullable, TooltipPosition } from "@porygon/shared";
 
 type HotspotRepo = ReturnType<typeof createHotspotRepository>;
 type StepRepo = ReturnType<typeof createStepRepository>;
@@ -25,8 +25,8 @@ export interface CreateHotspotInput {
   height: number;
   targetStepId?: Nullable<string>;
   tooltipContent?: Nullable<Record<string, unknown>>;
-  tooltipPosition?: string;
-  style?: Record<string, unknown>;
+  tooltipPosition?: TooltipPosition;
+  style?: HotspotStyle;
 }
 
 export interface UpdateHotspotInput {
@@ -36,8 +36,8 @@ export interface UpdateHotspotInput {
   height?: number;
   targetStepId?: Nullable<string>;
   tooltipContent?: Nullable<Record<string, unknown>>;
-  tooltipPosition?: string;
-  style?: Record<string, unknown>;
+  tooltipPosition?: TooltipPosition;
+  style?: HotspotStyle;
 }
 
 export function createHotspotService({

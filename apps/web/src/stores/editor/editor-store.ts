@@ -18,6 +18,7 @@ export function createEditorStore(initialData: EditorInitialData) {
         activeTool: "select",
         leftSidebarOpen: true,
         rightSidebarOpen: true,
+        isPreviewOpen: false,
         isDirty: false,
         isSaving: false,
         lastSavedAt: null,
@@ -187,6 +188,7 @@ export function createEditorStore(initialData: EditorInitialData) {
 
         // Tools & UI
         setTool: (tool) => set({ activeTool: tool }),
+        setPreviewOpen: (open) => set({ isPreviewOpen: open }),
         toggleLeftSidebar: () =>
           set((state) => ({ leftSidebarOpen: !state.leftSidebarOpen })),
         toggleRightSidebar: () =>

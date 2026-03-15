@@ -1,3 +1,4 @@
+import type { AnnotationSettings } from "@porygon/shared";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -10,7 +11,7 @@ interface CreateAnnotationData {
   y: number;
   width: number;
   height: number;
-  settings?: Record<string, unknown>;
+  settings?: AnnotationSettings;
 }
 
 interface UpdateAnnotationData {
@@ -19,7 +20,7 @@ interface UpdateAnnotationData {
   y?: number;
   width?: number;
   height?: number;
-  settings?: Record<string, unknown>;
+  settings?: AnnotationSettings;
 }
 
 export function createAnnotationRepository(db: Database) {

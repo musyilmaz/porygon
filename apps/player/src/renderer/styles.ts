@@ -8,8 +8,11 @@ export function generateCSS(brandColor: string = "#4f46e5"): string {
 .porygon-player {
   --porygon-brand-color: ${brandColor};
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
   box-sizing: border-box;
@@ -20,9 +23,17 @@ export function generateCSS(brandColor: string = "#4f46e5"): string {
   box-sizing: border-box;
 }
 
+.porygon-player-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .porygon-player-viewport {
   position: relative;
-  width: 100%;
+  flex: 0 1 auto;
+  min-height: 0;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
   transition: aspect-ratio 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -146,6 +157,7 @@ export function generateCSS(brandColor: string = "#4f46e5"): string {
 .porygon-player-controls {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 12px;
   padding: 8px 16px;
   background: #f9fafb;

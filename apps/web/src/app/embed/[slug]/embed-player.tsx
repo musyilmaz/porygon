@@ -33,7 +33,7 @@ export function EmbedPlayer({ config }: EmbedPlayerProps) {
   return (
     <div
       ref={containerRef}
-      style={{ width: "100%", height: "100vh" }}
+      className="h-dvh w-full"
     />
   );
 }

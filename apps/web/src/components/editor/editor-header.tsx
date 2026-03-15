@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@porygon/ui/components/button";
-import { ArrowLeft, Redo2, Undo2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@porygon/ui/components/tooltip";
+import { ArrowLeft, Play, Redo2, Undo2 } from "lucide-react";
 import Link from "next/link";
 
 import { SaveIndicator } from "./save-indicator";
@@ -13,10 +18,14 @@ import {
 
 export function EditorHeader() {
   const title = useEditorStore((s) => s.demo.title);
+  const steps = useEditorStore((s) => s.steps);
+  const setPreviewOpen = useEditorStore((s) => s.setPreviewOpen);
   const undo = useEditorTemporalStore((s) => s.undo);
   const redo = useEditorTemporalStore((s) => s.redo);
   const pastStates = useEditorTemporalStore((s) => s.pastStates);
   const futureStates = useEditorTemporalStore((s) => s.futureStates);
+
+  const hasPlayableSteps = steps.some((s) => s.screenshotUrl !== null);
 
   return (
     <header className="border-border flex h-12 shrink-0 items-center gap-3 border-b px-3">
@@ -33,6 +42,20 @@ export function EditorHeader() {
       <SaveIndicator />
 
       <div className="flex-1" />
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setPreviewOpen(true)}
+            disabled={!hasPlayableSteps}
+          >
+            <Play className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Preview (Ctrl+P)</TooltipContent>
+      </Tooltip>
 
       <div className="flex items-center gap-1">
         <Button

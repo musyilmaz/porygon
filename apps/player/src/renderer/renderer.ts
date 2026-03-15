@@ -214,7 +214,9 @@ export class DemoPlayerRenderer {
     } else {
       this.dom.cropContainer.style.transform = "none";
       this.dom.cropContainer.style.transformOrigin = "";
-      this.dom.viewport.style.aspectRatio = "";
+      if (this.naturalWidth > 0 && this.naturalHeight > 0) {
+        this.dom.viewport.style.aspectRatio = `${this.naturalWidth} / ${this.naturalHeight}`;
+      }
     }
   }
 

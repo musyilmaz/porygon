@@ -1,4 +1,4 @@
-import type { Nullable } from "@porygon/shared";
+import type { HotspotStyle, Nullable, TooltipPosition } from "@porygon/shared";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -12,8 +12,8 @@ interface CreateHotspotData {
   height: number;
   targetStepId?: Nullable<string>;
   tooltipContent?: Nullable<Record<string, unknown>>;
-  tooltipPosition?: string;
-  style?: Record<string, unknown>;
+  tooltipPosition?: TooltipPosition;
+  style?: HotspotStyle;
 }
 
 interface UpdateHotspotData {
@@ -23,8 +23,8 @@ interface UpdateHotspotData {
   height?: number;
   targetStepId?: Nullable<string>;
   tooltipContent?: Nullable<Record<string, unknown>>;
-  tooltipPosition?: string;
-  style?: Record<string, unknown>;
+  tooltipPosition?: TooltipPosition;
+  style?: HotspotStyle;
 }
 
 export function createHotspotRepository(db: Database) {

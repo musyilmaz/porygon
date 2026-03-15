@@ -1,4 +1,4 @@
-import type { Nullable } from "@porygon/shared";
+import type { DemoSettings, Nullable } from "@porygon/shared";
 import { and, asc, count, desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -13,14 +13,14 @@ interface CreateDemoData {
   slug: string;
   createdBy: string;
   description?: Nullable<string>;
-  settings?: Record<string, unknown>;
+  settings?: DemoSettings;
 }
 
 interface UpdateDemoData {
   title?: string;
   description?: Nullable<string>;
   status?: DemoStatus;
-  settings?: Record<string, unknown>;
+  settings?: DemoSettings;
 }
 
 interface ListOptions {

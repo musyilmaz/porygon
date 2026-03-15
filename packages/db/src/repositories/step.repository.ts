@@ -1,4 +1,4 @@
-import type { Nullable } from "@porygon/shared";
+import type { Coordinates, Nullable } from "@porygon/shared";
 import { asc, count, eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -9,13 +9,13 @@ interface CreateStepData {
   orderIndex: number;
   screenshotUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
-  actionCoordinates?: Nullable<Record<string, unknown>>;
+  actionCoordinates?: Nullable<Coordinates>;
 }
 
 interface UpdateStepData {
   screenshotUrl?: Nullable<string>;
   actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
-  actionCoordinates?: Nullable<Record<string, unknown>>;
+  actionCoordinates?: Nullable<Coordinates>;
 }
 
 export function createStepRepository(db: Database) {

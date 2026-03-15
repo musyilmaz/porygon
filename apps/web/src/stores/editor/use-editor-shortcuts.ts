@@ -12,6 +12,7 @@ export function useEditorShortcuts() {
   const undo = useEditorTemporalStore((s) => s.undo);
   const redo = useEditorTemporalStore((s) => s.redo);
   const setTool = useEditorStore((s) => s.setTool);
+  const setPreviewOpen = useEditorStore((s) => s.setPreviewOpen);
   const selectHotspot = useEditorStore((s) => s.selectHotspot);
   const selectAnnotation = useEditorStore((s) => s.selectAnnotation);
   const steps = useEditorStore((s) => s.steps);
@@ -28,9 +29,12 @@ export function useEditorShortcuts() {
 
       const mod = e.metaKey || e.ctrlKey;
 
-      // Mod shortcuts (undo/redo)
+      // Mod shortcuts (undo/redo/preview)
       if (mod) {
-        if (e.key === "z" && !e.shiftKey) {
+        if (e.key === "p") {
+          e.preventDefault();
+          setPreviewOpen(true);
+        } else if (e.key === "z" && !e.shiftKey) {
           e.preventDefault();
           undo();
         } else if (
@@ -84,6 +88,7 @@ export function useEditorShortcuts() {
     undo,
     redo,
     setTool,
+    setPreviewOpen,
     selectHotspot,
     selectAnnotation,
     steps,
