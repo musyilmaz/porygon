@@ -171,7 +171,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
   }
 
   function handleCopyLink(demo: DemoWithStats) {
-    const url = `${window.location.origin}/embed/${demo.slug}`;
+    const url = `${window.location.origin}/share/${demo.slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied");
   }
