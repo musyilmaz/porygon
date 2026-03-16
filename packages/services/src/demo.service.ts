@@ -137,6 +137,15 @@ export function createDemoService({
       return demoRepo.listByWorkspace(workspaceId, opts);
     },
 
+    async listWithStats(
+      workspaceId: string,
+      userId: string,
+      opts?: ListDemosOptions,
+    ) {
+      await assertWorkspaceMember(workspaceId, userId);
+      return demoRepo.listWithStats(workspaceId, opts);
+    },
+
     async update(id: string, input: UpdateDemoInput, userId: string) {
       const demo = await assertDemoAccess(id, userId);
       return demoRepo.update(demo.id, input);

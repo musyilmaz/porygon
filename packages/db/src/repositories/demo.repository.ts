@@ -1,5 +1,5 @@
 import type { DemoSettings, Nullable } from "@porygon/shared";
-import { and, asc, count, desc, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableColumns, sql } from "drizzle-orm";
 
 import type { Database } from "../client";
 import { demos, demoStatusEnum } from "../schema/demos";
@@ -79,6 +79,52 @@ export function createDemoRepository(db: Database) {
 
       return db
         .select()
+        .from(demos)
+        .where(and(...conditions))
+        .orderBy(orderFn(column))
+        .limit(limit)
+        .offset(offset);
+    },
+
+    async listWithStats(workspaceId: string, opts: ListOptions = {}) {
+      const {
+        limit = 50,
+        offset = 0,
+        status,
+        sortBy = "createdAt",
+        sortOrder = "desc",
+      } = opts;
+
+      const conditions = [eq(demos.workspaceId, workspaceId)];
+      if (status) {
+        conditions.push(eq(demos.status, status));
+      }
+
+      const column = sortColumns[sortBy];
+      const orderFn = sortOrder === "asc" ? asc : desc;
+
+      const stepCountSq = sql<number>`(
+        SELECT COUNT(*)::int FROM steps WHERE steps.demo_id = demos.id
+      )`.as("step_count");
+
+      const totalViewsSq = sql<number>`(
+        SELECT COUNT(*)::int FROM demo_views WHERE demo_views.demo_id = demos.id
+      )`.as("total_views");
+
+      const thumbnailUrlSq = sql<string | null>`(
+        SELECT steps.screenshot_url FROM steps
+        WHERE steps.demo_id = demos.id
+        ORDER BY steps.order_index ASC
+        LIMIT 1
+      )`.as("thumbnail_url");
+
+      return db
+        .select({
+          ...getTableColumns(demos),
+          stepCount: stepCountSq,
+          totalViews: totalViewsSq,
+          thumbnailUrl: thumbnailUrlSq,
+        })
         .from(demos)
         .where(and(...conditions))
         .orderBy(orderFn(column))
