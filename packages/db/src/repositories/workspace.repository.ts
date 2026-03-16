@@ -144,6 +144,14 @@ export function createWorkspaceRepository(db: Database) {
       return result?.count ?? 0;
     },
 
+    async findUserByEmail(email: string) {
+      const [found] = await db
+        .select({ id: user.id, name: user.name, email: user.email })
+        .from(user)
+        .where(eq(user.email, email));
+      return found ?? null;
+    },
+
     async listMembers(workspaceId: string) {
       return db
         .select({

@@ -22,6 +22,7 @@ const routeConfig: Record<string, RouteConfig> = {
   "/dashboard/demos": { label: "Demos", parent: "/dashboard" },
   "/dashboard/analytics": { label: "Analytics", parent: "/dashboard" },
   "/dashboard/account": { label: "Account", parent: "/dashboard" },
+  "/dashboard/settings": { label: "Settings", parent: "/dashboard" },
 };
 
 // Matches dynamic routes like /dashboard/demos/[id]/analytics

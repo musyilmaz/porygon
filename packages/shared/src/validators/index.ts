@@ -40,6 +40,7 @@ export {
   createWorkspaceSchema,
   updateWorkspaceSchema,
   addMemberSchema,
+  inviteMemberSchema,
   updateMemberRoleSchema,
   type CreateWorkspaceInput,
   type UpdateWorkspaceInput,

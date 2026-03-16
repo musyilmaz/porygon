@@ -1,5 +1,5 @@
 import { AppError } from "@porygon/shared";
-import { addMemberSchema } from "@porygon/shared/validators";
+import { inviteMemberSchema } from "@porygon/shared/validators";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/get-session";
@@ -41,7 +41,7 @@ export async function POST(
 
   const { workspaceId } = await params;
   const body = await request.json();
-  const parsed = addMemberSchema.safeParse(body);
+  const parsed = inviteMemberSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
@@ -50,9 +50,9 @@ export async function POST(
   }
 
   try {
-    const member = await getWorkspaceService().addMember(
+    const member = await getWorkspaceService().addMemberByEmail(
       workspaceId,
-      parsed.data.userId,
+      parsed.data.email,
       parsed.data.role,
       session.user.id,
     );

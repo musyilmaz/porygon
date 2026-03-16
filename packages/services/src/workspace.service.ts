@@ -65,7 +65,7 @@ export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) 
     );
   }
 
-  return {
+  const service = {
     async create(input: { name: string }, userId: string) {
       const baseSlug = generateSlug(input.name);
       const slug = await uniqueSlug(baseSlug);
@@ -141,6 +141,20 @@ export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) 
       });
     },
 
+    async addMemberByEmail(
+      workspaceId: string,
+      email: string,
+      role: "admin" | "editor" | "viewer",
+      actorId: string,
+    ) {
+      const targetUser = await workspaceRepo.findUserByEmail(email);
+      if (!targetUser) {
+        throw new NotFoundError("No user found with that email");
+      }
+
+      return service.addMember(workspaceId, targetUser.id, role, actorId);
+    },
+
     async removeMember(
       workspaceId: string,
       targetUserId: string,
@@ -188,4 +202,6 @@ export function createWorkspaceService({ workspaceRepo }: WorkspaceServiceDeps) 
       return workspaceRepo.updateMemberRole(workspaceId, targetUserId, role);
     },
   };
+
+  return service;
 }

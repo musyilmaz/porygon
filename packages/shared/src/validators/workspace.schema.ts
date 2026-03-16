@@ -28,6 +28,11 @@ export const addMemberSchema = z.object({
   role: z.enum(["admin", "editor", "viewer"]).default("editor"),
 });
 
+export const inviteMemberSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(["admin", "editor", "viewer"]),
+});
+
 export const updateMemberRoleSchema = z.object({
   role: z.enum(["admin", "editor", "viewer"]),
 });
