@@ -35,6 +35,11 @@ export interface DailyStats {
   completions: number;
 }
 
+export interface StepDropoff {
+  step: number;
+  viewers: number;
+}
+
 interface RecordViewData {
   demoId: string;
   viewerHash: string;
@@ -154,6 +159,36 @@ export function createAnalyticsRepository(db: Database) {
         .where(and(...conditions))
         .groupBy(dailyBucketSql)
         .orderBy(asc(dailyBucketSql));
+    },
+
+    async getStepDropoff(
+      demoId: string,
+      dateRange?: DateRange,
+    ): Promise<StepDropoff[]> {
+      const conditions = buildConditions(demoId, dateRange);
+
+      // Get the max totalSteps for this demo and each view's stepsViewed
+      const rows = await db
+        .select({
+          stepsViewed: demoViews.stepsViewed,
+          totalSteps: demoViews.totalSteps,
+        })
+        .from(demoViews)
+        .where(and(...conditions));
+
+      if (rows.length === 0) return [];
+
+      // Use max totalSteps across all views for step count
+      const maxSteps = Math.max(...rows.map((r) => r.totalSteps));
+
+      // For each step K (1..maxSteps), count viewers who reached at least step K
+      const result: StepDropoff[] = [];
+      for (let step = 1; step <= maxSteps; step++) {
+        const viewers = rows.filter((r) => r.stepsViewed >= step).length;
+        result.push({ step, viewers });
+      }
+
+      return result;
     },
   };
 }

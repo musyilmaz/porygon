@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 
-import { DemoList } from "@/components/dashboard/demo-list";
+import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import { getSession } from "@/lib/get-session";
 import { getDemoService } from "@/lib/services/demo.service";
 import { getWorkspaceService } from "@/lib/services/workspace.service";
 
-export default async function DemosPage() {
+export default async function AnalyticsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
@@ -21,5 +21,5 @@ export default async function DemosPage() {
   );
   const demos = allDemos.filter((d) => d.status !== "archived");
 
-  return <DemoList initialDemos={demos} workspaceId={workspace.id} />;
+  return <AnalyticsOverview demos={demos} />;
 }

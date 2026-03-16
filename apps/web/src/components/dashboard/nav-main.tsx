@@ -7,13 +7,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@porygon/ui/components/sidebar";
-import { LayoutDashboard, Play } from "lucide-react";
+import { BarChart3, LayoutDashboard, Play } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Demos", url: "/dashboard/demos", icon: Play },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exact: true },
+  { title: "Demos", url: "/dashboard/demos", icon: Play, exact: false },
+  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3, exact: false },
 ];
 
 export function NavMain() {
@@ -28,8 +29,10 @@ export function NavMain() {
             <SidebarMenuButton
               asChild
               isActive={
-                pathname === item.url ||
-                pathname.startsWith(item.url + "/")
+                item.exact
+                  ? pathname === item.url
+                  : pathname === item.url ||
+                    pathname.startsWith(item.url + "/")
               }
             >
               <Link href={item.url}>

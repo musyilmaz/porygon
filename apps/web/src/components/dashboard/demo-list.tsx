@@ -255,6 +255,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
               onPublish={() => handlePublish(demo)}
               onUnpublish={() => handleUnpublish(demo)}
               onCopyLink={() => handleCopyLink(demo)}
+              onAnalytics={() => router.push(`/dashboard/demos/${demo.id}/analytics`)}
             />
           ))}
         </div>
@@ -271,6 +272,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
               onPublish={() => handlePublish(demo)}
               onUnpublish={() => handleUnpublish(demo)}
               onCopyLink={() => handleCopyLink(demo)}
+              onAnalytics={() => router.push(`/dashboard/demos/${demo.id}/analytics`)}
             />
           ))}
         </div>

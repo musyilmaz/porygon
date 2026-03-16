@@ -26,5 +26,8 @@
   "devDependencies": {
     "prettier": "^3",
     "turbo": "^2"
+  },
+  "dependencies": {
+    "recharts": "^3.8.0"
   }
 }

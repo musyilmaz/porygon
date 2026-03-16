@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { DemoList } from "@/components/dashboard/demo-list";
+import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { getSession } from "@/lib/get-session";
 import { getDemoService } from "@/lib/services/demo.service";
 import { getWorkspaceService } from "@/lib/services/workspace.service";
@@ -21,5 +21,5 @@ export default async function DashboardPage() {
   );
   const demos = allDemos.filter((d) => d.status !== "archived");
 
-  return <DemoList initialDemos={demos} workspaceId={workspace.id} />;
+  return <DashboardOverview demos={demos} workspaceId={workspace.id} />;
 }

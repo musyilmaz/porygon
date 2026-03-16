@@ -45,6 +45,7 @@ function createMockRepos() {
       getByDemo: vi.fn(),
       getAggregates: vi.fn(),
       getDailyStats: vi.fn(),
+      getStepDropoff: vi.fn(),
     },
     demoRepo: {
       getById: vi.fn(),
@@ -287,6 +288,51 @@ describe("AnalyticsService", () => {
       await service.getDailyStats("demo_1", dateRange);
 
       expect(repos.analyticsRepo.getDailyStats).toHaveBeenCalledWith(
+        "demo_1",
+        dateRange,
+      );
+    });
+  });
+
+  // --- getStepDropoff ---
+  describe("getStepDropoff", () => {
+    it("returns step dropoff for existing demo", async () => {
+      const dropoff = [
+        { step: 1, viewers: 100 },
+        { step: 2, viewers: 80 },
+        { step: 3, viewers: 50 },
+      ];
+      repos.demoRepo.getById.mockResolvedValue(mockDemo());
+      repos.analyticsRepo.getStepDropoff.mockResolvedValue(dropoff);
+
+      const result = await service.getStepDropoff("demo_1");
+
+      expect(result).toEqual(dropoff);
+      expect(repos.analyticsRepo.getStepDropoff).toHaveBeenCalledWith(
+        "demo_1",
+        undefined,
+      );
+    });
+
+    it("throws NotFoundError when demo does not exist", async () => {
+      repos.demoRepo.getById.mockResolvedValue(undefined);
+
+      await expect(
+        service.getStepDropoff("nonexistent"),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it("passes dateRange to repo", async () => {
+      repos.demoRepo.getById.mockResolvedValue(mockDemo());
+      repos.analyticsRepo.getStepDropoff.mockResolvedValue([]);
+
+      const dateRange = {
+        from: new Date("2025-01-01"),
+        to: new Date("2025-01-31"),
+      };
+      await service.getStepDropoff("demo_1", dateRange);
+
+      expect(repos.analyticsRepo.getStepDropoff).toHaveBeenCalledWith(
         "demo_1",
         dateRange,
       );

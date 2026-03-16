@@ -3,6 +3,7 @@ export type {
   DailyStats,
   DateRange,
   DemoAggregates,
+  StepDropoff,
 } from "./analytics.repository";
 export { createAnnotationRepository } from "./annotation.repository";
 export { createDemoRepository } from "./demo.repository";

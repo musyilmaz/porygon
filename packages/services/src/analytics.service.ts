@@ -77,5 +77,10 @@ export function createAnalyticsService({
       await getDemoOrThrow(demoId);
       return analyticsRepo.getDailyStats(demoId, dateRange);
     },
+
+    async getStepDropoff(demoId: string, dateRange?: DateRange) {
+      await getDemoOrThrow(demoId);
+      return analyticsRepo.getStepDropoff(demoId, dateRange);
+    },
   };
 }

@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@porygon/ui/components/dropdown-menu";
 import {
+  BarChart3,
   Copy,
   Eye,
   Footprints,
@@ -32,6 +33,7 @@ interface DemoCardProps {
   onPublish: () => void;
   onUnpublish: () => void;
   onCopyLink: () => void;
+  onAnalytics: () => void;
 }
 
 const statusConfig = {
@@ -89,6 +91,7 @@ function ActionsMenu({
   onPublish,
   onUnpublish,
   onCopyLink,
+  onAnalytics,
 }: Omit<DemoCardProps, "layout">) {
   return (
     <DropdownMenu>
@@ -109,6 +112,10 @@ function ActionsMenu({
         <DropdownMenuItem onClick={onDuplicate}>
           <Copy />
           Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onAnalytics}>
+          <BarChart3 />
+          Analytics
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {demo.status === "published" ? (
