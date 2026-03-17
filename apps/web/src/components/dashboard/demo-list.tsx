@@ -1,6 +1,7 @@
 "use client";
 
 import type { DemoWithStats } from "@porygon/services";
+import type { DemoStatus } from "@porygon/shared";
 import { Button } from "@porygon/ui/components/button";
 import { Input } from "@porygon/ui/components/input";
 import { toast } from "@porygon/ui/components/sonner";
@@ -16,6 +17,7 @@ import { useMemo, useState } from "react";
 import { DeleteDemoDialog } from "@/components/dashboard/delete-demo-dialog";
 import { DemoCard } from "@/components/dashboard/demo-card";
 import { DemoEmptyState } from "@/components/dashboard/demo-empty-state";
+import { ShareModal } from "@/components/share-modal";
 import { apiError, fetchOpts } from "@/lib/editor/api-utils";
 
 type StatusFilter = "all" | "draft" | "published";
@@ -33,6 +35,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [deletingDemo, setDeletingDemo] = useState<DemoWithStats | null>(null);
+  const [sharingDemo, setSharingDemo] = useState<{ slug: string; status: DemoStatus } | null>(null);
 
   const filtered = useMemo(() => {
     let result = demos;
@@ -170,12 +173,6 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
     }
   }
 
-  function handleCopyLink(demo: DemoWithStats) {
-    const url = `${window.location.origin}/share/${demo.slug}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copied");
-  }
-
   const statuses: { value: StatusFilter; label: string }[] = [
     { value: "all", label: "All" },
     { value: "draft", label: "Draft" },
@@ -254,7 +251,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
               onDuplicate={() => handleDuplicate(demo.id)}
               onPublish={() => handlePublish(demo)}
               onUnpublish={() => handleUnpublish(demo)}
-              onCopyLink={() => handleCopyLink(demo)}
+              onShare={() => setSharingDemo({ slug: demo.slug, status: demo.status as DemoStatus })}
               onAnalytics={() => router.push(`/dashboard/demos/${demo.id}/analytics`)}
             />
           ))}
@@ -271,7 +268,7 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
               onDuplicate={() => handleDuplicate(demo.id)}
               onPublish={() => handlePublish(demo)}
               onUnpublish={() => handleUnpublish(demo)}
-              onCopyLink={() => handleCopyLink(demo)}
+              onShare={() => setSharingDemo({ slug: demo.slug, status: demo.status as DemoStatus })}
               onAnalytics={() => router.push(`/dashboard/demos/${demo.id}/analytics`)}
             />
           ))}
@@ -287,6 +284,17 @@ export function DemoList({ initialDemos, workspaceId }: DemoListProps) {
           if (deletingDemo) handleDelete(deletingDemo.id);
         }}
       />
+
+      {sharingDemo && (
+        <ShareModal
+          slug={sharingDemo.slug}
+          status={sharingDemo.status}
+          open
+          onOpenChange={(open) => {
+            if (!open) setSharingDemo(null);
+          }}
+        />
+      )}
     </div>
   );
 }

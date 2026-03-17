@@ -17,7 +17,7 @@ import {
   Footprints,
   Globe,
   GlobeLock,
-  Link,
+  Share2,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -32,7 +32,7 @@ interface DemoCardProps {
   onDuplicate: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
-  onCopyLink: () => void;
+  onShare: () => void;
   onAnalytics: () => void;
 }
 
@@ -90,7 +90,7 @@ function ActionsMenu({
   onDuplicate,
   onPublish,
   onUnpublish,
-  onCopyLink,
+  onShare,
   onAnalytics,
 }: Omit<DemoCardProps, "layout">) {
   return (
@@ -129,9 +129,9 @@ function ActionsMenu({
             Publish
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onClick={onCopyLink}>
-          <Link />
-          Copy share link
+        <DropdownMenuItem onClick={onShare}>
+          <Share2 />
+          Share
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={onDelete}>

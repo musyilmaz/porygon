@@ -70,6 +70,7 @@ export interface EditorState {
 
   isPreviewOpen: boolean;
   isShortcutsHelpOpen: boolean;
+  isShareOpen: boolean;
 
   isDirty: boolean;
   isSaving: boolean;
@@ -118,6 +119,7 @@ export interface EditorActions {
   setTool: (tool: ActiveTool) => void;
   setPreviewOpen: (open: boolean) => void;
   setShortcutsHelpOpen: (open: boolean) => void;
+  setShareOpen: (open: boolean) => void;
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
 

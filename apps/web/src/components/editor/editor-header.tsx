@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@porygon/ui/components/tooltip";
-import { ArrowLeft, Keyboard, Play, Redo2, Undo2 } from "lucide-react";
+import { ArrowLeft, Keyboard, Play, Redo2, Share2, Undo2 } from "lucide-react";
 import Link from "next/link";
 
 import { SaveIndicator } from "./save-indicator";
@@ -21,6 +21,7 @@ export function EditorHeader() {
   const steps = useEditorStore((s) => s.steps);
   const setPreviewOpen = useEditorStore((s) => s.setPreviewOpen);
   const setShortcutsHelpOpen = useEditorStore((s) => s.setShortcutsHelpOpen);
+  const setShareOpen = useEditorStore((s) => s.setShareOpen);
   const undo = useEditorTemporalStore((s) => s.undo);
   const redo = useEditorTemporalStore((s) => s.redo);
   const pastStates = useEditorTemporalStore((s) => s.pastStates);
@@ -69,6 +70,19 @@ export function EditorHeader() {
           </Button>
         </TooltipTrigger>
         <TooltipContent>Preview (Ctrl+P)</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setShareOpen(true)}
+          >
+            <Share2 className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Share</TooltipContent>
       </Tooltip>
 
       <div className="flex items-center gap-1">

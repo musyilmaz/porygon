@@ -10,6 +10,7 @@ const PUBLIC_ROUTES = [
   "/embed",
   "/api/auth",
   "/api/analytics",
+  "/api/public",
 ];
 
 function isPublicRoute(pathname: string): boolean {

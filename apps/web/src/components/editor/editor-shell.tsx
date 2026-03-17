@@ -10,10 +10,30 @@ import { EditorLayout } from "./editor-layout";
 import { PreviewModal } from "./preview-modal";
 import { ShortcutsDialog } from "./shortcuts-dialog";
 
-import { EditorStoreProvider } from "@/stores/editor/editor-store-provider";
+import { ShareModal } from "@/components/share-modal";
+import {
+  EditorStoreProvider,
+  useEditorStore,
+} from "@/stores/editor/editor-store-provider";
 import type { EditorInitialData } from "@/stores/editor/types";
 import { useAutoSave } from "@/stores/editor/use-auto-save";
 import { useEditorShortcuts } from "@/stores/editor/use-editor-shortcuts";
+
+function EditorShareModal() {
+  const slug = useEditorStore((s) => s.demo.slug);
+  const status = useEditorStore((s) => s.demo.status);
+  const isShareOpen = useEditorStore((s) => s.isShareOpen);
+  const setShareOpen = useEditorStore((s) => s.setShareOpen);
+
+  return (
+    <ShareModal
+      slug={slug}
+      status={status}
+      open={isShareOpen}
+      onOpenChange={setShareOpen}
+    />
+  );
+}
 
 function EditorInner() {
   useAutoSave();
@@ -34,6 +54,7 @@ function EditorInner() {
       <EditorLayout />
       <PreviewModal />
       <ShortcutsDialog />
+      <EditorShareModal />
     </div>
   );
 }

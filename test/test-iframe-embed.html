@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iframe Embed Test</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f5f5f5;
+        padding: 2rem;
+      }
+      h1 {
+        margin-bottom: 0.5rem;
+      }
+      p {
+        color: #666;
+        margin-bottom: 1.5rem;
+      }
+      .demo-container {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        max-width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>iframe Embed Test</h1>
+    <p>
+      Replace <code>YOUR_SLUG</code> below with a real demo slug. The app must
+      be running at the origin specified in the iframe src.
+    </p>
+
+    <div class="demo-container">
+      <!-- Replace YOUR_SLUG with your demo slug, and adjust origin/dimensions as needed -->
+      <iframe
+        src="http://localhost:3000/embed/googlecom-mar-16"
+        width="800"
+        height="600"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </body>
+</html>
