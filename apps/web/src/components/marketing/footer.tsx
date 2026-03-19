@@ -5,7 +5,7 @@ import { ScrollLink } from "@/components/marketing/scroll-link";
 
 const productLinks = [
   { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Changelog", href: "#" },
 ];
 
@@ -35,12 +35,21 @@ export function Footer() {
             <ul className="mt-3 space-y-2">
               {productLinks.map((link) => (
                 <li key={link.label}>
-                  <ScrollLink
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </ScrollLink>
+                  {link.href.startsWith("#") ? (
+                    <ScrollLink
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </ScrollLink>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

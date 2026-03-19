@@ -15,7 +15,7 @@ import { ScrollLink } from "@/components/marketing/scroll-link";
 
 const navLinks = [
   { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Pricing", href: "/pricing" },
   { label: "How It Works", href: "#how-it-works" },
 ];
 
@@ -32,15 +32,25 @@ export function Navbar() {
         {/* Desktop */}
         <div className="hidden items-center gap-8 md:flex">
           <div className="flex items-center gap-6">
-            {navLinks.map((link) => (
-              <ScrollLink
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </ScrollLink>
-            ))}
+            {navLinks.map((link) =>
+              link.href.startsWith("#") ? (
+                <ScrollLink
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </ScrollLink>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
@@ -67,16 +77,27 @@ export function Navbar() {
           <SheetContent side="right" className="w-[280px]">
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <div className="flex flex-col gap-6 pt-8">
-              {navLinks.map((link) => (
-                <ScrollLink
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {link.label}
-                </ScrollLink>
-              ))}
+              {navLinks.map((link) =>
+                link.href.startsWith("#") ? (
+                  <ScrollLink
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {link.label}
+                  </ScrollLink>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
               <div className="flex flex-col gap-3 pt-4">
                 <Button variant="outline" asChild>
                   <Link href="/login">Log in</Link>
