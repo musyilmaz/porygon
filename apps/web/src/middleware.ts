@@ -6,6 +6,7 @@ const PUBLIC_ROUTES = [
   "/signup",
   "/pricing",
   "/blog",
+  "/compare",
   "/share",
   "/embed",
   "/api/auth",

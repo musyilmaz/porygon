@@ -9,6 +9,12 @@ const productLinks = [
   { label: "Changelog", href: "#" },
 ];
 
+const compareLinks = [
+  { label: "vs Arcade", href: "/compare/arcade" },
+  { label: "vs Storylane", href: "/compare/storylane" },
+  { label: "vs Supademo", href: "/compare/supademo" },
+];
+
 const companyLinks = [{ label: "About", href: "#" }];
 
 const legalLinks = [
@@ -20,7 +26,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           <div>
             <Link href="/" className="text-lg font-bold tracking-tight">
               Porygon
@@ -50,6 +56,22 @@ export function Footer() {
                       {link.label}
                     </Link>
                   )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold">Compare</h3>
+            <ul className="mt-3 space-y-2">
+              {compareLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
