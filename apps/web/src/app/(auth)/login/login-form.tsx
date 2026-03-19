@@ -52,7 +52,11 @@ export function LoginForm() {
 
     if (error) {
       setLoading(false);
-      setServerError(error.message ?? "Something went wrong. Please try again.");
+      if (error.code === "EMAIL_NOT_VERIFIED") {
+        setServerError("EMAIL_NOT_VERIFIED");
+      } else {
+        setServerError(error.message ?? "Something went wrong. Please try again.");
+      }
       return;
     }
 
@@ -108,11 +112,23 @@ export function LoginForm() {
                 <FieldError>{fieldErrors.password}</FieldError>
               )}
             </Field>
-            {serverError && (
+            {serverError && serverError === "EMAIL_NOT_VERIFIED" ? (
+              <div className="text-sm text-center space-y-1">
+                <p className="text-destructive">
+                  Please verify your email before logging in.
+                </p>
+                <Link
+                  href={`/verify-email?email=${encodeURIComponent(email)}`}
+                  className="text-primary underline underline-offset-4"
+                >
+                  Resend verification email
+                </Link>
+              </div>
+            ) : serverError ? (
               <p className="text-destructive text-sm text-center">
                 {serverError}
               </p>
-            )}
+            ) : null}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="animate-spin" />}
               Login

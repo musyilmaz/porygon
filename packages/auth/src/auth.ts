@@ -16,9 +16,17 @@ function createAuth() {
     }),
     emailAndPassword: {
       enabled: true,
+      requireEmailVerification: true,
       sendResetPassword: async ({ user, url }) => {
         console.log(`[Password Reset] To: ${user.email}, URL: ${url}`);
       },
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        console.log(`[Email Verification] To: ${user.email}, URL: ${url}`);
+      },
+      autoSignInAfterVerification: true,
     },
     socialProviders: {
       google: {

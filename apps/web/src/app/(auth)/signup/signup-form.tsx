@@ -48,6 +48,7 @@ export function SignupForm() {
       name,
       email,
       password,
+      callbackURL: "/onboarding",
     });
 
     if (error) {
@@ -56,7 +57,7 @@ export function SignupForm() {
       return;
     }
 
-    router.push("/onboarding");
+    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
   }
 
   return (
