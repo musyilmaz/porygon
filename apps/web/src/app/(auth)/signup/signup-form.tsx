@@ -119,6 +119,17 @@ export function SignupForm() {
               {loading && <Loader2 className="animate-spin" />}
               Sign up
             </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              By signing up, you agree to our{" "}
+              <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </FieldGroup>
         </form>
         <div className="mt-4 text-center text-sm">

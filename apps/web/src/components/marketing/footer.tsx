@@ -18,8 +18,8 @@ const compareLinks = [
 const companyLinks = [{ label: "About", href: "#" }];
 
 const legalLinks = [
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms of Service", href: "#" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
 ];
 
 export function Footer() {
@@ -98,12 +98,12 @@ export function Footer() {
             <ul className="mt-3 space-y-2">
               {legalLinks.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

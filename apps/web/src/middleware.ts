@@ -10,6 +10,8 @@ const PUBLIC_ROUTES = [
   "/pricing",
   "/blog",
   "/compare",
+  "/terms",
+  "/privacy",
   "/share",
   "/embed",
   "/api/auth",
