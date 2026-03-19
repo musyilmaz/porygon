@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@porygon/auth/client";
-import { loginSchema } from "@porygon/shared/validators";
+import { resetPasswordSchema } from "@porygon/shared/validators";
 import { Button } from "@porygon/ui/components/button";
 import {
   Card,
@@ -17,13 +17,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-export function LoginForm() {
+export function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const token = searchParams.get("token");
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,70 +33,70 @@ export function LoginForm() {
     setFieldErrors({});
     setServerError("");
 
-    const result = loginSchema.safeParse({ email, password });
+    const result = resetPasswordSchema.safeParse({ password, confirmPassword });
     if (!result.success) {
-      const flat = result.error.flatten().fieldErrors;
+      const flat = result.error.flatten();
       const errors: Record<string, string> = {};
-      for (const [key, messages] of Object.entries(flat)) {
+      for (const [key, messages] of Object.entries(flat.fieldErrors)) {
         if (messages?.[0]) errors[key] = messages[0];
+      }
+      if (flat.formErrors[0]) {
+        errors.confirmPassword = flat.formErrors[0];
       }
       setFieldErrors(errors);
       return;
     }
 
     setLoading(true);
-    const { error } = await authClient.signIn.email({
-      email,
-      password,
+    const { error } = await authClient.resetPassword({
+      newPassword: password,
+      token: token!,
     });
 
+    setLoading(false);
+
     if (error) {
-      setLoading(false);
       setServerError(error.message ?? "Something went wrong. Please try again.");
       return;
     }
 
-    router.push(callbackUrl);
+    router.push("/login?reset=success");
+  }
+
+  if (!token) {
+    return (
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Invalid reset link</CardTitle>
+          <CardDescription>
+            This password reset link is invalid or has expired.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-sm">
+            <Link
+              href="/forgot-password"
+              className="underline underline-offset-4"
+            >
+              Request a new reset link
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">Welcome back</CardTitle>
-        <CardDescription>Login to your account</CardDescription>
+        <CardTitle className="text-xl">Reset password</CardTitle>
+        <CardDescription>Enter your new password</CardDescription>
       </CardHeader>
       <CardContent>
-        {searchParams.get("reset") === "success" && (
-          <p className="text-sm text-center text-green-600 mb-4">
-            Password reset successfully. Please log in.
-          </p>
-        )}
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                aria-invalid={!!fieldErrors.email}
-              />
-              {fieldErrors.email && (
-                <FieldError>{fieldErrors.email}</FieldError>
-              )}
-            </Field>
-            <Field>
-              <div className="flex items-center justify-between">
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm underline underline-offset-4"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <FieldLabel htmlFor="password">New password</FieldLabel>
               <Input
                 id="password"
                 type="password"
@@ -108,6 +108,21 @@ export function LoginForm() {
                 <FieldError>{fieldErrors.password}</FieldError>
               )}
             </Field>
+            <Field>
+              <FieldLabel htmlFor="confirmPassword">
+                Confirm password
+              </FieldLabel>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                aria-invalid={!!fieldErrors.confirmPassword}
+              />
+              {fieldErrors.confirmPassword && (
+                <FieldError>{fieldErrors.confirmPassword}</FieldError>
+              )}
+            </Field>
             {serverError && (
               <p className="text-destructive text-sm text-center">
                 {serverError}
@@ -115,14 +130,13 @@ export function LoginForm() {
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="animate-spin" />}
-              Login
+              Reset password
             </Button>
           </FieldGroup>
         </form>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline underline-offset-4">
-            Sign up
+          <Link href="/login" className="underline underline-offset-4">
+            Back to login
           </Link>
         </div>
       </CardContent>

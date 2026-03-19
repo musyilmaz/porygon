@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@porygon/auth/client";
-import { loginSchema } from "@porygon/shared/validators";
+import { forgotPasswordSchema } from "@porygon/shared/validators";
 import { Button } from "@porygon/ui/components/button";
 import {
   Card,
@@ -14,26 +14,21 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@porygon/ui/component
 import { Input } from "@porygon/ui/components/input";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-export function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-
+export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFieldErrors({});
     setServerError("");
 
-    const result = loginSchema.safeParse({ email, password });
+    const result = forgotPasswordSchema.safeParse({ email });
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors;
       const errors: Record<string, string> = {};
@@ -45,32 +40,51 @@ export function LoginForm() {
     }
 
     setLoading(true);
-    const { error } = await authClient.signIn.email({
+    const { error } = await authClient.requestPasswordReset({
       email,
-      password,
+      redirectTo: "/reset-password",
     });
 
+    setLoading(false);
+
     if (error) {
-      setLoading(false);
       setServerError(error.message ?? "Something went wrong. Please try again.");
       return;
     }
 
-    router.push(callbackUrl);
+    setSuccess(true);
+  }
+
+  if (success) {
+    return (
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Check your email</CardTitle>
+          <CardDescription>
+            If an account exists with that email, we&apos;ve sent a password
+            reset link.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-sm">
+            <Link href="/login" className="underline underline-offset-4">
+              Back to login
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">Welcome back</CardTitle>
-        <CardDescription>Login to your account</CardDescription>
+        <CardTitle className="text-xl">Forgot password</CardTitle>
+        <CardDescription>
+          Enter your email and we&apos;ll send you a reset link
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        {searchParams.get("reset") === "success" && (
-          <p className="text-sm text-center text-green-600 mb-4">
-            Password reset successfully. Please log in.
-          </p>
-        )}
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
@@ -87,27 +101,6 @@ export function LoginForm() {
                 <FieldError>{fieldErrors.email}</FieldError>
               )}
             </Field>
-            <Field>
-              <div className="flex items-center justify-between">
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm underline underline-offset-4"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                aria-invalid={!!fieldErrors.password}
-              />
-              {fieldErrors.password && (
-                <FieldError>{fieldErrors.password}</FieldError>
-              )}
-            </Field>
             {serverError && (
               <p className="text-destructive text-sm text-center">
                 {serverError}
@@ -115,14 +108,13 @@ export function LoginForm() {
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="animate-spin" />}
-              Login
+              Send reset link
             </Button>
           </FieldGroup>
         </form>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline underline-offset-4">
-            Sign up
+          <Link href="/login" className="underline underline-offset-4">
+            Back to login
           </Link>
         </div>
       </CardContent>

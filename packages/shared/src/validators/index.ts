@@ -51,8 +51,12 @@ export {
 export {
   loginSchema,
   signupSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
   type LoginInput,
   type SignupInput,
+  type ForgotPasswordInput,
+  type ResetPasswordInput,
 } from "./auth.schema";
 
 export {
