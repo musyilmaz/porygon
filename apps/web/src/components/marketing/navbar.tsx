@@ -7,26 +7,43 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@porygon/ui/components/sheet";
+import { cn } from "@porygon/ui/lib/utils";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { Logo } from "@/components/marketing/logo";
 import { ScrollLink } from "@/components/marketing/scroll-link";
 
 const navLinks = [
   { label: "Features", href: "#features" },
-  { label: "Pricing", href: "/pricing" },
   { label: "How It Works", href: "#how-it-works" },
+  { label: "Compare", href: "#compare" },
+  { label: "Pricing", href: "#pricing" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Porygon
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-colors duration-200",
+        scrolled
+          ? "border-b bg-background/90 backdrop-blur-md"
+          : "bg-transparent"
+      )}
+    >
+      <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" aria-label="dot home">
+          <Logo variant={scrolled ? "dark" : "light"} />
         </Link>
 
         {/* Desktop */}
@@ -37,7 +54,12 @@ export function Navbar() {
                 <ScrollLink
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className={cn(
+                    "text-sm font-medium transition-colors",
+                    scrolled
+                      ? "text-muted-foreground hover:text-foreground"
+                      : "text-zinc-400 hover:text-white"
+                  )}
                 >
                   {link.label}
                 </ScrollLink>
@@ -45,7 +67,12 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className={cn(
+                    "text-sm font-medium transition-colors",
+                    scrolled
+                      ? "text-muted-foreground hover:text-foreground"
+                      : "text-zinc-400 hover:text-white"
+                  )}
                 >
                   {link.label}
                 </Link>
@@ -53,12 +80,25 @@ export function Navbar() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                scrolled
+                  ? ""
+                  : "text-zinc-300 hover:bg-white/5 hover:text-white"
+              )}
+              asChild
+            >
               <Link href="/login">Log in</Link>
             </Button>
             <Button
               size="sm"
-              className="bg-violet-600 text-white hover:bg-violet-700"
+              className={cn(
+                scrolled
+                  ? "bg-violet-600 text-white hover:bg-violet-700"
+                  : "bg-white text-[#09090B] hover:bg-zinc-100"
+              )}
               asChild
             >
               <Link href="/signup">Start Free</Link>
@@ -69,7 +109,14 @@ export function Navbar() {
         {/* Mobile */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "md:hidden",
+                !scrolled && "text-zinc-300 hover:bg-white/5 hover:text-white"
+              )}
+            >
               <Menu className="size-5" />
               <span className="sr-only">Open menu</span>
             </Button>
