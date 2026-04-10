@@ -1,9 +1,23 @@
-import type { HotspotStyle, TooltipPosition } from "@porygon/shared";
+import type { HotspotStyle, HotspotType, TooltipPosition } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
-import { jsonb, pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  jsonb,
+  pgEnum,
+  pgTable,
+  real,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 import { steps } from "./steps";
+
+export const hotspotTypeEnum = pgEnum("hotspot_type", [
+  "click_zone",
+  "area",
+  "callout",
+]);
 
 export const hotspots = pgTable("hotspots", {
   id: text("id")
@@ -12,6 +26,7 @@ export const hotspots = pgTable("hotspots", {
   stepId: text("step_id")
     .notNull()
     .references(() => steps.id, { onDelete: "cascade" }),
+  type: hotspotTypeEnum("type").notNull().default("click_zone").$type<HotspotType>(),
   x: real("x").notNull(),
   y: real("y").notNull(),
   width: real("width").notNull(),
@@ -20,6 +35,7 @@ export const hotspots = pgTable("hotspots", {
   tooltipContent: jsonb("tooltip_content").$type<Record<string, unknown>>(),
   tooltipPosition: text("tooltip_position").notNull().default("bottom").$type<TooltipPosition>(),
   style: jsonb("style").$type<HotspotStyle>().default({}),
+  openByDefault: boolean("open_by_default").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

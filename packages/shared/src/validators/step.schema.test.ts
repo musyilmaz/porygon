@@ -11,6 +11,9 @@ describe("createStepSchema", () => {
       actionType: "click",
     });
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.mediaType).toBe("image");
+    }
   });
 
   it("accepts valid input with coordinates", () => {
@@ -95,6 +98,55 @@ describe("createStepSchema", () => {
       });
       expect(result.success).toBe(true);
     }
+  });
+
+  it("accepts video mediaType with videoUrl", () => {
+    const result = createStepSchema.safeParse({
+      demoId: "demo_123",
+      orderIndex: 0,
+      screenshotUrl: "https://cdn.example.com/screenshot.png",
+      actionType: "click",
+      mediaType: "video",
+      videoUrl: "https://cdn.example.com/capture.webm",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.mediaType).toBe("video");
+      expect(result.data.videoUrl).toBe("https://cdn.example.com/capture.webm");
+    }
+  });
+
+  it("accepts null videoUrl", () => {
+    const result = createStepSchema.safeParse({
+      demoId: "demo_123",
+      orderIndex: 0,
+      screenshotUrl: "https://cdn.example.com/screenshot.png",
+      actionType: "click",
+      videoUrl: null,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid mediaType", () => {
+    const result = createStepSchema.safeParse({
+      demoId: "demo_123",
+      orderIndex: 0,
+      screenshotUrl: "https://cdn.example.com/screenshot.png",
+      actionType: "click",
+      mediaType: "audio",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid videoUrl", () => {
+    const result = createStepSchema.safeParse({
+      demoId: "demo_123",
+      orderIndex: 0,
+      screenshotUrl: "https://cdn.example.com/screenshot.png",
+      actionType: "click",
+      videoUrl: "not-a-url",
+    });
+    expect(result.success).toBe(false);
   });
 });
 

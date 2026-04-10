@@ -1,4 +1,4 @@
-import type { Coordinates } from "@porygon/shared";
+import type { Coordinates, MediaType } from "@porygon/shared";
 import { generateId } from "@porygon/shared/utils";
 import { relations } from "drizzle-orm";
 import {
@@ -21,6 +21,8 @@ export const actionTypeEnum = pgEnum("action_type", [
   "navigation",
 ]);
 
+export const mediaTypeEnum = pgEnum("media_type", ["image", "video"]);
+
 export const steps = pgTable("steps", {
   id: text("id")
     .primaryKey()
@@ -30,6 +32,8 @@ export const steps = pgTable("steps", {
     .references(() => demos.id, { onDelete: "cascade" }),
   orderIndex: integer("order_index").notNull(),
   screenshotUrl: text("screenshot_url"),
+  mediaType: mediaTypeEnum("media_type").notNull().default("image").$type<MediaType>(),
+  videoUrl: text("video_url"),
   actionType: actionTypeEnum("action_type"),
   actionCoordinates:
     jsonb("action_coordinates").$type<Coordinates>(),

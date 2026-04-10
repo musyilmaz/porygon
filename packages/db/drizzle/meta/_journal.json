@@ -29,6 +29,13 @@
       "when": 1773130418292,
       "tag": "0003_pink_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775856937817,
+      "tag": "0004_even_mac_gargan",
+      "breakpoints": true
     }
   ]
 }

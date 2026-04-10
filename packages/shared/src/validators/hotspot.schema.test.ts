@@ -14,6 +14,8 @@ describe("createHotspotSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.tooltipPosition).toBe("bottom");
+      expect(result.data.type).toBe("click_zone");
+      expect(result.data.openByDefault).toBe(false);
     }
   });
 
@@ -128,6 +130,117 @@ describe("createHotspotSchema", () => {
       targetStepId: null,
     });
     expect(result.success).toBe(true);
+  });
+
+  it("accepts all hotspot types", () => {
+    for (const type of ["click_zone", "area", "callout"]) {
+      const result = createHotspotSchema.safeParse({
+        stepId: "step_123",
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type,
+      });
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it("rejects invalid hotspot type", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      type: "tooltip",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts openByDefault true", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      openByDefault: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.openByDefault).toBe(true);
+    }
+  });
+
+  it("accepts area style fields", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      type: "area",
+      style: {
+        overlayColor: "#ff0000",
+        overlayOpacity: 0.5,
+        shape: "rounded",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid shape", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      style: { shape: "circle" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts callout style fields", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      type: "callout",
+      style: {
+        pointerDirection: "top-left",
+        showButton: true,
+        buttonText: "Next",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid pointer direction", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      style: { pointerDirection: "center" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid overlay hex color", () => {
+    const result = createHotspotSchema.safeParse({
+      stepId: "step_123",
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      style: { overlayColor: "red" },
+    });
+    expect(result.success).toBe(false);
   });
 });
 

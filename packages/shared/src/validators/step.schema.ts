@@ -1,11 +1,13 @@
 import { z } from "zod";
 
-import { ACTION_TYPES } from "../constants/demo";
+import { ACTION_TYPES, MEDIA_TYPES } from "../constants/demo";
 
 export const createStepSchema = z.object({
   demoId: z.string().min(1, "Demo ID is required"),
   orderIndex: z.number().int().min(0),
   screenshotUrl: z.string().min(1, "Screenshot URL is required"),
+  mediaType: z.enum(MEDIA_TYPES).default("image"),
+  videoUrl: z.string().url().nullish(),
   actionType: z.enum(ACTION_TYPES),
   actionCoordinates: z
     .object({
@@ -17,6 +19,8 @@ export const createStepSchema = z.object({
 
 export const createStepBodySchema = z.object({
   screenshotUrl: z.string().min(1).optional(),
+  mediaType: z.enum(MEDIA_TYPES).default("image"),
+  videoUrl: z.string().url().nullish(),
   actionType: z.enum(ACTION_TYPES).optional(),
   actionCoordinates: z
     .object({
@@ -29,6 +33,8 @@ export const createStepBodySchema = z.object({
 export const updateStepSchema = z.object({
   orderIndex: z.number().int().min(0).optional(),
   screenshotUrl: z.string().min(1).optional(),
+  mediaType: z.enum(MEDIA_TYPES).optional(),
+  videoUrl: z.string().url().nullish(),
   actionType: z.enum(ACTION_TYPES).optional(),
   actionCoordinates: z
     .object({
