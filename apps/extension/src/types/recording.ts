@@ -28,4 +28,5 @@ export interface RecordingSession {
   tabUrl: string;
   startedAt: number;
   status: RecordingStatus;
+  videoCaptureActive?: boolean;
 }

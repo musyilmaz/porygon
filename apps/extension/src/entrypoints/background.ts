@@ -1,6 +1,7 @@
 import { getSessionCookie } from "@/lib/api-client";
 import { recordingSession } from "@/lib/recording-state";
 import { addStep, clearSteps, getStepCount, getSteps } from "@/lib/recording-store";
+import { cleanupTabCapture, startTabCapture, stopTabCapture } from "@/lib/tab-capture";
 import {
   getUploadProgress,
   resetUploadProgress,
@@ -48,16 +49,27 @@ async function handleStart(
 
   await ensureContentScript(tabId);
 
+  // Attempt tab video capture (non-blocking on failure)
+  const videoCaptureActive = await startTabCapture(tabId);
+  if (!videoCaptureActive) {
+    console.warn("[Porygon] Tab capture unavailable, continuing screenshot-only");
+  }
+
   await recordingSession.setValue({
     tabId,
     tabUrl,
     startedAt: Date.now(),
     status: "recording",
+    videoCaptureActive,
   });
 
   await browser.tabs.sendMessage(tabId, { type: "RECORDING_STARTED" });
 
-  console.log("[Porygon] Recording started on tab", tabId);
+  console.log(
+    "[Porygon] Recording started on tab",
+    tabId,
+    videoCaptureActive ? "(with video)" : "(screenshot-only)",
+  );
   return { success: true, tabId };
 }
 
@@ -67,6 +79,16 @@ async function handleStop(
   await browser.tabs.sendMessage(tabId, { type: "RECORDING_STOPPED" });
 
   const session = await recordingSession.getValue();
+
+  // Stop video capture if active
+  if (session?.videoCaptureActive) {
+    const videoDataUrl = await stopTabCapture();
+    console.log(
+      "[Porygon] Video capture stopped",
+      videoDataUrl ? `(${(videoDataUrl.length / 1024 / 1024).toFixed(2)} MB data URL)` : "(no video)",
+    );
+  }
+
   if (session) {
     await recordingSession.setValue({ ...session, status: "done" });
   }
@@ -122,6 +144,7 @@ function handleGetSteps(): GetStepsResponse {
 async function handleNewRecording(): Promise<StateResponse> {
   clearSteps();
   resetUploadProgress();
+  await cleanupTabCapture();
   const cookie = await getSessionCookie();
   await recordingSession.setValue(null);
   return { status: "idle", stepCount: 0, tabUrl: null, isAuthenticated: cookie !== null };
@@ -285,6 +308,17 @@ export default defineBackground(() => {
 
       if (message.type === "GET_UPLOAD_PROGRESS") {
         sendResponse({ progress: getUploadProgress() } satisfies UploadProgressResponse);
+        return false;
+      }
+
+      if (message.type === "OFFSCREEN_CAPTURE_FAILED") {
+        console.warn("[Porygon] Video capture failed:", message.payload.error);
+        recordingSession.getValue().then(async (session) => {
+          if (session) {
+            await recordingSession.setValue({ ...session, videoCaptureActive: false });
+          }
+          await cleanupTabCapture();
+        });
         return false;
       }
 

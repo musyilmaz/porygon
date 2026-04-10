@@ -52,6 +52,22 @@ export interface ActionCapturedMessage {
   };
 }
 
+// Background → Offscreen
+export interface OffscreenStartCaptureMessage {
+  type: "OFFSCREEN_START_CAPTURE";
+  payload: { streamId: string };
+}
+
+export interface OffscreenStopCaptureMessage {
+  type: "OFFSCREEN_STOP_CAPTURE";
+}
+
+// Offscreen → Background
+export interface OffscreenCaptureFailedMessage {
+  type: "OFFSCREEN_CAPTURE_FAILED";
+  payload: { error: string };
+}
+
 // Background → Content
 export interface RecordingStartedMessage {
   type: "RECORDING_STARTED";
@@ -88,7 +104,10 @@ export type ExtensionMessage =
   | RecordingStoppedMessage
   | RecordingPausedMessage
   | RecordingResumedMessage
-  | PingMessage;
+  | PingMessage
+  | OffscreenStartCaptureMessage
+  | OffscreenStopCaptureMessage
+  | OffscreenCaptureFailedMessage;
 
 // Response types
 export interface StateResponse {
@@ -131,4 +150,15 @@ export interface SendToAppResponse {
 
 export interface UploadProgressResponse {
   progress: UploadProgress | null;
+}
+
+export interface OffscreenStartCaptureResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface OffscreenStopCaptureResponse {
+  success: boolean;
+  videoDataUrl?: string;
+  error?: string;
 }

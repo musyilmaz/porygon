@@ -6,7 +6,7 @@ export default defineConfig({
   manifest: {
     name: "Porygon",
     description: "Capture interactive product demos",
-    permissions: ["activeTab", "tabs", "scripting", "storage", "cookies"],
+    permissions: ["activeTab", "tabs", "scripting", "storage", "cookies", "tabCapture", "offscreen"],
     host_permissions: ["http://localhost:3000/*", "https://app.porygon.dev/*"],
   },
   dev: {
