@@ -1,6 +1,7 @@
 import {
   AuthRequiredError,
   createDemo,
+  createHotspot,
   createStep,
   getSessionCookie,
   getUploadUrl,
@@ -9,6 +10,8 @@ import {
 } from "@/lib/api-client";
 import type { CapturedStep } from "@/types/recording";
 import type { UploadProgress } from "@/types/recording";
+
+const HOTSPOT_SIZE = 40;
 
 let uploadProgress: UploadProgress | null = null;
 
@@ -94,7 +97,10 @@ export async function sendToApp(
       demoId: demo.id,
     };
 
-    // Upload each step sequentially
+    // Upload each step sequentially, collecting IDs for hotspot creation
+    const uploadedSteps: Array<{ stepId: string; capturedStep: CapturedStep }> =
+      [];
+
     for (let i = 0; i < steps.length; i++) {
       const capturedStep = steps[i]!;
 
@@ -121,8 +127,36 @@ export async function sendToApp(
       // Patch step with public URL
       await updateStep(demo.id, step.id, { screenshotUrl: publicUrl });
 
+      uploadedSteps.push({ stepId: step.id, capturedStep });
       setProgress({ completedSteps: i + 1 });
     }
+
+    // Create hotspots for click-type steps
+    const hotspotPromises = uploadedSteps
+      .filter(
+        ({ capturedStep }) =>
+          capturedStep.actionType === "click" &&
+          capturedStep.actionCoordinates !== null,
+      )
+      .map(({ stepId, capturedStep }) => {
+        const coords = capturedStep.actionCoordinates!;
+        const currentIndexInAll = uploadedSteps.findIndex(
+          (s) => s.stepId === stepId,
+        );
+        const nextStep = uploadedSteps[currentIndexInAll + 1];
+
+        return createHotspot(stepId, {
+          x: Math.max(0, coords.x - HOTSPOT_SIZE / 2),
+          y: Math.max(0, coords.y - HOTSPOT_SIZE / 2),
+          width: HOTSPOT_SIZE,
+          height: HOTSPOT_SIZE,
+          targetStepId: nextStep?.stepId ?? null,
+          tooltipPosition: "bottom",
+          style: { pulseAnimation: true },
+        });
+      });
+
+    await Promise.all(hotspotPromises);
 
     uploadProgress = {
       ...uploadProgress!,

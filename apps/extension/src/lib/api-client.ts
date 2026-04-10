@@ -76,6 +76,15 @@ interface Step {
   screenshotUrl: string | null;
 }
 
+interface Hotspot {
+  id: string;
+  stepId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface UploadUrlResponse {
   uploadUrl: string;
   publicUrl: string;
@@ -127,6 +136,24 @@ export function updateStep(
 ): Promise<Step> {
   return apiFetch<Step>(`/api/demos/${demoId}/steps/${stepId}`, {
     method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
+export function createHotspot(
+  stepId: string,
+  input: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    targetStepId?: string | null;
+    tooltipPosition?: string;
+    style?: Record<string, unknown>;
+  },
+): Promise<Hotspot> {
+  return apiFetch<Hotspot>(`/api/steps/${stepId}/hotspots`, {
+    method: "POST",
     body: JSON.stringify(input),
   });
 }
