@@ -8,12 +8,16 @@ interface CreateStepData {
   demoId: string;
   orderIndex: number;
   screenshotUrl?: Nullable<string>;
+  mediaType?: "image" | "video";
+  videoUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
   actionCoordinates?: Nullable<Coordinates>;
 }
 
 interface UpdateStepData {
   screenshotUrl?: Nullable<string>;
+  mediaType?: "image" | "video";
+  videoUrl?: Nullable<string>;
   actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
   actionCoordinates?: Nullable<Coordinates>;
 }

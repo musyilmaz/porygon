@@ -1,6 +1,7 @@
 import {
   ForbiddenError,
   MAX_UPLOAD_SIZE_BYTES,
+  MAX_VIDEO_UPLOAD_SIZE_BYTES,
   NotFoundError,
   ValidationError,
 } from "@porygon/shared";
@@ -117,7 +118,7 @@ describe("UploadService", () => {
       );
 
       expect(deps.storageService.generateUploadUrl).toHaveBeenCalledWith(
-        "ws_1/demo_1/step_1.webp",
+        "ws_1/demo_1/step_1.png",
         "image/png",
       );
     });
@@ -188,6 +189,33 @@ describe("UploadService", () => {
       await expect(
         service.generateUploadUrl(VALID_INPUT, USER_ID),
       ).rejects.toThrow(ValidationError);
+    });
+
+    it("generates .webm key and larger maxSizeBytes for video/webm", async () => {
+      deps.workspaceRepo.getMemberRole.mockResolvedValue("admin");
+      deps.demoRepo.getById.mockResolvedValue(mockDemo());
+      deps.stepRepo.getById.mockResolvedValue(mockStep());
+      deps.storageService.generateUploadUrl.mockResolvedValue(
+        "https://r2.example.com/presigned",
+      );
+      deps.storageService.generateDownloadUrl.mockReturnValue(
+        "https://cdn.example.com/ws_1/demo_1/step_1.webm",
+      );
+
+      const result = await service.generateUploadUrl(
+        { ...VALID_INPUT, contentType: "video/webm" },
+        USER_ID,
+      );
+
+      expect(deps.storageService.generateUploadUrl).toHaveBeenCalledWith(
+        "ws_1/demo_1/step_1.webm",
+        "video/webm",
+      );
+      expect(deps.storageService.generateDownloadUrl).toHaveBeenCalledWith(
+        "ws_1/demo_1/step_1.webm",
+      );
+      expect(result.key).toBe("ws_1/demo_1/step_1.webm");
+      expect(result.maxSizeBytes).toBe(MAX_VIDEO_UPLOAD_SIZE_BYTES);
     });
   });
 });

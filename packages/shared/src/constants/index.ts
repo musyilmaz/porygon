@@ -9,4 +9,9 @@ export {
   POINTER_DIRECTIONS,
 } from "./demo";
 export { HEX_COLOR, SLUG } from "./patterns";
-export { ALLOWED_CONTENT_TYPES, MAX_UPLOAD_SIZE_BYTES } from "./upload";
+export {
+  ALLOWED_CONTENT_TYPES,
+  MAX_UPLOAD_SIZE_BYTES,
+  MAX_VIDEO_UPLOAD_SIZE_BYTES,
+  maxSizeForContentType,
+} from "./upload";

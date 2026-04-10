@@ -1,4 +1,4 @@
-import type { ActionType, Coordinates } from "@porygon/shared/types";
+import type { ActionType, Coordinates, MediaType } from "@porygon/shared/types";
 
 export type RecordingStatus = "idle" | "recording" | "paused" | "done" | "uploading";
 
@@ -19,6 +19,8 @@ export interface CapturedStep {
   viewportWidth: number;
   viewportHeight: number;
   capturedAt: number;
+  mediaType?: MediaType;
+  videoDataUrl?: string;
 }
 
 export interface RecordingSession {

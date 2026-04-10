@@ -15,12 +15,20 @@ interface StorageServiceConfig {
   publicUrl: string;
 }
 
+const CONTENT_TYPE_EXTENSIONS: Record<string, string> = {
+  "image/webp": ".webp",
+  "image/png": ".png",
+  "video/webm": ".webm",
+};
+
 export function storageKey(
   workspaceId: string,
   demoId: string,
   stepId: string,
+  contentType: string = "image/webp",
 ): string {
-  return `${workspaceId}/${demoId}/${stepId}.webp`;
+  const ext = CONTENT_TYPE_EXTENSIONS[contentType] ?? ".webp";
+  return `${workspaceId}/${demoId}/${stepId}${ext}`;
 }
 
 export function createStorageService({

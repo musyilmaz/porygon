@@ -29,12 +29,16 @@ interface StepServiceDeps {
 export interface CreateStepInput {
   demoId: string;
   screenshotUrl?: Nullable<string>;
+  mediaType?: "image" | "video";
+  videoUrl?: Nullable<string>;
   actionType?: "click" | "scroll" | "type" | "navigation";
   actionCoordinates?: Nullable<Coordinates>;
 }
 
 export interface UpdateStepInput {
   screenshotUrl?: Nullable<string>;
+  mediaType?: "image" | "video";
+  videoUrl?: Nullable<string>;
   actionType?: Nullable<"click" | "scroll" | "type" | "navigation">;
   actionCoordinates?: Nullable<Coordinates>;
 }
@@ -102,6 +106,12 @@ export function createStepService({
         orderIndex,
         ...(input.screenshotUrl !== undefined && {
           screenshotUrl: input.screenshotUrl,
+        }),
+        ...(input.mediaType !== undefined && {
+          mediaType: input.mediaType,
+        }),
+        ...(input.videoUrl !== undefined && {
+          videoUrl: input.videoUrl,
         }),
         ...(input.actionType !== undefined && {
           actionType: input.actionType,
@@ -191,6 +201,12 @@ export function createStepService({
         orderIndex,
         ...(source.screenshotUrl !== null && {
           screenshotUrl: source.screenshotUrl,
+        }),
+        ...(source.mediaType !== null && {
+          mediaType: source.mediaType,
+        }),
+        ...(source.videoUrl !== null && {
+          videoUrl: source.videoUrl,
         }),
         ...(source.actionType !== null && {
           actionType: source.actionType,

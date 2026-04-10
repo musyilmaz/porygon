@@ -74,6 +74,8 @@ interface Step {
   demoId: string;
   orderIndex: number;
   screenshotUrl: string | null;
+  mediaType: "image" | "video";
+  videoUrl: string | null;
 }
 
 interface Hotspot {
@@ -109,6 +111,7 @@ export function createStep(
   input: {
     actionType?: string;
     actionCoordinates?: { x: number; y: number } | null;
+    mediaType?: "image" | "video";
   },
 ): Promise<Step> {
   return apiFetch<Step>(`/api/demos/${demoId}/steps`, {
@@ -121,7 +124,7 @@ export function getUploadUrl(input: {
   workspaceId: string;
   demoId: string;
   stepId: string;
-  contentType: "image/webp" | "image/png";
+  contentType: "image/webp" | "image/png" | "video/webm";
 }): Promise<UploadUrlResponse> {
   return apiFetch<UploadUrlResponse>("/api/uploads", {
     method: "POST",
@@ -132,7 +135,7 @@ export function getUploadUrl(input: {
 export function updateStep(
   demoId: string,
   stepId: string,
-  input: { screenshotUrl: string },
+  input: { screenshotUrl?: string; videoUrl?: string },
 ): Promise<Step> {
   return apiFetch<Step>(`/api/demos/${demoId}/steps/${stepId}`, {
     method: "PATCH",

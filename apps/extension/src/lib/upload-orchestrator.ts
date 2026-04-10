@@ -103,29 +103,61 @@ export async function sendToApp(
 
     for (let i = 0; i < steps.length; i++) {
       const capturedStep = steps[i]!;
+      const isVideo = capturedStep.mediaType === "video";
 
       // Create step
       const step = await createStep(demo.id, {
         actionType: capturedStep.actionType,
         actionCoordinates: capturedStep.actionCoordinates,
+        ...(isVideo && { mediaType: "video" as const }),
       });
 
-      // Get presigned upload URL
-      const { uploadUrl, publicUrl } = await getUploadUrl({
-        workspaceId: workspace.id,
-        demoId: demo.id,
-        stepId: step.id,
-        contentType: "image/webp",
-      });
+      if (isVideo && capturedStep.videoDataUrl) {
+        // Upload video blob
+        const { uploadUrl: videoUploadUrl, publicUrl: videoPublicUrl } =
+          await getUploadUrl({
+            workspaceId: workspace.id,
+            demoId: demo.id,
+            stepId: step.id,
+            contentType: "video/webm",
+          });
+        const videoBlob = await fetch(capturedStep.videoDataUrl).then((r) =>
+          r.blob(),
+        );
+        await uploadBlob(videoUploadUrl, videoBlob);
 
-      // Convert data URL to blob and upload
-      const blob = await fetch(capturedStep.screenshotDataUrl).then((r) =>
-        r.blob(),
-      );
-      await uploadBlob(uploadUrl, blob);
+        // Upload thumbnail screenshot
+        const { uploadUrl: thumbUploadUrl, publicUrl: thumbPublicUrl } =
+          await getUploadUrl({
+            workspaceId: workspace.id,
+            demoId: demo.id,
+            stepId: step.id,
+            contentType: "image/webp",
+          });
+        const thumbBlob = await fetch(capturedStep.screenshotDataUrl).then(
+          (r) => r.blob(),
+        );
+        await uploadBlob(thumbUploadUrl, thumbBlob);
 
-      // Patch step with public URL
-      await updateStep(demo.id, step.id, { screenshotUrl: publicUrl });
+        // Patch step with both URLs
+        await updateStep(demo.id, step.id, {
+          screenshotUrl: thumbPublicUrl,
+          videoUrl: videoPublicUrl,
+        });
+      } else {
+        // Image step: existing flow
+        const { uploadUrl, publicUrl } = await getUploadUrl({
+          workspaceId: workspace.id,
+          demoId: demo.id,
+          stepId: step.id,
+          contentType: "image/webp",
+        });
+        const blob = await fetch(capturedStep.screenshotDataUrl).then((r) =>
+          r.blob(),
+        );
+        await uploadBlob(uploadUrl, blob);
+        await updateStep(demo.id, step.id, { screenshotUrl: publicUrl });
+      }
 
       uploadedSteps.push({ stepId: step.id, capturedStep });
       setProgress({ completedSteps: i + 1 });

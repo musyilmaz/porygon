@@ -3,9 +3,9 @@ import type { createStepRepository } from "@porygon/db";
 import type { createWorkspaceRepository } from "@porygon/db";
 import {
   ForbiddenError,
-  MAX_UPLOAD_SIZE_BYTES,
   NotFoundError,
   ValidationError,
+  maxSizeForContentType,
 } from "@porygon/shared";
 
 import { storageKey } from "./storage.service";
@@ -67,7 +67,12 @@ export function createUploadService({
         throw new ValidationError("Step does not belong to this demo");
       }
 
-      const key = storageKey(input.workspaceId, input.demoId, input.stepId);
+      const key = storageKey(
+        input.workspaceId,
+        input.demoId,
+        input.stepId,
+        input.contentType,
+      );
       const uploadUrl = await storageService.generateUploadUrl(
         key,
         input.contentType,
@@ -78,7 +83,7 @@ export function createUploadService({
         uploadUrl,
         publicUrl,
         key,
-        maxSizeBytes: MAX_UPLOAD_SIZE_BYTES,
+        maxSizeBytes: maxSizeForContentType(input.contentType),
       };
     },
   };
