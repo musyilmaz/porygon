@@ -22,6 +22,12 @@ export default defineContentScript({
         } else if (message.type === "RECORDING_RESUMED") {
           attachListeners();
           sendResponse({ success: true });
+        } else if (message.type === "GET_VIEWPORT") {
+          sendResponse({
+            scrollY: window.scrollY,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+          });
         }
       },
     );

@@ -71,6 +71,28 @@ export interface ContinuousActionEndMessage {
   };
 }
 
+export interface NavigationDetectedMessage {
+  type: "NAVIGATION_DETECTED";
+  payload: {
+    url: string;
+    timestamp: number;
+    scrollY: number;
+    viewportWidth: number;
+    viewportHeight: number;
+  };
+}
+
+// Background → Content (viewport query)
+export interface GetViewportMessage {
+  type: "GET_VIEWPORT";
+}
+
+export interface GetViewportResponse {
+  scrollY: number;
+  viewportWidth: number;
+  viewportHeight: number;
+}
+
 // Background → Offscreen
 export interface OffscreenStartCaptureMessage {
   type: "OFFSCREEN_START_CAPTURE";
@@ -130,11 +152,13 @@ export type ExtensionMessage =
   | ActionCapturedMessage
   | ContinuousActionStartMessage
   | ContinuousActionEndMessage
+  | NavigationDetectedMessage
   | RecordingStartedMessage
   | RecordingStoppedMessage
   | RecordingPausedMessage
   | RecordingResumedMessage
   | PingMessage
+  | GetViewportMessage
   | OffscreenStartCaptureMessage
   | OffscreenStopCaptureMessage
   | OffscreenStartSegmentMessage

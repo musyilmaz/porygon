@@ -21,6 +21,8 @@ import type {
   ContinuousActionStartMessage,
   ExtensionMessage,
   GetStepsResponse,
+  GetViewportResponse,
+  NavigationDetectedMessage,
   RecordingStartedResponse,
   RecordingStoppedResponse,
   SendToAppResponse,
@@ -35,10 +37,16 @@ const APP_URL = import.meta.env.WXT_APP_URL;
 
 const CAPTURE_DELAY_MS = 100;
 const MAX_SEGMENT_DURATION_MS = 15_000;
+const NAVIGATION_SETTLE_MS = 500;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+// Navigation capture state
+let navigationSettleTimer: ReturnType<typeof setTimeout> | null = null;
+let lastNavigationUrl: string | null = null;
+let lastNavigationTimestamp = 0;
 
 // Active video segment state
 let activeSegment: {
@@ -124,6 +132,108 @@ async function handleSegmentMaxDuration(): Promise<void> {
   };
 }
 
+function cancelPendingNavigationCapture(): void {
+  if (navigationSettleTimer) {
+    clearTimeout(navigationSettleTimer);
+    navigationSettleTimer = null;
+  }
+}
+
+function scheduleNavigationCapture(
+  tabId: number,
+  url: string,
+  viewportData?: { scrollY: number; viewportWidth: number; viewportHeight: number },
+): void {
+  // Dedup: skip if same URL as last navigation capture
+  if (url === lastNavigationUrl) return;
+
+  // Debounce: clear any pending timer (handles rapid redirects)
+  cancelPendingNavigationCapture();
+
+  lastNavigationUrl = url;
+  lastNavigationTimestamp = Date.now();
+
+  navigationSettleTimer = setTimeout(async () => {
+    navigationSettleTimer = null;
+
+    const session = await recordingSession.getValue();
+    if (!session || session.tabId !== tabId || session.status !== "recording") {
+      return;
+    }
+
+    // For full-page nav without viewport data, query the content script
+    let viewport = viewportData;
+    if (!viewport) {
+      try {
+        viewport = await browser.tabs.sendMessage(tabId, {
+          type: "GET_VIEWPORT",
+        }) as GetViewportResponse;
+      } catch {
+        viewport = { scrollY: 0, viewportWidth: 0, viewportHeight: 0 };
+      }
+    }
+
+    try {
+      const screenshotDataUrl = await captureScreenshot();
+
+      const step: CapturedStep = {
+        orderIndex: getStepCount(),
+        screenshotDataUrl,
+        actionType: "navigation",
+        actionCoordinates: null,
+        scrollY: viewport.scrollY,
+        viewportWidth: viewport.viewportWidth,
+        viewportHeight: viewport.viewportHeight,
+        capturedAt: Date.now(),
+      };
+
+      const stepIndex = addStep(step);
+      console.log("[Porygon] Navigation step captured:", url, "| Total:", stepIndex + 1);
+    } catch (error) {
+      console.error("[Porygon] Failed to capture navigation step:", error);
+    }
+  }, NAVIGATION_SETTLE_MS);
+}
+
+async function handleFullPageNavigation(tabId: number, url?: string): Promise<void> {
+  const session = await recordingSession.getValue();
+  if (!session || session.tabId !== tabId || session.status !== "recording") {
+    return;
+  }
+
+  // Finalize any active video segment
+  if (activeSegment) {
+    await finalizeSegment();
+  }
+
+  try {
+    await ensureContentScript(tabId);
+    await browser.tabs.sendMessage(tabId, { type: "RECORDING_STARTED" });
+    console.log("[Porygon] Re-attached listeners after navigation on tab", tabId);
+  } catch (error) {
+    console.error("[Porygon] Failed to re-attach after navigation:", error);
+    return;
+  }
+
+  // Schedule the navigation screenshot capture
+  if (url) {
+    scheduleNavigationCapture(tabId, url);
+  }
+}
+
+async function handleNavigationDetected(
+  message: NavigationDetectedMessage,
+): Promise<void> {
+  const session = await recordingSession.getValue();
+  if (!session || session.status !== "recording") return;
+
+  scheduleNavigationCapture(session.tabId, message.payload.url, {
+    scrollY: message.payload.scrollY,
+    viewportWidth: message.payload.viewportWidth,
+    viewportHeight: message.payload.viewportHeight,
+  });
+}
+
 async function handleContinuousActionStart(
   message: ContinuousActionStartMessage,
 ): Promise<void> {
@@ -204,6 +314,7 @@ async function handleStart(
   tabId: number,
   tabUrl: string,
 ): Promise<RecordingStartedResponse> {
+  lastNavigationUrl = null;
   clearSteps();
 
   await ensureContentScript(tabId);
@@ -235,6 +346,7 @@ async function handleStart(
 async function handleStop(
   tabId: number,
 ): Promise<RecordingStoppedResponse> {
+  cancelPendingNavigationCapture();
   await browser.tabs.sendMessage(tabId, { type: "RECORDING_STOPPED" });
 
   // Finalize any active video segment before teardown
@@ -261,6 +373,8 @@ async function handleStop(
 async function handlePause(
   session: RecordingSession,
 ): Promise<{ success: boolean }> {
+  cancelPendingNavigationCapture();
+
   // Finalize any active video segment before pausing
   if (activeSegment) {
     await finalizeSegment();
@@ -307,6 +421,9 @@ function handleGetSteps(): GetStepsResponse {
 }
 
 async function handleNewRecording(): Promise<StateResponse> {
+  cancelPendingNavigationCapture();
+  lastNavigationUrl = null;
+
   if (activeSegment) {
     clearTimeout(activeSegment.maxDurationTimer);
     activeSegment = null;
@@ -323,6 +440,9 @@ async function handleNewRecording(): Promise<StateResponse> {
 async function handleActionCaptured(
   message: ExtensionMessage & { type: "ACTION_CAPTURED" },
 ): Promise<ActionCapturedResponse> {
+  // Cancel any pending navigation capture — the click supersedes it
+  cancelPendingNavigationCapture();
+
   const session = await recordingSession.getValue();
   if (!session || session.status !== "recording") {
     return { success: false, stepIndex: -1 };
@@ -363,8 +483,14 @@ async function handleActionCaptured(
 export default defineBackground(() => {
   console.log("[Porygon] Background service worker started");
 
-  // Re-attach event listeners after the recording tab navigates
-  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  // Primary: detect full-page navigation via webNavigation API
+  browser.webNavigation.onCompleted.addListener((details) => {
+    if (details.frameId !== 0) return;
+    handleFullPageNavigation(details.tabId, details.url);
+  });
+
+  // Fallback: re-inject content script via tabs.onUpdated if webNavigation missed it
+  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== "complete") return;
 
     recordingSession.getValue().then(async (session) => {
@@ -372,18 +498,17 @@ export default defineBackground(() => {
         return;
       }
 
-      // Finalize any active video segment on navigation
-      if (activeSegment) {
-        await finalizeSegment();
+      // If webNavigation already handled this recently, just ensure content script
+      if (tab.url && tab.url === lastNavigationUrl && Date.now() - lastNavigationTimestamp < 2000) {
+        try {
+          await ensureContentScript(tabId);
+        } catch {
+          // ignore
+        }
+        return;
       }
 
-      try {
-        await ensureContentScript(tabId);
-        await browser.tabs.sendMessage(tabId, { type: "RECORDING_STARTED" });
-        console.log("[Porygon] Re-attached listeners after navigation on tab", tabId);
-      } catch (error) {
-        console.error("[Porygon] Failed to re-attach after navigation:", error);
-      }
+      handleFullPageNavigation(tabId, tab.url);
     });
   });
 
@@ -507,6 +632,11 @@ export default defineBackground(() => {
           activeSegment = null;
         }
 
+        return false;
+      }
+
+      if (message.type === "NAVIGATION_DETECTED") {
+        handleNavigationDetected(message);
         return false;
       }
 
