@@ -1,18 +1,31 @@
 import type {
   ExtensionMessage,
   OffscreenStartCaptureResponse,
+  OffscreenStartSegmentResponse,
   OffscreenStopCaptureResponse,
+  OffscreenStopSegmentResponse,
 } from "@/types/messages";
 
 let mediaStream: MediaStream | null = null;
 let mediaRecorder: MediaRecorder | null = null;
 let recordedChunks: Blob[] = [];
 
-function cleanup(): void {
+function getSupportedMimeType(): string {
+  return MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+    ? "video/webm;codecs=vp9"
+    : "video/webm";
+}
+
+function stopRecorder(): void {
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
     mediaRecorder.stop();
   }
   mediaRecorder = null;
+  recordedChunks = [];
+}
+
+function cleanup(): void {
+  stopRecorder();
 
   if (mediaStream) {
     for (const track of mediaStream.getTracks()) {
@@ -20,7 +33,6 @@ function cleanup(): void {
     }
   }
   mediaStream = null;
-  recordedChunks = [];
 }
 
 async function startCapture(streamId: string): Promise<OffscreenStartCaptureResponse> {
@@ -63,72 +75,90 @@ async function startCapture(streamId: string): Promise<OffscreenStartCaptureResp
       });
     }
 
-    // Determine supported mimeType
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-      ? "video/webm;codecs=vp9"
-      : "video/webm";
-
-    mediaRecorder = new MediaRecorder(mediaStream, {
-      mimeType,
-      videoBitsPerSecond: 2_500_000,
-    });
-
-    recordedChunks = [];
-
-    mediaRecorder.addEventListener("dataavailable", (event) => {
-      if (event.data.size > 0) {
-        recordedChunks.push(event.data);
-      }
-    });
-
-    mediaRecorder.addEventListener("error", () => {
-      browser.runtime.sendMessage({
-        type: "OFFSCREEN_CAPTURE_FAILED",
-        payload: { error: "MediaRecorder error" },
-      });
-      cleanup();
-    });
-
-    // Record in 1-second chunks for more granular data collection
-    mediaRecorder.start(1000);
-
-    console.log("[Porygon Offscreen] Capture started, mimeType:", mimeType);
+    console.log("[Porygon Offscreen] Stream acquired, ready for segments");
     return { success: true };
   } catch (error) {
     cleanup();
     const message = error instanceof Error ? error.message : "Unknown capture error";
-    console.error("[Porygon Offscreen] Failed to start capture:", message);
+    console.error("[Porygon Offscreen] Failed to acquire stream:", message);
     return { success: false, error: message };
   }
 }
 
-function stopCapture(): Promise<OffscreenStopCaptureResponse> {
+function stopCapture(): OffscreenStopCaptureResponse {
+  stopRecorder();
+  cleanup();
+  console.log("[Porygon Offscreen] Stream released");
+  return { success: true };
+}
+
+function startSegment(): OffscreenStartSegmentResponse {
+  if (!mediaStream) {
+    return { success: false, error: "No active stream" };
+  }
+
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    return { success: false, error: "Segment already recording" };
+  }
+
+  const mimeType = getSupportedMimeType();
+
+  mediaRecorder = new MediaRecorder(mediaStream, {
+    mimeType,
+    videoBitsPerSecond: 2_500_000,
+  });
+
+  recordedChunks = [];
+
+  mediaRecorder.addEventListener("dataavailable", (event) => {
+    if (event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  });
+
+  mediaRecorder.addEventListener("error", () => {
+    browser.runtime.sendMessage({
+      type: "OFFSCREEN_CAPTURE_FAILED",
+      payload: { error: "MediaRecorder error during segment" },
+    });
+    stopRecorder();
+  });
+
+  // Record in 1-second chunks for more granular data collection
+  mediaRecorder.start(1000);
+
+  console.log("[Porygon Offscreen] Segment started, mimeType:", mimeType);
+  return { success: true };
+}
+
+function stopSegment(): Promise<OffscreenStopSegmentResponse> {
   return new Promise((resolve) => {
     if (!mediaRecorder || mediaRecorder.state === "inactive") {
-      cleanup();
+      recordedChunks = [];
       resolve({ success: true });
       return;
     }
 
     mediaRecorder.addEventListener("stop", () => {
       const blob = new Blob(recordedChunks, { type: "video/webm" });
+      recordedChunks = [];
+      mediaRecorder = null;
+
       const reader = new FileReader();
 
       reader.onload = () => {
         const videoDataUrl = reader.result as string;
         console.log(
-          "[Porygon Offscreen] Capture stopped, blob size:",
+          "[Porygon Offscreen] Segment stopped, blob size:",
           (blob.size / 1024 / 1024).toFixed(2),
           "MB",
         );
-        cleanup();
         resolve({ success: true, videoDataUrl });
       };
 
       reader.onerror = () => {
-        console.error("[Porygon Offscreen] Failed to read video blob");
-        cleanup();
-        resolve({ success: false, error: "Failed to read video blob" });
+        console.error("[Porygon Offscreen] Failed to read segment blob");
+        resolve({ success: false, error: "Failed to read segment blob" });
       };
 
       reader.readAsDataURL(blob);
@@ -146,7 +176,17 @@ browser.runtime.onMessage.addListener(
     }
 
     if (message.type === "OFFSCREEN_STOP_CAPTURE") {
-      stopCapture().then(sendResponse);
+      sendResponse(stopCapture());
+      return false;
+    }
+
+    if (message.type === "OFFSCREEN_START_SEGMENT") {
+      sendResponse(startSegment());
+      return false;
+    }
+
+    if (message.type === "OFFSCREEN_STOP_SEGMENT") {
+      stopSegment().then(sendResponse);
       return true;
     }
   },

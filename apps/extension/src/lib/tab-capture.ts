@@ -1,6 +1,8 @@
 import type {
   OffscreenStartCaptureResponse,
+  OffscreenStartSegmentResponse,
   OffscreenStopCaptureResponse,
+  OffscreenStopSegmentResponse,
 } from "@/types/messages";
 
 let capturing = false;
@@ -58,28 +60,54 @@ export async function startTabCapture(tabId: number): Promise<boolean> {
   }
 }
 
-export async function stopTabCapture(): Promise<string | null> {
-  if (!capturing) return null;
+export async function stopTabCapture(): Promise<void> {
+  if (!capturing) return;
 
   try {
-    const response: OffscreenStopCaptureResponse =
+    const _response: OffscreenStopCaptureResponse =
       await browser.runtime.sendMessage({
         type: "OFFSCREEN_STOP_CAPTURE",
       });
 
     await closeOffscreenDocument();
     capturing = false;
-
-    if (response.success && response.videoDataUrl) {
-      return response.videoDataUrl;
-    }
-
-    console.warn("[Porygon] Stop capture returned no video:", response.error);
-    return null;
   } catch (error) {
     console.error("[Porygon] Failed to stop tab capture:", error);
     await closeOffscreenDocument();
     capturing = false;
+  }
+}
+
+export async function startVideoSegment(): Promise<boolean> {
+  if (!capturing) return false;
+
+  try {
+    const response: OffscreenStartSegmentResponse =
+      await browser.runtime.sendMessage({
+        type: "OFFSCREEN_START_SEGMENT",
+      });
+    return response.success;
+  } catch (error) {
+    console.warn("[Porygon] Failed to start video segment:", error);
+    return false;
+  }
+}
+
+export async function stopVideoSegment(): Promise<string | null> {
+  if (!capturing) return null;
+
+  try {
+    const response: OffscreenStopSegmentResponse =
+      await browser.runtime.sendMessage({
+        type: "OFFSCREEN_STOP_SEGMENT",
+      });
+
+    if (response.success && response.videoDataUrl) {
+      return response.videoDataUrl;
+    }
+    return null;
+  } catch (error) {
+    console.warn("[Porygon] Failed to stop video segment:", error);
     return null;
   }
 }

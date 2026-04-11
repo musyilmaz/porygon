@@ -1,10 +1,13 @@
 import type { ActionType } from "@porygon/shared/types";
 
-import type { ActionCapturedMessage } from "@/types/messages";
-import { debounce } from "@/utils/debounce";
+import type {
+  ActionCapturedMessage,
+  ContinuousActionEndMessage,
+  ContinuousActionStartMessage,
+} from "@/types/messages";
+import { leadingTrailingDebounce } from "@/utils/debounce";
 
-const SCROLL_DEBOUNCE_MS = 300;
-const KEYDOWN_DEBOUNCE_MS = 500;
+const CONTINUOUS_IDLE_MS = 500;
 
 function sendAction(actionType: ActionType, x: number, y: number): void {
   const message: ActionCapturedMessage = {
@@ -22,17 +25,48 @@ function sendAction(actionType: ActionType, x: number, y: number): void {
   browser.runtime.sendMessage(message);
 }
 
+function sendContinuousStart(actionType: ActionType): void {
+  const message: ContinuousActionStartMessage = {
+    type: "CONTINUOUS_ACTION_START",
+    payload: {
+      actionType,
+      timestamp: Date.now(),
+    },
+  };
+
+  browser.runtime.sendMessage(message);
+}
+
+function sendContinuousEnd(actionType: ActionType): void {
+  const message: ContinuousActionEndMessage = {
+    type: "CONTINUOUS_ACTION_END",
+    payload: {
+      actionType,
+      timestamp: Date.now(),
+      scrollY: window.scrollY,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+    },
+  };
+
+  browser.runtime.sendMessage(message);
+}
+
 function handleClick(event: MouseEvent): void {
   sendAction("click", event.clientX, event.clientY);
 }
 
-const handleScroll = debounce(() => {
-  sendAction("scroll", 0, 0);
-}, SCROLL_DEBOUNCE_MS);
+const handleScroll = leadingTrailingDebounce(
+  () => sendContinuousStart("scroll"),
+  () => sendContinuousEnd("scroll"),
+  CONTINUOUS_IDLE_MS,
+);
 
-const handleKeydown = debounce(() => {
-  sendAction("type", 0, 0);
-}, KEYDOWN_DEBOUNCE_MS);
+const handleKeydown = leadingTrailingDebounce(
+  () => sendContinuousStart("type"),
+  () => sendContinuousEnd("type"),
+  CONTINUOUS_IDLE_MS,
+);
 
 let abortController: AbortController | null = null;
 

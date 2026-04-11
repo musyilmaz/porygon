@@ -52,6 +52,25 @@ export interface ActionCapturedMessage {
   };
 }
 
+export interface ContinuousActionStartMessage {
+  type: "CONTINUOUS_ACTION_START";
+  payload: {
+    actionType: ActionType;
+    timestamp: number;
+  };
+}
+
+export interface ContinuousActionEndMessage {
+  type: "CONTINUOUS_ACTION_END";
+  payload: {
+    actionType: ActionType;
+    timestamp: number;
+    scrollY: number;
+    viewportWidth: number;
+    viewportHeight: number;
+  };
+}
+
 // Background → Offscreen
 export interface OffscreenStartCaptureMessage {
   type: "OFFSCREEN_START_CAPTURE";
@@ -60,6 +79,15 @@ export interface OffscreenStartCaptureMessage {
 
 export interface OffscreenStopCaptureMessage {
   type: "OFFSCREEN_STOP_CAPTURE";
+}
+
+// Background → Offscreen (segment control)
+export interface OffscreenStartSegmentMessage {
+  type: "OFFSCREEN_START_SEGMENT";
+}
+
+export interface OffscreenStopSegmentMessage {
+  type: "OFFSCREEN_STOP_SEGMENT";
 }
 
 // Offscreen → Background
@@ -100,6 +128,8 @@ export type ExtensionMessage =
   | SendToAppMessage
   | GetUploadProgressMessage
   | ActionCapturedMessage
+  | ContinuousActionStartMessage
+  | ContinuousActionEndMessage
   | RecordingStartedMessage
   | RecordingStoppedMessage
   | RecordingPausedMessage
@@ -107,6 +137,8 @@ export type ExtensionMessage =
   | PingMessage
   | OffscreenStartCaptureMessage
   | OffscreenStopCaptureMessage
+  | OffscreenStartSegmentMessage
+  | OffscreenStopSegmentMessage
   | OffscreenCaptureFailedMessage;
 
 // Response types
@@ -158,6 +190,16 @@ export interface OffscreenStartCaptureResponse {
 }
 
 export interface OffscreenStopCaptureResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface OffscreenStartSegmentResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface OffscreenStopSegmentResponse {
   success: boolean;
   videoDataUrl?: string;
   error?: string;
