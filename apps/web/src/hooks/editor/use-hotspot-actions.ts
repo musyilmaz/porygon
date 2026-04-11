@@ -1,5 +1,6 @@
 "use client";
 
+import type { HotspotStyle, HotspotType } from "@porygon/shared";
 import { useCallback, useRef } from "react";
 
 import { apiError, fetchOpts } from "@/lib/editor/api-utils";
@@ -16,6 +17,8 @@ export function useHotspotActions() {
   const rightSidebarOpen = useEditorStore((s) => s.rightSidebarOpen);
   const toggleRightSidebar = useEditorStore((s) => s.toggleRightSidebar);
   const setSaveError = useEditorStore((s) => s.setSaveError);
+  const steps = useEditorStore((s) => s.steps);
+  const updateHotspotStyleByType = useEditorStore((s) => s.updateHotspotStyleByType);
 
   const debounceTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
@@ -38,11 +41,13 @@ export function useHotspotActions() {
       const optimistic: EditorHotspot = {
         id: tempId,
         stepId,
+        type: "click_zone",
         ...data,
         targetStepId: null,
         tooltipContent: null,
         tooltipPosition: "bottom",
         style: null,
+        openByDefault: false,
       };
 
       addHotspot(stepId, optimistic);
@@ -151,5 +156,25 @@ export function useHotspotActions() {
     [removeHotspot, setSaveError, resolveHotspotId],
   );
 
-  return { createHotspot, saveHotspot, deleteHotspot };
+  const applyStyleToAll = useCallback(
+    (
+      hotspotType: HotspotType,
+      styleUpdates: Partial<HotspotStyle>,
+      excludeHotspotId?: string,
+    ) => {
+      updateHotspotStyleByType(hotspotType, styleUpdates);
+
+      for (const step of steps) {
+        for (const h of step.hotspots) {
+          if (h.type === hotspotType && h.id !== excludeHotspotId) {
+            const mergedStyle = { ...(h.style ?? {}), ...styleUpdates };
+            saveHotspot(step.id, h.id, { style: mergedStyle });
+          }
+        }
+      }
+    },
+    [steps, updateHotspotStyleByType, saveHotspot],
+  );
+
+  return { createHotspot, saveHotspot, deleteHotspot, applyStyleToAll };
 }

@@ -140,6 +140,19 @@ export function createEditorStore(initialData: EditorInitialData) {
         selectHotspot: (hotspotId) =>
           set({ selectedHotspotId: hotspotId, selectedAnnotationId: null }),
 
+        updateHotspotStyleByType: (hotspotType, styleUpdates) =>
+          set((state) => ({
+            steps: state.steps.map((s) => ({
+              ...s,
+              hotspots: s.hotspots.map((h) =>
+                h.type === hotspotType
+                  ? { ...h, style: { ...(h.style ?? {}), ...styleUpdates } }
+                  : h,
+              ),
+            })),
+            isDirty: true,
+          })),
+
         // Annotations
         addAnnotation: (stepId, annotation) =>
           set((state) => ({

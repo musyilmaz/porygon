@@ -1,4 +1,4 @@
-import type { HotspotStyle, Nullable, TooltipPosition } from "@porygon/shared";
+import type { HotspotStyle, HotspotType, Nullable, TooltipPosition } from "@porygon/shared";
 import { eq } from "drizzle-orm";
 
 import type { Database } from "../client";
@@ -6,6 +6,7 @@ import { hotspots } from "../schema/hotspots";
 
 interface CreateHotspotData {
   stepId: string;
+  type?: HotspotType;
   x: number;
   y: number;
   width: number;
@@ -14,9 +15,11 @@ interface CreateHotspotData {
   tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: TooltipPosition;
   style?: HotspotStyle;
+  openByDefault?: boolean;
 }
 
 interface UpdateHotspotData {
+  type?: HotspotType;
   x?: number;
   y?: number;
   width?: number;
@@ -25,6 +28,7 @@ interface UpdateHotspotData {
   tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: TooltipPosition;
   style?: HotspotStyle;
+  openByDefault?: boolean;
 }
 
 export function createHotspotRepository(db: Database) {

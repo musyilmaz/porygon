@@ -1,4 +1,4 @@
-import type { AnnotationSettings, HotspotStyle, Nullable } from "@porygon/shared";
+import type { AnnotationSettings, HotspotStyle, Nullable, PointerDirection } from "@porygon/shared";
 
 import { hexToRgb } from "@/lib/editor/color-utils";
 import type { EditorAnnotation } from "@/stores/editor/types";
@@ -32,6 +32,88 @@ export function parseHotspotStyle(
     backgroundColor: style?.backgroundColor ?? HOTSPOT_DEFAULT_COLOR,
     opacity: style?.opacity ?? HOTSPOT_DEFAULT_OPACITY,
     pulseAnimation: style?.pulseAnimation ?? false,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Click Zone style defaults
+// ---------------------------------------------------------------------------
+
+export const CLICK_ZONE_DEFAULT_TEXT_COLOR = "#ffffff";
+
+export interface ParsedClickZoneStyle {
+  backgroundColor: string;
+  textColor: string;
+  opacity: number;
+  pulseAnimation: boolean;
+}
+
+export function parseClickZoneStyle(
+  style: Nullable<HotspotStyle> | undefined,
+): ParsedClickZoneStyle {
+  return {
+    backgroundColor: style?.backgroundColor ?? HOTSPOT_DEFAULT_COLOR,
+    textColor: style?.textColor ?? CLICK_ZONE_DEFAULT_TEXT_COLOR,
+    opacity: style?.opacity ?? HOTSPOT_DEFAULT_OPACITY,
+    pulseAnimation: style?.pulseAnimation ?? false,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Area style defaults
+// ---------------------------------------------------------------------------
+
+export const AREA_DEFAULT_BORDER_COLOR = "#3b82f6";
+export const AREA_DEFAULT_BORDER_WIDTH = 2;
+export const AREA_DEFAULT_OVERLAY_COLOR = "#3b82f6";
+export const AREA_DEFAULT_OVERLAY_OPACITY = 0.15;
+export const AREA_DEFAULT_SHAPE: "rectangle" | "rounded" = "rectangle";
+
+export interface ParsedAreaStyle {
+  borderColor: string;
+  borderWidth: number;
+  overlayColor: string;
+  overlayOpacity: number;
+  shape: "rectangle" | "rounded";
+}
+
+export function parseAreaStyle(
+  style: Nullable<HotspotStyle> | undefined,
+): ParsedAreaStyle {
+  return {
+    borderColor: style?.borderColor ?? AREA_DEFAULT_BORDER_COLOR,
+    borderWidth: style?.borderWidth ?? AREA_DEFAULT_BORDER_WIDTH,
+    overlayColor: style?.overlayColor ?? AREA_DEFAULT_OVERLAY_COLOR,
+    overlayOpacity: style?.overlayOpacity ?? AREA_DEFAULT_OVERLAY_OPACITY,
+    shape: style?.shape ?? AREA_DEFAULT_SHAPE,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Callout style defaults
+// ---------------------------------------------------------------------------
+
+export const CALLOUT_DEFAULT_BG_COLOR = "#1f2937";
+export const CALLOUT_DEFAULT_TEXT_COLOR = "#ffffff";
+export const CALLOUT_DEFAULT_POINTER: PointerDirection = "bottom";
+
+export interface ParsedCalloutStyle {
+  backgroundColor: string;
+  textColor: string;
+  pointerDirection: PointerDirection;
+  showButton: boolean;
+  buttonText: string;
+}
+
+export function parseCalloutStyle(
+  style: Nullable<HotspotStyle> | undefined,
+): ParsedCalloutStyle {
+  return {
+    backgroundColor: style?.backgroundColor ?? CALLOUT_DEFAULT_BG_COLOR,
+    textColor: style?.textColor ?? CALLOUT_DEFAULT_TEXT_COLOR,
+    pointerDirection: style?.pointerDirection ?? CALLOUT_DEFAULT_POINTER,
+    showButton: style?.showButton ?? false,
+    buttonText: style?.buttonText ?? "Next",
   };
 }
 

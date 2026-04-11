@@ -3,7 +3,7 @@ import type { createHotspotRepository } from "@porygon/db";
 import type { createStepRepository } from "@porygon/db";
 import type { createWorkspaceRepository } from "@porygon/db";
 import { ForbiddenError, NotFoundError, ValidationError } from "@porygon/shared";
-import type { HotspotStyle, Nullable, TooltipPosition } from "@porygon/shared";
+import type { HotspotStyle, HotspotType, Nullable, TooltipPosition } from "@porygon/shared";
 
 type HotspotRepo = ReturnType<typeof createHotspotRepository>;
 type StepRepo = ReturnType<typeof createStepRepository>;
@@ -19,6 +19,7 @@ interface HotspotServiceDeps {
 
 export interface CreateHotspotInput {
   stepId: string;
+  type?: HotspotType;
   x: number;
   y: number;
   width: number;
@@ -27,9 +28,11 @@ export interface CreateHotspotInput {
   tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: TooltipPosition;
   style?: HotspotStyle;
+  openByDefault?: boolean;
 }
 
 export interface UpdateHotspotInput {
+  type?: HotspotType;
   x?: number;
   y?: number;
   width?: number;
@@ -38,6 +41,7 @@ export interface UpdateHotspotInput {
   tooltipContent?: Nullable<Record<string, unknown>>;
   tooltipPosition?: TooltipPosition;
   style?: HotspotStyle;
+  openByDefault?: boolean;
 }
 
 export function createHotspotService({
@@ -120,10 +124,12 @@ export function createHotspotService({
         y: input.y,
         width: input.width,
         height: input.height,
+        ...(input.type !== undefined && { type: input.type }),
         ...(input.targetStepId !== undefined && { targetStepId: input.targetStepId }),
         ...(input.tooltipContent !== undefined && { tooltipContent: input.tooltipContent }),
         ...(input.tooltipPosition !== undefined && { tooltipPosition: input.tooltipPosition }),
         ...(input.style !== undefined && { style: input.style }),
+        ...(input.openByDefault !== undefined && { openByDefault: input.openByDefault }),
       });
     },
 

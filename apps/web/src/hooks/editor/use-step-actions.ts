@@ -146,6 +146,7 @@ export function useStepActions() {
         hotspots: (created.hotspots ?? []).map((h: Record<string, unknown>) => ({
           id: h.id,
           stepId: h.stepId,
+          type: h.type ?? "click_zone",
           x: h.x,
           y: h.y,
           width: h.width,
@@ -154,6 +155,7 @@ export function useStepActions() {
           tooltipContent: h.tooltipContent,
           tooltipPosition: h.tooltipPosition,
           style: h.style,
+          openByDefault: h.openByDefault ?? false,
         })),
         annotations: (created.annotations ?? []).map(
           (a: Record<string, unknown>) => ({

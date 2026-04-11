@@ -21,6 +21,7 @@ export const createHotspotSchema = z.object({
         .string()
         .regex(HEX_COLOR, "Invalid hex color")
         .optional(),
+      textColor: z.string().regex(HEX_COLOR, "Invalid hex color").optional(),
       opacity: z.number().min(0).max(1).optional(),
       pulseAnimation: z.boolean().optional(),
       // Area-specific

@@ -16,6 +16,7 @@ export interface HotspotStyle {
   borderColor?: string;
   borderWidth?: number;
   backgroundColor?: string;
+  textColor?: string;
   opacity?: number;
   pulseAnimation?: boolean;
   // Area-specific

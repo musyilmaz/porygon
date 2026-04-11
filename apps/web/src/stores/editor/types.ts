@@ -4,6 +4,7 @@ import type {
   DemoSettings,
   DemoStatus,
   HotspotStyle,
+  HotspotType,
   Nullable,
   TooltipPosition,
 } from "@porygon/shared";
@@ -11,6 +12,7 @@ import type {
 export interface EditorHotspot {
   id: string;
   stepId: string;
+  type: HotspotType;
   x: number;
   y: number;
   width: number;
@@ -19,6 +21,7 @@ export interface EditorHotspot {
   tooltipContent: Nullable<Record<string, unknown>>;
   tooltipPosition: TooltipPosition;
   style: Nullable<HotspotStyle>;
+  openByDefault: boolean;
 }
 
 export interface EditorAnnotation {
@@ -104,6 +107,10 @@ export interface EditorActions {
   ) => void;
   removeHotspot: (stepId: string, hotspotId: string) => void;
   selectHotspot: (hotspotId: Nullable<string>) => void;
+  updateHotspotStyleByType: (
+    hotspotType: HotspotType,
+    styleUpdates: Partial<HotspotStyle>,
+  ) => void;
 
   // Annotations
   addAnnotation: (stepId: string, annotation: EditorAnnotation) => void;
