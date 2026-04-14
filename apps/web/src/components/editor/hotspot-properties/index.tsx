@@ -19,6 +19,7 @@ import { TypeSelector } from "./type-selector";
 
 import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
+import type { EditorHotspot } from "@/stores/editor/types";
 
 export function HotspotProperties() {
   const steps = useEditorStore((s) => s.steps);
@@ -39,13 +40,21 @@ export function HotspotProperties() {
 
   const handleTypeChange = (type: HotspotType) => {
     if (type === hotspot.type) return;
-    const updates = {
+    const updates: Partial<EditorHotspot> = {
       type,
       style: null,
       tooltipContent: null,
       tooltipPosition: "bottom" as TooltipPosition,
       openByDefault: false,
     };
+
+    // Click zones are circles — enforce square dimensions
+    if (type === "click_zone") {
+      const size = Math.max(hotspot.width, hotspot.height);
+      updates.width = size;
+      updates.height = size;
+    }
+
     updateHotspot(selectedStep.id, hotspot.id, updates);
     saveHotspot(selectedStep.id, hotspot.id, updates);
   };

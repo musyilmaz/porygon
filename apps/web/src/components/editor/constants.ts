@@ -36,6 +36,29 @@ export function parseHotspotStyle(
 }
 
 // ---------------------------------------------------------------------------
+// Click Zone rendering constants
+// ---------------------------------------------------------------------------
+
+/** Duration of the pulse animation cycle in seconds */
+export const CLICK_ZONE_PULSE_DURATION = 1.2;
+
+/** Maximum scale for the pulse ring animation */
+export const CLICK_ZONE_PULSE_SCALE = 1.6;
+
+// ---------------------------------------------------------------------------
+// Callout rendering constants
+// ---------------------------------------------------------------------------
+
+/** Height of the callout pointer triangle in pixels */
+export const CALLOUT_POINTER_HEIGHT = 12;
+
+/** Base width of the callout pointer triangle in pixels */
+export const CALLOUT_POINTER_BASE = 20;
+
+/** Corner radius for the callout body rectangle */
+export const CALLOUT_BODY_CORNER_RADIUS = 8;
+
+// ---------------------------------------------------------------------------
 // Click Zone style defaults
 // ---------------------------------------------------------------------------
 
