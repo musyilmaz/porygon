@@ -7,7 +7,7 @@ export const createStepSchema = z.object({
   orderIndex: z.number().int().min(0),
   screenshotUrl: z.string().min(1, "Screenshot URL is required"),
   mediaType: z.enum(MEDIA_TYPES).default("image"),
-  videoUrl: z.string().url().nullish(),
+  videoUrl: z.string().min(1).nullish(),
   actionType: z.enum(ACTION_TYPES),
   actionCoordinates: z
     .object({
@@ -20,7 +20,7 @@ export const createStepSchema = z.object({
 export const createStepBodySchema = z.object({
   screenshotUrl: z.string().min(1).optional(),
   mediaType: z.enum(MEDIA_TYPES).default("image"),
-  videoUrl: z.string().url().nullish(),
+  videoUrl: z.string().min(1).nullish(),
   actionType: z.enum(ACTION_TYPES).optional(),
   actionCoordinates: z
     .object({
@@ -34,7 +34,7 @@ export const updateStepSchema = z.object({
   orderIndex: z.number().int().min(0).optional(),
   screenshotUrl: z.string().min(1).optional(),
   mediaType: z.enum(MEDIA_TYPES).optional(),
-  videoUrl: z.string().url().nullish(),
+  videoUrl: z.string().min(1).nullish(),
   actionType: z.enum(ACTION_TYPES).optional(),
   actionCoordinates: z
     .object({
