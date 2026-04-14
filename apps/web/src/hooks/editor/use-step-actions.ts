@@ -37,6 +37,8 @@ export function useStepActions() {
         demoId: created.demoId,
         orderIndex: created.orderIndex,
         screenshotUrl: created.screenshotUrl,
+        mediaType: created.mediaType ?? "image",
+        videoUrl: created.videoUrl ?? null,
         actionType: created.actionType,
         actionCoordinates: created.actionCoordinates,
         hotspots: [],
@@ -141,6 +143,8 @@ export function useStepActions() {
         demoId: created.demoId,
         orderIndex: insertAt,
         screenshotUrl: created.screenshotUrl,
+        mediaType: created.mediaType ?? "image",
+        videoUrl: created.videoUrl ?? null,
         actionType: created.actionType,
         actionCoordinates: created.actionCoordinates,
         hotspots: (created.hotspots ?? []).map((h: Record<string, unknown>) => ({

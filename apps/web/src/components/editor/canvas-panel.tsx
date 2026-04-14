@@ -6,9 +6,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useImage from "use-image";
 
 import { CanvasToolbar } from "./canvas/canvas-toolbar";
+import { VideoControls } from "./canvas/video-controls";
 import { ZoomControls } from "./canvas/zoom-controls";
 
 import { useContainerSize } from "@/hooks/editor/use-container-size";
+import { useVideoElement } from "@/hooks/editor/use-video-element";
 import { isTypingTarget } from "@/lib/editor/keyboard-utils";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
@@ -30,10 +32,36 @@ export function CanvasPanel() {
   const selectedStepIndex = useEditorStore((s) => s.selectedStepIndex);
   const selectedStep = steps[selectedStepIndex];
 
+  const isVideoStep =
+    selectedStep?.mediaType === "video" && !!selectedStep?.videoUrl;
+
   const { ref: containerRef, size: containerSize } =
     useContainerSize<HTMLDivElement>();
 
-  const [image] = useImage(selectedStep?.screenshotUrl ?? "");
+  // Always call both hooks (React rules) — pass inactive values when not needed
+  const [image] = useImage(isVideoStep ? "" : (selectedStep?.screenshotUrl ?? ""));
+
+  const layerRef = useRef<Konva.Layer | null>(null);
+  const {
+    video,
+    status: videoStatus,
+    videoWidth,
+    videoHeight,
+    isPlaying,
+    currentTime,
+    duration,
+    togglePlayPause,
+    seek,
+    pause: pauseVideo,
+  } = useVideoElement({
+    videoUrl: isVideoStep ? selectedStep.videoUrl : null,
+    layerRef,
+  });
+
+  // Resolve the active media element and dimensions
+  const mediaElement = isVideoStep ? video : image;
+  const contentW = isVideoStep ? videoWidth : (image?.naturalWidth ?? 0);
+  const contentH = isVideoStep ? videoHeight : (image?.naturalHeight ?? 0);
 
   const [zoomLevel, setZoomLevel] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
@@ -41,31 +69,29 @@ export function CanvasPanel() {
 
   const prevStepIdRef = useRef<string | null>(null);
 
-  const imageW = image?.naturalWidth ?? 0;
-  const imageH = image?.naturalHeight ?? 0;
-
   const fitScale =
-    imageW > 0 && imageH > 0
+    contentW > 0 && contentH > 0
       ? Math.min(
-          containerSize.width / imageW,
-          containerSize.height / imageH,
+          containerSize.width / contentW,
+          containerSize.height / contentH,
           1,
         )
       : 1;
 
   const effectiveScale = fitScale * zoomLevel;
-  const layerX = (containerSize.width - imageW * effectiveScale) / 2;
-  const layerY = (containerSize.height - imageH * effectiveScale) / 2;
+  const layerX = (containerSize.width - contentW * effectiveScale) / 2;
+  const layerY = (containerSize.height - contentH * effectiveScale) / 2;
 
-  // Reset zoom/pan on step change
+  // Reset zoom/pan on step change + pause video
   useEffect(() => {
     const currentStepId = selectedStep?.id ?? null;
     if (currentStepId !== prevStepIdRef.current) {
       prevStepIdRef.current = currentStepId;
       setZoomLevel(1);
       setStagePosition({ x: 0, y: 0 });
+      pauseVideo();
     }
-  }, [selectedStep?.id]);
+  }, [selectedStep?.id, pauseVideo]);
 
   // Space key for pan mode
   useEffect(() => {
@@ -121,8 +147,8 @@ export function CanvasPanel() {
         y: (pointer.y - stagePosition.y - layerY) / oldScale,
       };
 
-      const newLayerX = (containerSize.width - imageW * newScale) / 2;
-      const newLayerY = (containerSize.height - imageH * newScale) / 2;
+      const newLayerX = (containerSize.width - contentW * newScale) / 2;
+      const newLayerY = (containerSize.height - contentH * newScale) / 2;
 
       const newPos = {
         x: pointer.x - mousePointTo.x * newScale - newLayerX,
@@ -140,8 +166,8 @@ export function CanvasPanel() {
       layerY,
       containerSize.width,
       containerSize.height,
-      imageW,
-      imageH,
+      contentW,
+      contentH,
       clampZoom,
     ],
   );
@@ -171,11 +197,19 @@ export function CanvasPanel() {
     );
   }
 
-  if (!selectedStep.screenshotUrl) {
+  const hasMedia = isVideoStep
+    ? videoStatus === "loaded" && video
+    : !!selectedStep.screenshotUrl;
+
+  if (!hasMedia) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="bg-muted flex aspect-video w-full max-w-2xl items-center justify-center rounded-md">
-          <p className="text-muted-foreground text-sm">No screenshot</p>
+          <p className="text-muted-foreground text-sm">
+            {isVideoStep && videoStatus === "loading"
+              ? "Loading video..."
+              : "No screenshot"}
+          </p>
         </div>
       </div>
     );
@@ -183,11 +217,11 @@ export function CanvasPanel() {
 
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-hidden">
-      {containerSize.width > 0 && containerSize.height > 0 && image && (
+      {containerSize.width > 0 && containerSize.height > 0 && mediaElement && (
         <EditorStage
           width={containerSize.width}
           height={containerSize.height}
-          image={image}
+          image={mediaElement}
           effectiveScale={effectiveScale}
           layerX={layerX}
           layerY={layerY}
@@ -195,9 +229,19 @@ export function CanvasPanel() {
           stagePosition={stagePosition}
           onStagePositionChange={setStagePosition}
           onWheel={handleWheel}
+          layerRef={layerRef}
         />
       )}
       <CanvasToolbar />
+      {isVideoStep && (
+        <VideoControls
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          duration={duration}
+          onPlayPause={togglePlayPause}
+          onSeek={seek}
+        />
+      )}
       <ZoomControls
         zoomLevel={zoomLevel}
         onZoomIn={handleZoomIn}

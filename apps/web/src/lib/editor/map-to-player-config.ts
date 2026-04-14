@@ -35,19 +35,18 @@ function mapAnnotation(
   };
 }
 
-function hasScreenshot(
-  step: EditorStep,
-): step is EditorStep & { screenshotUrl: string } {
-  return step.screenshotUrl !== null;
+function hasMedia(step: EditorStep): boolean {
+  return (
+    step.screenshotUrl !== null ||
+    (step.mediaType === "video" && step.videoUrl !== null)
+  );
 }
 
-function mapStep(
-  step: EditorStep & { screenshotUrl: string },
-): PlayerStep {
+function mapStep(step: EditorStep): PlayerStep {
   return {
     id: step.id,
     orderIndex: step.orderIndex,
-    screenshotUrl: step.screenshotUrl,
+    screenshotUrl: step.screenshotUrl ?? "",
     actionType: step.actionType ?? "click",
     actionCoordinates: step.actionCoordinates,
     hotspots: step.hotspots.map(mapHotspot),
@@ -66,6 +65,6 @@ export function mapToPlayerConfig(
     description: demo.description,
     slug: demo.slug,
     settings: demo.settings ?? {},
-    steps: steps.filter(hasScreenshot).map(mapStep),
+    steps: steps.filter(hasMedia).map(mapStep),
   };
 }

@@ -11,8 +11,9 @@ import {
   ContextMenuTrigger,
 } from "@porygon/ui/components/context-menu";
 import { cn } from "@porygon/ui/lib/utils";
-import { Copy, GripVertical, Plus, Trash2 } from "lucide-react";
+import { Copy, GripVertical, Play, Plus, Trash2, Video } from "lucide-react";
 
+import { useVideoThumbnail } from "@/hooks/editor/use-video-thumbnail";
 import type { EditorStep } from "@/stores/editor/types";
 
 const ACTION_TYPE_LABELS: Record<string, string> = {
@@ -21,6 +22,13 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
   type: "Type",
   navigation: "Nav",
 };
+
+function VideoThumbnail({ videoUrl }: { videoUrl: string }) {
+  const thumbnail = useVideoThumbnail(videoUrl);
+  if (!thumbnail) return null;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={thumbnail} alt="Video frame" className="h-full w-full object-cover" />;
+}
 
 interface SortableStepCardProps {
   step: EditorStep;
@@ -84,13 +92,21 @@ export function SortableStepCard({
             <span className="text-muted-foreground text-xs">
               {index + 1}
             </span>
-            {step.actionType && (
-              <Badge variant="secondary" className="ml-auto h-4 px-1 text-[10px]">
-                {ACTION_TYPE_LABELS[step.actionType] ?? step.actionType}
-              </Badge>
-            )}
+            <div className="ml-auto flex items-center gap-1">
+              {step.mediaType === "video" && (
+                <Badge variant="outline" className="h-4 px-1 text-[10px]">
+                  <Video className="mr-0.5 size-2.5" />
+                  Video
+                </Badge>
+              )}
+              {step.actionType && (
+                <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+                  {ACTION_TYPE_LABELS[step.actionType] ?? step.actionType}
+                </Badge>
+              )}
+            </div>
           </div>
-          <div className="bg-muted aspect-video w-full overflow-hidden rounded-sm">
+          <div className="bg-muted relative aspect-video w-full overflow-hidden rounded-sm">
             {step.screenshotUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -98,11 +114,20 @@ export function SortableStepCard({
                 alt={`Step ${index + 1}`}
                 className="h-full w-full object-cover"
               />
+            ) : step.mediaType === "video" && step.videoUrl ? (
+              <VideoThumbnail videoUrl={step.videoUrl} />
             ) : (
               <div className="flex h-full items-center justify-center">
                 <span className="text-muted-foreground text-[10px]">
                   No screenshot
                 </span>
+              </div>
+            )}
+            {step.mediaType === "video" && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex size-6 items-center justify-center rounded-full bg-black/50">
+                  <Play className="size-3 fill-white text-white" />
+                </div>
               </div>
             )}
           </div>

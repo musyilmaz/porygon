@@ -46,6 +46,8 @@ export default async function EditorPage({
         demoId: step.demoId,
         orderIndex: step.orderIndex,
         screenshotUrl: step.screenshotUrl,
+        mediaType: step.mediaType ?? "image",
+        videoUrl: step.videoUrl ?? null,
         actionType: step.actionType,
         actionCoordinates: step.actionCoordinates,
         hotspots,

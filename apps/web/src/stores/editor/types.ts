@@ -5,6 +5,7 @@ import type {
   DemoStatus,
   HotspotStyle,
   HotspotType,
+  MediaType,
   Nullable,
   TooltipPosition,
 } from "@porygon/shared";
@@ -40,6 +41,8 @@ export interface EditorStep {
   demoId: string;
   orderIndex: number;
   screenshotUrl: Nullable<string>;
+  mediaType: MediaType;
+  videoUrl: Nullable<string>;
   actionType: Nullable<"click" | "scroll" | "type" | "navigation">;
   actionCoordinates: Nullable<Coordinates>;
   hotspots: EditorHotspot[];

@@ -16,12 +16,13 @@ import {
 } from "@/components/editor/constants";
 import { useAnnotationActions } from "@/hooks/editor/use-annotation-actions";
 import { useHotspotActions } from "@/hooks/editor/use-hotspot-actions";
+import { getMediaDimensions } from "@/lib/editor/media-utils";
 import { useEditorStore } from "@/stores/editor/editor-store-provider";
 
 interface EditorStageProps {
   width: number;
   height: number;
-  image: HTMLImageElement;
+  image: HTMLImageElement | HTMLVideoElement;
   effectiveScale: number;
   layerX: number;
   layerY: number;
@@ -29,6 +30,7 @@ interface EditorStageProps {
   stagePosition: { x: number; y: number };
   onStagePositionChange: (pos: { x: number; y: number }) => void;
   onWheel: (e: Konva.KonvaEventObject<WheelEvent>) => void;
+  layerRef?: React.RefObject<Konva.Layer | null>;
 }
 
 export function EditorStage({
@@ -42,8 +44,10 @@ export function EditorStage({
   stagePosition,
   onStagePositionChange,
   onWheel,
+  layerRef: externalLayerRef,
 }: EditorStageProps) {
-  const layerRef = useRef<Konva.Layer>(null);
+  const internalLayerRef = useRef<Konva.Layer>(null);
+  const layerRef = externalLayerRef ?? internalLayerRef;
 
   const steps = useEditorStore((s) => s.steps);
   const selectedStepIndex = useEditorStore((s) => s.selectedStepIndex);
@@ -140,7 +144,8 @@ export function EditorStage({
       createAnnotation(selectedStep.id, activeTool, rect);
     } else if (activeTool === "crop") {
       // Constrain to image aspect ratio during drawing
-      const imgRatio = image.naturalWidth / image.naturalHeight;
+      const { width: mediaW, height: mediaH } = getMediaDimensions(image);
+      const imgRatio = mediaW / mediaH;
       const constrainedH = Math.round(rect.width / imgRatio);
       const constrainedRect = {
         ...rect,
@@ -161,7 +166,8 @@ export function EditorStage({
   // Drawing preview rect dimensions (in image space)
   const previewW = Math.abs(drawCurrent.x - drawStart.x);
   const isCropDraw = activeTool === "crop";
-  const imgRatio = image.naturalWidth / image.naturalHeight;
+  const { width: imgW, height: imgH } = getMediaDimensions(image);
+  const imgRatio = imgW / imgH;
   const previewH = isCropDraw ? previewW / imgRatio : Math.abs(drawCurrent.y - drawStart.y);
   const previewX = Math.min(drawStart.x, drawCurrent.x);
   const previewY = isCropDraw
@@ -272,8 +278,8 @@ export function EditorStage({
         <StepContent image={image} />
         <CropDimOverlay
           crop={selectedStep.annotations.find((a) => a.type === "crop")}
-          imageWidth={image.naturalWidth}
-          imageHeight={image.naturalHeight}
+          imageWidth={imgW}
+          imageHeight={imgH}
         />
         <AnnotationOverlay
           annotations={selectedStep.annotations}

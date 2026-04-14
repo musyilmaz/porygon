@@ -16,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import { Play, Plus } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
 import { DeleteStepDialog } from "./delete-step-dialog";
@@ -156,7 +156,7 @@ export function TimelineSidebar() {
               <DragOverlay>
                 {activeStep && (
                   <div className="border-primary bg-accent w-full rounded-md border p-1.5 opacity-90 shadow-lg">
-                    <div className="bg-muted aspect-video w-full overflow-hidden rounded-sm">
+                    <div className="bg-muted relative aspect-video w-full overflow-hidden rounded-sm">
                       {activeStep.screenshotUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -169,6 +169,13 @@ export function TimelineSidebar() {
                           <span className="text-muted-foreground text-[10px]">
                             No screenshot
                           </span>
+                        </div>
+                      )}
+                      {activeStep.mediaType === "video" && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="flex size-6 items-center justify-center rounded-full bg-black/50">
+                            <Play className="size-3 fill-white text-white" />
+                          </div>
                         </div>
                       )}
                     </div>
