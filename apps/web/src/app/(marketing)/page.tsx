@@ -1,29 +1,31 @@
 import type { Metadata } from "next";
 
-import { FAQ } from "@/components/marketing/landing/faq";
 import { Features } from "@/components/marketing/landing/features";
 import { FinalCTA } from "@/components/marketing/landing/final-cta";
 import { Hero } from "@/components/marketing/landing/hero";
+import { LogoWall } from "@/components/marketing/landing/logo-wall";
+import { Personas } from "@/components/marketing/landing/personas";
 import { PricingPreview } from "@/components/marketing/landing/pricing-preview";
-import { Stats } from "@/components/marketing/landing/stats";
+import { ProductPreview } from "@/components/marketing/landing/product-preview";
+import { Testimonials } from "@/components/marketing/landing/testimonials";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "dot — Interactive Demo Builder",
+    absolute: "dot · Interactive product demos",
   },
   description:
-    "Create interactive product demos in minutes. Flat pricing — not per seat. No watermarks. 10 free demos included.",
+    "Interactive product demos that sell your product. Branching, narrated, measured — don't tell, show.",
   openGraph: {
-    title: "dot — The Demo Builder That Doesn't Charge Per Seat",
+    title: "dot · Interactive product demos",
     description:
-      "Create interactive product demos in minutes. $20/mo flat. No watermarks. 10 free demos included.",
+      "The interactive demo platform built for teams who sell by showing. Branching flows, smart hotspots, analytics that matter.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "dot — The Demo Builder That Doesn't Charge Per Seat",
+    title: "dot · Interactive product demos",
     description:
-      "Interactive product demos in minutes. $20/mo flat — not per seat. No watermarks.",
+      "Interactive demos that sell your product. Don't tell — show.",
   },
   robots: {
     index: true,
@@ -35,10 +37,12 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Stats />
+      <LogoWall />
       <Features />
+      <Personas />
+      <ProductPreview />
       <PricingPreview />
-      <FAQ />
+      <Testimonials />
       <FinalCTA />
     </>
   );

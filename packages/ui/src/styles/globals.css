@@ -40,83 +40,172 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Dot-specific palette exposed as Tailwind utilities (bg-dot, text-dot-lo, etc.) */
+  --color-dot: var(--dot);
+  --color-dot-hi: var(--dot-hi);
+  --color-dot-lo: var(--dot-lo);
+  --color-dot-soft: var(--dot-soft);
+  --color-dot-wash: var(--dot-wash);
+
+  --color-ink-000: var(--ink-000);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+  --color-ink-950: var(--ink-950);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, monospace;
+  --font-instrument: var(--font-instrument-serif), ui-serif, Georgia, serif;
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Dot · Warm Ink neutrals (oklch, 280° violet bias, warm 80° at light end) */
+  --ink-000: oklch(0.12 0.012 280);
+  --ink-100: oklch(0.22 0.010 280);
+  --ink-200: oklch(0.36 0.008 280);
+  --ink-300: oklch(0.50 0.008 280);
+  --ink-400: oklch(0.62 0.008 280);
+  --ink-500: oklch(0.74 0.006 280);
+  --ink-600: oklch(0.86 0.004 280);
+  --ink-700: oklch(0.93 0.003 280);
+  --ink-800: oklch(0.965 0.003 80);
+  --ink-900: oklch(0.985 0.003 80);
+  --ink-950: oklch(1 0 0);
+
+  /* Dot · Electric indigo accent */
+  --dot: oklch(0.58 0.22 280);
+  --dot-hi: oklch(0.66 0.22 280);
+  --dot-lo: oklch(0.48 0.20 280);
+  --dot-soft: oklch(0.93 0.06 280);
+  --dot-wash: oklch(0.97 0.025 280);
+  --dot-ring: oklch(0.58 0.22 280 / 0.18);
+
+  --line: oklch(0.90 0.004 280);
+  --line-strong: oklch(0.82 0.006 280);
+
+  /* shadcn semantic tokens mapped onto Dot palette */
+  --background: var(--ink-900);
+  --foreground: var(--ink-000);
+  --card: var(--ink-950);
+  --card-foreground: var(--ink-000);
+  --popover: var(--ink-950);
+  --popover-foreground: var(--ink-000);
+  --primary: var(--dot);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: var(--ink-000);
+  --secondary-foreground: var(--ink-900);
+  --muted: var(--ink-800);
+  --muted-foreground: var(--ink-200);
+  --accent: var(--dot-soft);
+  --accent-foreground: var(--dot-lo);
+  --destructive: oklch(0.60 0.20 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--dot);
+
+  --chart-1: var(--dot);
+  --chart-2: oklch(0.65 0.16 155);
+  --chart-3: oklch(0.75 0.15 80);
+  --chart-4: oklch(0.60 0.18 230);
+  --chart-5: oklch(0.66 0.19 30);
+
+  --sidebar: var(--ink-950);
+  --sidebar-foreground: var(--ink-000);
+  --sidebar-primary: var(--dot);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: var(--ink-800);
+  --sidebar-accent-foreground: var(--ink-000);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--dot);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --background: var(--ink-000);
+  --foreground: var(--ink-900);
+  --card: var(--ink-100);
+  --card-foreground: var(--ink-900);
+  --popover: var(--ink-100);
+  --popover-foreground: var(--ink-900);
+  --primary: var(--dot-hi);
+  --primary-foreground: var(--ink-000);
+  --secondary: var(--ink-100);
+  --secondary-foreground: var(--ink-900);
+  --muted: var(--ink-100);
+  --muted-foreground: var(--ink-500);
+  --accent: oklch(0.28 0.08 280);
+  --accent-foreground: var(--dot-hi);
+  --destructive: oklch(0.55 0.20 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.28 0.01 280);
+  --input: oklch(0.32 0.01 280);
+  --ring: var(--dot-hi);
+
+  --sidebar: var(--ink-100);
+  --sidebar-foreground: var(--ink-900);
+  --sidebar-primary: var(--dot-hi);
+  --sidebar-primary-foreground: var(--ink-000);
+  --sidebar-accent: oklch(0.22 0.010 280);
+  --sidebar-accent-foreground: var(--ink-900);
+  --sidebar-border: oklch(0.28 0.01 280);
+  --sidebar-ring: var(--dot-hi);
 }
 
+/* ============================================
+   The Dot — signature pulsing hotspot
+   ============================================ */
+.dot-hotspot {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--dot);
+  box-shadow: 0 0 0 4px var(--dot-ring), inset 0 0 0 1px var(--card);
+}
+.dot-hotspot::before,
+.dot-hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--dot);
+  animation: dot-pulse 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+}
+.dot-hotspot::after {
+  animation-delay: 1.2s;
+}
+
+@keyframes dot-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+/* Legacy animations used by the Logo component */
 @keyframes dot-ring {
   0% {
     transform: scale(1);
@@ -139,9 +228,23 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-ping,
   .dot-ring,
-  .dot-ring-delayed {
+  .dot-ring-delayed,
+  .dot-hotspot::before,
+  .dot-hotspot::after {
     animation: none !important;
   }
+}
+
+/* ============================================
+   Typography utilities
+   ============================================ */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
 @layer base {
@@ -150,6 +253,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01", "cv11";
   }
 }
 

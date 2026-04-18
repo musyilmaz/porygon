@@ -1,102 +1,158 @@
 import { Button } from "@porygon/ui/components/button";
-import { cn } from "@porygon/ui/lib/utils";
-import { Check } from "lucide-react";
 import Link from "next/link";
 
-const plans = [
+type Tier = {
+  name: string;
+  price: string;
+  per?: string;
+  description: string;
+  features: string[];
+  cta: string;
+  ctaHref: string;
+  primary?: boolean;
+  tag?: string;
+};
+
+const tiers: Tier[] = [
   {
     name: "Free",
     price: "$0",
-    seats: "1 seat",
-    features: ["10 demos", "Share links", "Basic analytics", "No watermarks"],
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "$20",
-    seats: "1 seat",
-    features: ["Unlimited demos", "Custom branding", "Embed anywhere", "Full analytics"],
-    highlighted: true,
+    description: "For solo creators and tire-kickers.",
+    features: ["3 demos", "Dot-branded viewer", "Basic analytics"],
+    cta: "Start free",
+    ctaHref: "/signup",
   },
   {
     name: "Team",
-    price: "$50",
-    seats: "5 seats",
-    features: ["Everything in Pro", "Team workspace", "Team analytics", "Priority support"],
-    highlighted: false,
+    price: "$29",
+    per: "/user/mo",
+    description: "Everything GTM needs to ship and measure.",
+    features: [
+      "Unlimited demos",
+      "Branching + personalization",
+      "Custom domain & theming",
+      "Viewer-level analytics",
+    ],
+    cta: "Start 14-day trial",
+    ctaHref: "/signup",
+    primary: true,
+    tag: "Most popular",
   },
   {
-    name: "Business",
-    price: "$99",
-    seats: "15 seats",
-    features: ["Everything in Team", "SSO (coming soon)", "Dedicated support", "Custom integrations"],
-    highlighted: false,
+    name: "Scale",
+    price: "Custom",
+    description: "SSO, audit logs, and a name on speed dial.",
+    features: [
+      "SSO · SAML · SCIM",
+      "Audit log + data residency",
+      "Dedicated CSM",
+    ],
+    cta: "Talk to sales",
+    ctaHref: "mailto:sales@usedot.io",
   },
 ];
 
 export function PricingPreview() {
   return (
-    <section id="pricing" className="border-t py-24 lg:py-32">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Pricing
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            One price per plan, not per person. Annual billing saves 2 months.
-          </p>
-        </div>
+    <section id="pricing" className="mx-auto max-w-7xl px-6 py-32 sm:px-12">
+      <div className="mb-14 text-center">
+        <div className="mono-label mb-4 !text-primary">05 · PRICING</div>
+        <h2 className="font-display text-[44px] font-medium leading-[1.05] tracking-[-0.03em] sm:text-[52px]">
+          Priced to{" "}
+          <em className="font-instrument font-normal italic text-primary">
+            actually use
+          </em>
+          .
+        </h2>
+      </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan) => (
+      <div className="grid gap-4 md:grid-cols-3">
+        {tiers.map((tier) => (
+          <div
+            key={tier.name}
+            className={
+              "relative rounded-[16px] border p-8 " +
+              (tier.primary
+                ? "border-ink-000 bg-ink-000 text-background"
+                : "border-border bg-card text-foreground")
+            }
+          >
+            {tier.tag ? (
+              <span className="absolute right-5 top-5 rounded-full bg-primary px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-primary-foreground">
+                {tier.tag}
+              </span>
+            ) : null}
+
             <div
-              key={plan.name}
-              className={cn(
-                "relative flex flex-col rounded-xl border p-5",
-                plan.highlighted
-                  ? "border-violet-500 shadow-md ring-1 ring-violet-500"
-                  : "bg-background"
-              )}
+              className={
+                "mb-5 font-mono text-[11px] uppercase tracking-[0.12em] " +
+                (tier.primary ? "text-ink-500" : "text-ink-400")
+              }
             >
-              {plan.highlighted && (
-                <span className="absolute -top-2.5 left-4 rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-medium text-white">
-                  Popular
-                </span>
-              )}
-              <div className="text-sm font-medium text-muted-foreground">
-                {plan.name}
-              </div>
-              <div className="mt-2 flex items-baseline gap-0.5">
-                <span className="text-3xl font-bold tracking-tight">
-                  {plan.price}
-                </span>
-                <span className="text-sm text-muted-foreground">/mo</span>
-              </div>
-              <div className="text-xs text-muted-foreground">{plan.seats}</div>
-
-              <ul className="mt-5 flex-1 space-y-2">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-violet-600" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                className={cn(
-                  "mt-5 w-full",
-                  plan.highlighted && "bg-violet-600 text-white hover:bg-violet-700"
-                )}
-                variant={plan.highlighted ? "default" : "outline"}
-                size="sm"
-                asChild
-              >
-                <Link href="/signup">Start Free</Link>
-              </Button>
+              {tier.name}
             </div>
-          ))}
-        </div>
+            <div className="mb-2 flex items-baseline gap-1">
+              <span className="font-display text-[56px] font-medium leading-none tracking-[-0.04em]">
+                {tier.price}
+              </span>
+              {tier.per ? (
+                <span
+                  className={
+                    "text-sm " +
+                    (tier.primary ? "text-ink-500" : "text-muted-foreground")
+                  }
+                >
+                  {tier.per}
+                </span>
+              ) : null}
+            </div>
+            <div
+              className={
+                "mb-6 min-h-[40px] text-sm " +
+                (tier.primary ? "text-ink-500" : "text-muted-foreground")
+              }
+            >
+              {tier.description}
+            </div>
+
+            <Button
+              asChild
+              variant={tier.primary ? "default" : "outline"}
+              className="h-11 w-full"
+            >
+              <Link href={tier.ctaHref}>{tier.cta}</Link>
+            </Button>
+
+            <div
+              className={
+                "my-7 h-px " +
+                (tier.primary ? "bg-white/10" : "bg-border")
+              }
+            />
+
+            <ul className="grid gap-3">
+              {tier.features.map((feature) => (
+                <li
+                  key={feature}
+                  className={
+                    "flex gap-2.5 text-[13px] " +
+                    (tier.primary ? "text-ink-500" : "text-muted-foreground")
+                  }
+                >
+                  <span
+                    className={
+                      "inline-flex size-4 shrink-0 items-center justify-center rounded-full text-[10px] text-white " +
+                      (tier.primary ? "bg-dot-hi" : "bg-primary")
+                    }
+                  >
+                    ✓
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );

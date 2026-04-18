@@ -2,37 +2,39 @@ import { cn } from "@porygon/ui/lib/utils";
 
 export function Logo({
   className,
-  variant = "dark",
+  size = "md",
+  tone = "ink",
 }: {
   className?: string;
-  variant?: "dark" | "light";
+  size?: "sm" | "md" | "lg";
+  tone?: "ink" | "invert";
 }) {
+  const sizes = {
+    sm: { text: "text-base", dotOuter: "size-3", dotCore: "size-2" },
+    md: { text: "text-xl", dotOuter: "size-3.5", dotCore: "size-2.5" },
+    lg: { text: "text-2xl", dotOuter: "size-4", dotCore: "size-3" },
+  };
+  const s = sizes[size];
+
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-0.5 text-xl font-bold tracking-tight",
-        variant === "light" ? "text-white" : "text-[#09090B]",
-        className
+        "inline-flex items-center gap-1.5 font-semibold tracking-[-0.04em]",
+        tone === "invert" ? "text-background" : "text-foreground",
+        s.text,
+        className,
       )}
     >
       dot
-      {/* Animated hotspot dot */}
-      <span className="relative flex size-3 items-center justify-center">
-        {/* Pulsing rings */}
-        <span
-          className={cn(
-            "dot-ring absolute inset-0 rounded-full",
-            variant === "light" ? "bg-violet-400/40" : "bg-violet-500/30"
-          )}
-        />
-        <span
-          className={cn(
-            "dot-ring-delayed absolute inset-0 rounded-full",
-            variant === "light" ? "bg-violet-400/25" : "bg-violet-500/20"
-          )}
-        />
-        {/* Core dot */}
-        <span className="relative size-2.5 rounded-full bg-violet-500" />
+      <span
+        className={cn(
+          "relative inline-flex items-center justify-center",
+          s.dotOuter,
+        )}
+      >
+        <span className="dot-ring absolute inset-0 rounded-full bg-primary/30" />
+        <span className="dot-ring-delayed absolute inset-0 rounded-full bg-primary/20" />
+        <span className={cn("relative rounded-full bg-primary", s.dotCore)} />
       </span>
     </span>
   );

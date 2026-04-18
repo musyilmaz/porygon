@@ -1,52 +1,39 @@
 import { Button } from "@porygon/ui/components/button";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+
+import { Hotspot } from "@/components/marketing/landing/hotspot";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-[#09090B] text-white">
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/10 blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:py-28">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-          Ready to build your first demo?
+    <section className="bg-ink-000 px-6 py-24 text-background sm:px-12">
+      <div className="mx-auto max-w-[900px] text-center">
+        <Hotspot size={20} />
+        <h2 className="mt-6 font-display text-[52px] font-medium leading-[1] tracking-[-0.04em] text-background sm:text-[72px]">
+          Stop explaining.
+          <br />
+          <em className="font-instrument font-normal italic text-dot-hi">
+            Start showing.
+          </em>
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
-          Start free with 10 demos, no watermarks, no credit card. Upgrade when
-          you&apos;re ready — or don&apos;t. The free plan is free forever.
+        <p className="mx-auto mt-6 max-w-[540px] text-[17px] text-ink-500">
+          Free forever for solo creators. 14-day trial on Team. No credit
+          card, no gatekept onboarding call.
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="h-12 rounded-lg bg-white px-6 text-base font-semibold text-[#09090B] shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl"
-            asChild
-          >
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button size="lg" asChild>
             <Link href="/signup">
-              Start Free <ArrowRight className="ml-1.5 size-4" />
+              Start for free <span className="opacity-70">→</span>
             </Link>
           </Button>
           <Button
-            variant="ghost"
             size="lg"
-            className="h-12 rounded-lg border border-white/10 px-6 text-base text-zinc-300 hover:bg-white/5 hover:text-white"
+            variant="secondary"
+            className="bg-white/[0.08] text-background hover:bg-white/[0.14]"
             asChild
           >
-            <Link href="/pricing">View pricing</Link>
+            <Link href="mailto:sales@usedot.io">Book a 15-min demo</Link>
           </Button>
         </div>
-        <p className="mt-5 text-sm text-zinc-500">
-          Free forever &middot; No credit card &middot; Setup in under 3 minutes
-        </p>
       </div>
     </section>
   );

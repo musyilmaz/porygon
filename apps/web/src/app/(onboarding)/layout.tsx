@@ -1,21 +1,34 @@
 import Link from "next/link";
 
+import { Logo } from "@/components/marketing/logo";
+
 export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 self-center font-semibold"
-        >
-          <span className="text-xl font-bold tracking-tight">Porygon</span>
+    <div
+      className="relative grid min-h-svh grid-rows-[auto_1fr_auto]"
+      style={{
+        background:
+          "radial-gradient(ellipse 1200px 600px at 50% -200px, var(--dot-wash), transparent 70%), var(--background)",
+      }}
+    >
+      <header className="flex items-center justify-between px-8 py-6">
+        <Link href="/" aria-label="dot home">
+          <Logo />
         </Link>
+      </header>
+
+      <main className="flex items-start justify-center px-6 pb-16 pt-6 sm:items-center sm:pt-0">
         {children}
-      </div>
+      </main>
+
+      <footer className="flex items-center justify-between px-8 py-6 font-mono text-[11px] tracking-[0.04em] text-ink-400">
+        <span>USEDOT.IO</span>
+        <span>You can change any of this later in Settings.</span>
+      </footer>
     </div>
   );
 }
